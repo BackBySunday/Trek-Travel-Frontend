@@ -14,29 +14,28 @@ A responsive frontend for a trek and travel landing page. The current implementa
 ## Project Structure
 
 ```txt
-trek-and-travel/
-|-- public/
+public/
+|-- Hero/
 |   |-- card-1.png
 |   |-- card-2.png
 |   |-- card-3.png
 |   `-- hero-background.png
-|-- src/
-|   |-- app/
-|   |   |-- favicon.ico
-|   |   |-- globals.css
-|   |   |-- layout.tsx
-|   |   `-- page.tsx
-|   `-- components/
-|       |-- HeaderBadge.tsx
-|       |-- HeroTitle.tsx
-|       |-- Navbar.tsx
-|       |-- SearchBar.tsx
-|       `-- TrekCarousel.tsx
-|-- eslint.config.mjs
-|-- next.config.ts
-|-- package.json
-|-- postcss.config.mjs
-`-- tsconfig.json
+`-- Top-Categories/
+    `-- Trek-Card.png
+src/
+|-- app/
+|   |-- favicon.ico
+|   |-- globals.css
+|   |-- layout.tsx
+|   `-- page.tsx
+`-- components/
+    |-- layout/
+    |   |-- Navbar.tsx
+    |   |-- SectionBadge.tsx
+    |   `-- TrekCard.tsx
+    `-- sections/
+        |-- hero/
+        `-- top-categories/
 ```
 
 ## Main Files
@@ -44,11 +43,11 @@ trek-and-travel/
 - `src/app/page.tsx`: Composes the landing page sections.
 - `src/app/layout.tsx`: Defines metadata, viewport settings, and font loading.
 - `src/app/globals.css`: Global Tailwind import, theme variables, glass styles, and base styles.
-- `src/components/Navbar.tsx`: Responsive navigation and mobile menu.
-- `src/components/HeaderBadge.tsx`: Hero badge above the title.
-- `src/components/HeroTitle.tsx`: Main hero heading.
-- `src/components/SearchBar.tsx`: Responsive trek search bar.
-- `src/components/TrekCarousel.tsx`: Auto-rotating card carousel.
+- `src/components/layout/Navbar.tsx`: Responsive navigation and mobile menu.
+- `src/components/layout/SectionBadge.tsx`: Reusable section badge.
+- `src/components/layout/TrekCard.tsx`: Reusable trek/trip card.
+- `src/components/sections/hero/`: Hero section components.
+- `src/components/sections/top-categories/`: Top Categories section components.
 
 ## Requirements
 
@@ -117,8 +116,9 @@ All public assets are stored in `public/`.
 
 Current assets:
 
-- `hero-background.png`: Hero section background.
-- `card-1.png`, `card-2.png`, `card-3.png`: Carousel cards.
+- `public/Hero/hero-background.png`: Hero section background.
+- `public/Hero/card-1.png`, `public/Hero/card-2.png`, `public/Hero/card-3.png`: Hero carousel cards.
+- `public/Top-Categories/Trek-Card.png`: Top Categories card image.
 
 Only add assets that are used by the application.
 

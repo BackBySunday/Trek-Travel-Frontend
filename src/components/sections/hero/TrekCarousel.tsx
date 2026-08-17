@@ -8,21 +8,21 @@ const cards = [
     title: "Sahyadri Adventures",
     description:
       "Explore rugged forts, misty valleys, waterfalls, and sunrise trails around Pune.",
-    image: "/card-1.png",
+    image: "/Hero/card-1.png",
     alt: "Trekkers climbing rocks near a lake",
   },
   {
     title: "Mountain Escapes",
     description:
       "Find scenic ridges, peaceful trails, and weekend treks built for every explorer.",
-    image: "/card-2.png",
+    image: "/Hero/card-2.png",
     alt: "Vertical trek destination preview",
   },
   {
     title: "Wild Trail Moments",
     description:
       "Step into open landscapes, forest paths, and memorable group adventures.",
-    image: "/card-3.png",
+    image: "/Hero/card-3.png",
     alt: "Vertical adventure destination preview",
   },
 ];

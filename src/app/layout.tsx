@@ -1,11 +1,17 @@
 import type { Metadata, Viewport } from "next";
-import { Urbanist } from "next/font/google";
+import { IBM_Plex_Sans, Urbanist } from "next/font/google";
 import "./globals.css";
 
 const urbanist = Urbanist({
   subsets: ["latin"],
-  weight: ["300", "400", "500"],
+  weight: ["300", "400", "500", "600"],
   variable: "--font-urbanist",
+});
+
+const ibmPlexSans = IBM_Plex_Sans({
+  subsets: ["latin"],
+  weight: ["500", "600"],
+  variable: "--font-ibm-plex-sans",
 });
 
 export const metadata: Metadata = {
@@ -21,7 +27,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${urbanist.variable}`}>
+    <html lang="en" className={`${urbanist.variable} ${ibmPlexSans.variable}`}>
       <body>{children}</body>
     </html>
   );
