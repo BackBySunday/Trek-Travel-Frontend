@@ -1,6 +1,7 @@
 import SectionBadge from "@/components/layout/SectionBadge";
 import TrekCard, { type TrekCardProps } from "@/components/layout/TrekCard";
 import TopCategoriesIntro from "./TopCategoriesIntro";
+import ViewAllTreksButton from "./ViewAllTreksButton";
 
 const trekCards: TrekCardProps[] = [
   {
@@ -119,7 +120,7 @@ const trekCards: TrekCardProps[] = [
 
 export default function TopCategoriesSection() {
   return (
-    <section className="w-full bg-white px-3 py-16 text-[#101010] sm:px-6 lg:px-8">
+    <section className="w-full bg-white px-3 pb-10 pt-16 text-[#101010] sm:px-6 sm:pb-12 lg:px-8">
       <div className="mx-auto flex w-full max-w-7xl flex-col items-center gap-5 sm:gap-6">
         <SectionBadge>Tour Categories</SectionBadge>
         <TopCategoriesIntro />
@@ -127,6 +128,9 @@ export default function TopCategoriesSection() {
           {trekCards.map((card) => (
             <TrekCard key={card.title} {...card} />
           ))}
+        </div>
+        <div className="mt-5 flex w-full justify-center sm:mt-8">
+          <ViewAllTreksButton />
         </div>
       </div>
     </section>

@@ -1,5 +1,6 @@
 import Navbar from "@/components/layout/Navbar";
 import HeroSection from "@/components/sections/hero/HeroSection";
+import OurPartnersSection from "@/components/sections/our-partners/OurPartnersSection";
 import TopCategoriesSection from "@/components/sections/top-categories/TopCategoriesSection";
 
 export default function Home() {
@@ -18,6 +19,7 @@ export default function Home() {
 
       <div className="mt-[calc(100svh+30px)] w-screen">
         <TopCategoriesSection />
+        <OurPartnersSection />
       </div>
     </main>
   );

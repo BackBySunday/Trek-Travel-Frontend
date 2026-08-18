@@ -74,6 +74,26 @@
   box-shadow: 0 1px 3px color-mix(in srgb, #000 10%, transparent);
 }
 
+.partners-marquee {
+  animation: partners-marquee 28s linear infinite;
+}
+
+@keyframes partners-marquee {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .partners-marquee {
+    animation: none;
+  }
+}
+
 body {
   margin: 0;
   padding: 0;
