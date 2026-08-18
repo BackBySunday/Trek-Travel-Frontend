@@ -1,0 +1,86 @@
+import SectionBadge from "@/components/layout/SectionBadge";
+import FeaturedDestinationCard, {
+  type FeaturedDestinationCardProps,
+} from "./FeaturedDestinationCard";
+import FeaturedDestinationsIntro from "./FeaturedDestinationsIntro";
+
+const destinationTitle = "Vasota Fort Trek";
+const destinationDescription =
+  "Vasota Fort is located at an altitude of 1171 m near Bamnoli village in Satara district.";
+
+const destinationColumns: FeaturedDestinationCardProps[][] = [
+  [
+    {
+      image: "/Featured-Destination/up-card-1.png",
+      alt: "Featured travel destination upper card one",
+      label: "Himachal Pradesh",
+      title: destinationTitle,
+      description: destinationDescription,
+    },
+    {
+      image: "/Featured-Destination/down-card-1.png",
+      alt: "Featured travel destination lower card one",
+      label: "Uttrakhand",
+      title: destinationTitle,
+      description: destinationDescription,
+    },
+  ],
+  [
+    {
+      image: "/Featured-Destination/up-card-2.png",
+      alt: "Featured travel destination upper card two",
+      label: "Pune",
+      title: destinationTitle,
+      description: destinationDescription,
+      isTall: true,
+    },
+    {
+      image: "/Featured-Destination/down-card-2.png",
+      alt: "Featured travel destination lower card two",
+      label: "uttrakhand",
+      title: destinationTitle,
+      description: destinationDescription,
+    },
+  ],
+  [
+    {
+      image: "/Featured-Destination/up-card-3.png",
+      alt: "Featured travel destination upper card three",
+      label: "Pune",
+      title: destinationTitle,
+      description: destinationDescription,
+    },
+    {
+      image: "/Featured-Destination/down-card-3.png",
+      alt: "Featured travel destination lower card three",
+      label: "Pune",
+      title: destinationTitle,
+      description: destinationDescription,
+    },
+  ],
+];
+
+export default function FeaturedDestinationsSection() {
+  return (
+    <section className="featured-destinations-section w-full bg-white px-3 py-12 text-[#101010] sm:px-6 sm:py-16 lg:px-8">
+      <div className="mx-auto flex w-full max-w-7xl flex-col items-center gap-5 sm:gap-6">
+        <SectionBadge>Featured Destinations</SectionBadge>
+        <FeaturedDestinationsIntro />
+        <div className="featured-destination-grid mt-8 grid w-full gap-4 sm:grid-cols-2 sm:gap-5 lg:mt-10 lg:grid-cols-3 lg:gap-[30px]">
+          {destinationColumns.map((column, columnIndex) => (
+            <div
+              key={column.map((destination) => destination.image).join("-")}
+              className={`featured-destination-column ${
+                columnIndex === 2 ? "sm:col-span-2 lg:col-span-1" : ""
+              }`}
+            >
+              {column.map((destination) => (
+                <FeaturedDestinationCard key={destination.image} {...destination} />
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
