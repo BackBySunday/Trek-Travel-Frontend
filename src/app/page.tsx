@@ -3,6 +3,7 @@ import FeaturedDestinationsSection from "@/components/sections/featured-destinat
 import HeroSection from "@/components/sections/hero/HeroSection";
 import OurPartnersSection from "@/components/sections/our-partners/OurPartnersSection";
 import TopCategoriesSection from "@/components/sections/top-categories/TopCategoriesSection";
+import WhyTrekWithUsSection from "@/components/sections/why-trek-with-us/WhyTrekWithUsSection";
 
 export default function Home() {
   return (
@@ -22,6 +23,7 @@ export default function Home() {
         <TopCategoriesSection />
         <OurPartnersSection />
         <FeaturedDestinationsSection />
+        <WhyTrekWithUsSection />
       </div>
     </main>
   );

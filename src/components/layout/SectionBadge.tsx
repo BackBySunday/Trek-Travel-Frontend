@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 type SectionBadgeProps = {
   children: ReactNode;
   className?: string;
+  variant?: "light" | "dark";
 };
 
 function BadgeFlowerIcon() {
@@ -38,13 +39,25 @@ function BadgeFlowerIcon() {
   );
 }
 
-export default function SectionBadge({ children, className = "" }: SectionBadgeProps) {
+export default function SectionBadge({
+  children,
+  className = "",
+  variant = "light",
+}: SectionBadgeProps) {
+  const isDark = variant === "dark";
+
   return (
     <div
-      className={`inline-flex w-fit items-center justify-center gap-2.5 rounded-[100px] border border-dashed border-[rgba(94,94,94,0.30)] px-3 py-2 ${className}`}
+      className={`inline-flex w-fit items-center justify-center gap-2.5 rounded-[100px] border border-dashed px-3 py-2 ${
+        isDark ? "border-white/30" : "border-[rgba(94,94,94,0.30)]"
+      } ${className}`}
     >
       <BadgeFlowerIcon />
-      <p className="w-fit font-urbanist text-base leading-none text-[#101010] sm:text-[17px] lg:text-lg">
+      <p
+        className={`w-fit font-urbanist text-base leading-none sm:text-[17px] lg:text-lg ${
+          isDark ? "text-white" : "text-[#101010]"
+        }`}
+      >
         {children}
       </p>
       <BadgeFlowerIcon />
