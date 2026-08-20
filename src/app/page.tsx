@@ -2,6 +2,7 @@ import Navbar from "@/components/layout/Navbar";
 import FeaturedDestinationsSection from "@/components/sections/featured-destinations/FeaturedDestinationsSection";
 import HeroSection from "@/components/sections/hero/HeroSection";
 import OurPartnersSection from "@/components/sections/our-partners/OurPartnersSection";
+import SnapshotsSection from "@/components/sections/snapshots/SnapshotsSection";
 import TopCategoriesSection from "@/components/sections/top-categories/TopCategoriesSection";
 import WhyTrekWithUsSection from "@/components/sections/why-trek-with-us/WhyTrekWithUsSection";
 
@@ -24,6 +25,7 @@ export default function Home() {
         <OurPartnersSection />
         <FeaturedDestinationsSection />
         <WhyTrekWithUsSection />
+        <SnapshotsSection />
       </div>
     </main>
   );

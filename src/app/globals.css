@@ -25,10 +25,10 @@
   backdrop-filter: blur(8px) url(#switcher) saturate(var(--saturation));
   -webkit-backdrop-filter: blur(8px) saturate(var(--saturation));
   box-shadow: 
-    inset 0 0 0 1px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 10%), transparent),
-    inset 1.8px 3px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 90%), transparent), 
-    inset -2px -2px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 80%), transparent), 
-    inset -3px -8px 1px -6px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 60%), transparent), 
+    inset 0 0 0 0.75px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 9%), transparent),
+    inset 1.4px 2.4px 0px -1.7px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 74%), transparent), 
+    inset -1.5px -1.5px 0px -1.6px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 64%), transparent), 
+    inset -2.4px -6.4px 1px -5.4px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 48%), transparent), 
     inset -0.3px -1px 4px 0px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 12%), transparent), 
     inset -1.5px 2.5px 0px -2px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 20%), transparent), 
     inset 0px 3px 4px -2px color-mix(in srgb, var(--c-dark) calc(var(--glass-reflex-dark) * 20%), transparent), 
@@ -81,7 +81,7 @@
 .featured-destination-column {
   display: flex;
   flex-direction: column;
-  gap: clamp(16px, 1.6vw, 30px);
+  gap: 16px;
 }
 
 .featured-destinations-section {
@@ -91,6 +91,46 @@
 
 .featured-destination-card {
   transition: flex-grow 420ms ease;
+}
+
+.snapshots-3d-scene {
+  display: grid;
+  min-height: clamp(300px, 42vw, 560px);
+  perspective: 35em;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.snapshots-3d-scene:active {
+  cursor: grabbing;
+}
+
+.snapshots-3d-ring {
+  --snapshot-width: clamp(150px, 17vw, 260px);
+  --snapshot-angle: calc(1turn / var(--snapshot-count));
+  display: grid;
+  place-self: center;
+  transform-style: preserve-3d;
+  animation: snapshots-3d-spin 32s linear infinite;
+  transform: rotateY(var(--snapshots-drag-rotate, 0deg));
+}
+
+.snapshots-3d-ring.is-dragging {
+  animation-play-state: paused;
+}
+
+.snapshots-3d-card {
+  grid-area: 1 / 1;
+  position: relative;
+  width: var(--snapshot-width);
+  aspect-ratio: 7 / 10;
+  overflow: hidden;
+  border-radius: clamp(20px, 1.8vw, 30px);
+  backface-visibility: hidden;
+  transform:
+    rotateY(calc(var(--snapshot-index) * var(--snapshot-angle)))
+    translateZ(calc(-1 * (0.5 * var(--snapshot-width) + 0.5rem) / tan(0.5 * var(--snapshot-angle))));
 }
 
 @keyframes partners-marquee {
@@ -103,8 +143,15 @@
   }
 }
 
+@keyframes snapshots-3d-spin {
+  to {
+    transform: rotateY(calc(1turn + var(--snapshots-drag-rotate, 0deg)));
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .partners-marquee {
+  .partners-marquee,
+  .snapshots-3d-ring {
     animation: none;
   }
 
@@ -120,6 +167,7 @@
 
 @media (min-width: 1024px) {
   .featured-destination-column {
+    gap: 20px;
     height: clamp(730px, 63vw, 1180px);
   }
 

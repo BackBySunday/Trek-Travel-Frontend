@@ -37,7 +37,15 @@ const logoGroup = Array.from({ length: 3 }, () => partnerLogos).flat();
 
 export default function PartnersCarousel() {
   return (
-    <div className="mt-8 w-screen overflow-hidden sm:mt-10">
+    <div className="relative mt-8 w-screen overflow-hidden sm:mt-10">
+      <div
+        className="pointer-events-none absolute -bottom-4 -top-4 left-0 z-10 w-4 bg-[rgba(253,253,253,0.60)] blur-[9.45px] sm:w-5"
+        aria-hidden="true"
+      />
+      <div
+        className="pointer-events-none absolute -bottom-4 -top-4 right-0 z-10 w-4 bg-[rgba(253,253,253,0.60)] blur-[9.45px] sm:w-5"
+        aria-hidden="true"
+      />
       <div className="partners-marquee flex w-max items-center">
         {[0, 1].map((groupIndex) => (
           <div

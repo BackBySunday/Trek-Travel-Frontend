@@ -45,8 +45,8 @@ export default function TrekCarousel() {
   ];
 
   return (
-    <div className="mt-8 flex w-full max-w-7xl items-start justify-center gap-3 overflow-visible lg:mt-10 lg:justify-end">
-      <article className="flex w-full max-w-[285px] -translate-y-2 flex-col items-center gap-2 text-left transition-all duration-500 sm:max-w-[315px] 2xl:max-w-[380px] 2xl:gap-4">
+    <div className="mt-8 flex w-full max-w-[1280px] items-start justify-center gap-3 overflow-visible transition-transform duration-500 md:w-[calc(100vw-2rem)] md:translate-x-[clamp(2.25rem,5.25vw,4.5rem)] md:justify-end lg:mt-10 lg:max-w-[1220px] lg:translate-x-[clamp(3rem,6.25vw,5.75rem)] xl:max-w-[1320px] xl:translate-x-[clamp(3.75rem,7.25vw,7.25rem)]">
+      <article className="flex w-full max-w-[295px] -translate-y-2 flex-col items-center gap-2 text-left transition-all duration-500 sm:max-w-[325px] lg:max-w-[370px] 2xl:max-w-[405px] 2xl:gap-4">
         <Image
           src={orderedCards[0].image}
           alt={orderedCards[0].alt}
@@ -66,26 +66,28 @@ export default function TrekCarousel() {
         </div>
       </article>
 
-      <div className="hidden translate-y-2 items-start gap-3 transition-all duration-500 md:inline-flex 2xl:gap-4">
-        {orderedCards.slice(1).map((card) => (
-          <button
-            key={card.title}
-            type="button"
-            className="group overflow-hidden rounded-[15px] transition-transform hover:-translate-y-1"
-            onClick={() =>
-              setActiveIndex(cards.findIndex((item) => item.title === card.title))
-            }
-            aria-label={`Show ${card.title}`}
-          >
-            <Image
-              src={card.image}
-              alt={card.alt}
-              width={250}
-              height={320}
-              className="h-[215px] w-[155px] rounded-[15px] object-cover opacity-90 transition-opacity group-hover:opacity-100 lg:h-[238px] lg:w-[170px] xl:h-[248px] xl:w-[178px] 2xl:h-[285px] 2xl:w-[205px]"
-            />
-          </button>
-        ))}
+      <div className="hidden translate-y-2 overflow-visible transition-all duration-500 md:block">
+        <div className="inline-flex items-start gap-3 xl:gap-4">
+          {orderedCards.slice(1).map((card) => (
+            <button
+              key={card.title}
+              type="button"
+              className="group shrink-0 overflow-hidden rounded-[15px] transition-transform hover:-translate-y-1"
+              onClick={() =>
+                setActiveIndex(cards.findIndex((item) => item.title === card.title))
+              }
+              aria-label={`Show ${card.title}`}
+            >
+              <Image
+                src={card.image}
+                alt={card.alt}
+                width={280}
+                height={360}
+                className="h-[215px] w-[162px] rounded-[15px] object-cover opacity-90 transition-opacity group-hover:opacity-100 lg:h-[238px] lg:w-[178px] xl:h-[248px] xl:w-[188px] 2xl:h-[285px] 2xl:w-[215px]"
+              />
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

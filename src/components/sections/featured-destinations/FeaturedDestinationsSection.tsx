@@ -62,11 +62,11 @@ const destinationColumns: FeaturedDestinationCardProps[][] = [
 
 export default function FeaturedDestinationsSection() {
   return (
-    <section className="featured-destinations-section w-full bg-white px-3 py-12 text-[#101010] sm:px-6 sm:py-16 lg:px-8">
-      <div className="mx-auto flex w-full max-w-7xl flex-col items-center gap-5 sm:gap-6">
+    <section className="featured-destinations-section w-full bg-white px-4 py-12 text-[#101010] sm:py-16 lg:px-5">
+      <div className="mx-auto flex w-full max-w-[1500px] flex-col items-center gap-5 sm:gap-6">
         <SectionBadge>Featured Destinations</SectionBadge>
         <FeaturedDestinationsIntro />
-        <div className="featured-destination-grid mt-8 grid w-full gap-4 sm:grid-cols-2 sm:gap-5 lg:mt-10 lg:grid-cols-3 lg:gap-[30px]">
+        <div className="featured-destination-grid mt-8 grid w-full gap-4 sm:grid-cols-2 sm:gap-5 lg:mt-10 lg:grid-cols-3">
           {destinationColumns.map((column, columnIndex) => (
             <div
               key={column.map((destination) => destination.image).join("-")}

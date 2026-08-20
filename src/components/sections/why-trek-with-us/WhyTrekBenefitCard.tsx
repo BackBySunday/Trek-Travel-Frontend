@@ -12,7 +12,7 @@ export default function WhyTrekBenefitCard({
   description,
 }: WhyTrekBenefitCardProps) {
   return (
-    <article className="flex h-full flex-col items-start gap-4 rounded-[28px] bg-[#262626] p-5 text-left sm:gap-5 sm:rounded-[34px] sm:p-6 lg:min-h-[310px] lg:rounded-[40px] xl:min-h-[330px]">
+    <article className="flex h-full flex-col items-start gap-4 rounded-[28px] bg-[#262626] p-5 text-left sm:gap-5 sm:rounded-[34px] sm:p-6 lg:min-h-[265px] lg:rounded-[40px] xl:min-h-[285px]">
       <div className="liquid-glass-nav flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full p-2.5 text-[#E3E3E3] xl:h-[78px] xl:w-[78px] xl:p-[13px]">
         {icon}
       </div>
