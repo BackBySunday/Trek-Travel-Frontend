@@ -1,5 +1,8 @@
 import SectionBadge from "@/components/layout/SectionBadge";
-import TrekCard, { type TrekCardProps } from "@/components/layout/TrekCard";
+import TrekCard, {
+  TrekCardGlassFilters,
+  type TrekCardProps,
+} from "@/components/layout/TrekCard";
 import TopCategoriesIntro from "./TopCategoriesIntro";
 import ViewAllTreksButton from "./ViewAllTreksButton";
 
@@ -121,6 +124,7 @@ const trekCards: TrekCardProps[] = [
 export default function TopCategoriesSection() {
   return (
     <section className="w-full bg-white px-4 pb-10 pt-16 text-[#101010] sm:pb-12 lg:px-5">
+      <TrekCardGlassFilters />
       <div className="mx-auto flex w-full max-w-[1500px] flex-col items-center gap-5 sm:gap-6">
         <SectionBadge>Tour Categories</SectionBadge>
         <TopCategoriesIntro />

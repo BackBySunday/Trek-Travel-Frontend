@@ -1,4 +1,5 @@
 import Image from "next/image";
+import type { ReactNode } from "react";
 
 export type TrekCardProps = {
   title: string;
@@ -68,6 +69,29 @@ function TrekMeta({ label, value }: { label: string; value: string }) {
   );
 }
 
+export function TrekCardGlassFilters() {
+  return (
+    <svg className="pointer-events-none absolute h-0 w-0 opacity-0" aria-hidden="true">
+      <filter id="trek-btn-glass" primitiveUnits="objectBoundingBox">
+        <feTurbulence type="fractalNoise" baseFrequency="0.012 0.018" numOctaves="2" seed="24" result="map" />
+        <feGaussianBlur in="SourceGraphic" stdDeviation="0.02" result="blur" />
+        <feDisplacementMap in="blur" in2="map" scale="1" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </svg>
+  );
+}
+
+function TrekPill({ children }: { children: ReactNode }) {
+  return (
+    <span className="trek-pill-glass h-6 px-2 font-urbanist text-[11px] leading-none sm:h-7 sm:px-3 sm:text-xs">
+      <span className="trek-pill-glass-effect" />
+      <span className="trek-pill-glass-tint" />
+      <span className="trek-pill-glass-shine" />
+      <span className="trek-pill-glass-content">{children}</span>
+    </span>
+  );
+}
+
 export default function TrekCard({
   title,
   description,
@@ -92,13 +116,13 @@ export default function TrekCard({
           sizes="(min-width: 1280px) 25vw, (min-width: 640px) 50vw, 100vw"
         />
         <div className="absolute inset-x-0 bottom-0 flex items-end gap-1.5 bg-gradient-to-t from-black/30 to-transparent p-2.5 sm:gap-2 sm:p-4">
-          <span className="liquid-glass-pill rounded-full px-2 py-1 font-urbanist text-[11px] font-medium leading-none text-white sm:px-3 sm:text-xs">
+          <TrekPill>
             {durationTag}
-          </span>
-          <span className="liquid-glass-pill inline-flex items-center gap-1 rounded-full px-2 py-1 font-urbanist text-[11px] font-medium leading-none text-white sm:px-3 sm:text-xs">
+          </TrekPill>
+          <TrekPill>
             <StarIcon />
             {rating}
-          </span>
+          </TrekPill>
         </div>
       </div>
 
