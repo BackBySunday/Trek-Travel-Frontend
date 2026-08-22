@@ -1,3 +1,4 @@
+import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
 import CTASection from "@/components/sections/cta/CTASection";
 import FeaturedDestinationsSection from "@/components/sections/featured-destinations/FeaturedDestinationsSection";
@@ -30,6 +31,7 @@ export default function Home() {
         <SnapshotsSection />
         <OurTestimonialsSection />
         <CTASection />
+        <Footer />
       </div>
     </main>
   );
