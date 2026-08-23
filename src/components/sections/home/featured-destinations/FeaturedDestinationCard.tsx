@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export type FeaturedDestinationCardProps = {
   image: string;
@@ -7,6 +8,7 @@ export type FeaturedDestinationCardProps = {
   title: string;
   description: string;
   isTall?: boolean;
+  href?: string;
 };
 
 export default function FeaturedDestinationCard({
@@ -16,12 +18,15 @@ export default function FeaturedDestinationCard({
   title,
   description,
   isTall = false,
+  href = "/trek-details",
 }: FeaturedDestinationCardProps) {
   return (
-    <article
-      className={`featured-destination-card group relative min-h-[280px] overflow-hidden rounded-[30px] bg-[#d9d9d9] ${
+    <Link
+      href={href}
+      className={`featured-destination-card group relative min-h-[280px] overflow-hidden rounded-[30px] bg-[#d9d9d9] no-underline outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-4 focus-visible:ring-offset-[#101010] ${
         isTall ? "is-tall" : ""
       }`}
+      aria-label={`View details for ${title}`}
     >
       <Image
         src={image}
@@ -44,6 +49,6 @@ export default function FeaturedDestinationCard({
           {description}
         </p>
       </div>
-    </article>
+    </Link>
   );
 }

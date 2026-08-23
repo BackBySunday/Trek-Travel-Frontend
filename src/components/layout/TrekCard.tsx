@@ -1,4 +1,6 @@
+
 import Image from "next/image";
+import Link from "next/link";
 import type { ReactNode } from "react";
 
 export type TrekCardProps = {
@@ -13,6 +15,7 @@ export type TrekCardProps = {
   duration: string;
   operator: string;
   price: string;
+  href?: string;
 };
 
 function StarIcon() {
@@ -104,9 +107,14 @@ export default function TrekCard({
   duration,
   operator,
   price,
+  href = "/trek-details",
 }: TrekCardProps) {
   return (
-    <article className="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl bg-[#F6F7F7] text-left sm:rounded-[22px]">
+    <Link
+      href={href}
+      className="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl bg-[#F6F7F7] text-left no-underline outline-none focus-visible:ring-2 focus-visible:ring-[#101010] focus-visible:ring-offset-4 sm:rounded-[22px]"
+      aria-label={`View details for ${title}`}
+    >
       <div className="relative h-36 w-full overflow-hidden rounded-2xl sm:h-[230px] sm:rounded-[22px] lg:h-[250px]">
         <Image
           src={image}
@@ -153,18 +161,17 @@ export default function TrekCard({
                 /person
               </p>
             </div>
-            <button
-              type="button"
+            <span
               className="inline-flex h-8 w-full shrink-0 items-center justify-between gap-1.5 rounded-full bg-[rgba(42,42,42,0.84)] py-1 pl-3 pr-1 font-urbanist text-xs font-medium text-white transition-transform hover:scale-[1.02] active:scale-[0.98] sm:h-9 sm:w-fit sm:gap-2 sm:pr-1.5 sm:text-sm"
             >
               <span className="text-nowrap">Book Now</span>
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white">
                 <ArrowIcon />
               </span>
-            </button>
+            </span>
           </div>
         </div>
       </div>
-    </article>
+    </Link>
   );
 }
