@@ -5,12 +5,7 @@ export default function TrekDetailsHeroImage() {
         <div
           aria-label="Mountain trek landscape at sunset"
           role="img"
-          className="absolute inset-0 bg-[url('/Hero/hero-background.png')] bg-no-repeat"
-          style={{
-            backgroundColor: "lightgray",
-            backgroundPosition: "-1.228px -127.337px",
-            backgroundSize: "100.469% 135.432%",
-          }}
+          className="absolute inset-0 bg-[url('/Hero/hero-background.png')] bg-cover bg-center bg-no-repeat"
         />
         <div className="absolute inset-x-0 bottom-[var(--hero-gap)] flex justify-center px-4 sm:px-6 lg:px-5">
           <div className="flex w-full max-w-[568px] flex-col items-center gap-6 text-center sm:gap-8 lg:gap-10">

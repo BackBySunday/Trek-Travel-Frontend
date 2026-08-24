@@ -1,6 +1,8 @@
+import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
 import { TrekCardGlassFilters } from "@/components/layout/TrekCard";
 import TrekDetailsHeroImage from "@/components/sections/trek-details/hero/TrekDetailsHeroImage";
+import YouMightAlsoLoveSection from "@/components/sections/trek-details/you-might-also-love/YouMightAlsoLoveSection";
 
 export default function TrekDetailsPage() {
   return (
@@ -11,6 +13,8 @@ export default function TrekDetailsPage() {
       </header>
 
       <TrekDetailsHeroImage />
+      <YouMightAlsoLoveSection />
+      <Footer />
     </main>
   );
 }

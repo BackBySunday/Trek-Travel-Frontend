@@ -37,8 +37,11 @@ export default function FeaturedDestinationCard({
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-[#181818]/20 to-[#666]/0" />
       <div className="absolute left-4 top-4 sm:left-5 sm:top-5">
-        <span className="liquid-glass-pill rounded-full px-3 py-1.5 font-urbanist text-xs font-medium leading-none text-white sm:text-sm">
-          {label}
+        <span className="trek-pill-glass h-7 px-3 font-urbanist text-xs leading-none sm:h-8 sm:px-4 sm:text-sm">
+          <span className="trek-pill-glass-effect" />
+          <span className="trek-pill-glass-tint" />
+          <span className="trek-pill-glass-shine" />
+          <span className="trek-pill-glass-content">{label}</span>
         </span>
       </div>
       <div className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-2 overflow-hidden p-4 text-left sm:p-5 lg:p-6">

@@ -11,14 +11,14 @@ const destinationDescription =
 const destinationColumns: FeaturedDestinationCardProps[][] = [
   [
     {
-      image: "/Featured-Destination/up-card-1.png",
+      image: "/Featured-Destination/featured-himachal-pradesh-upper.png",
       alt: "Featured travel destination upper card one",
       label: "Himachal Pradesh",
       title: destinationTitle,
       description: destinationDescription,
     },
     {
-      image: "/Featured-Destination/down-card-1.png",
+      image: "/Featured-Destination/featured-uttarakhand-lower.png",
       alt: "Featured travel destination lower card one",
       label: "Uttrakhand",
       title: destinationTitle,
@@ -27,7 +27,7 @@ const destinationColumns: FeaturedDestinationCardProps[][] = [
   ],
   [
     {
-      image: "/Featured-Destination/up-card-2.png",
+      image: "/Featured-Destination/featured-pune-tall.png",
       alt: "Featured travel destination upper card two",
       label: "Pune",
       title: destinationTitle,
@@ -35,7 +35,7 @@ const destinationColumns: FeaturedDestinationCardProps[][] = [
       isTall: true,
     },
     {
-      image: "/Featured-Destination/down-card-2.png",
+      image: "/Featured-Destination/featured-uttarakhand-secondary.png",
       alt: "Featured travel destination lower card two",
       label: "uttrakhand",
       title: destinationTitle,
@@ -44,14 +44,14 @@ const destinationColumns: FeaturedDestinationCardProps[][] = [
   ],
   [
     {
-      image: "/Featured-Destination/up-card-3.png",
+      image: "/Featured-Destination/featured-pune-upper.png",
       alt: "Featured travel destination upper card three",
       label: "Pune",
       title: destinationTitle,
       description: destinationDescription,
     },
     {
-      image: "/Featured-Destination/down-card-3.png",
+      image: "/Featured-Destination/featured-pune-lower.png",
       alt: "Featured travel destination lower card three",
       label: "Pune",
       title: destinationTitle,
