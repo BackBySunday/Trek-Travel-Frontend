@@ -30,7 +30,7 @@ function RegionIcon() {
       viewBox="0 0 34 34"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className="h-5 w-5 overflow-hidden lg:h-6 lg:w-6 2xl:h-[32px] 2xl:w-[32px]"
+      className="h-5 w-5 overflow-hidden lg:h-[22px] lg:w-[22px] 2xl:h-7 2xl:w-7"
       aria-hidden="true"
     >
       <path
@@ -57,7 +57,7 @@ function DestinationIcon() {
       viewBox="0 0 34 34"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className="h-5 w-5 overflow-hidden lg:h-6 lg:w-6 2xl:h-[32px] 2xl:w-[32px]"
+      className="h-5 w-5 overflow-hidden lg:h-[22px] lg:w-[22px] 2xl:h-7 2xl:w-7"
       aria-hidden="true"
     >
       <path
@@ -78,7 +78,7 @@ function DateIcon() {
       viewBox="0 0 34 34"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className="h-5 w-5 overflow-hidden lg:h-6 lg:w-6 2xl:h-[32px] 2xl:w-[32px]"
+      className="h-5 w-5 overflow-hidden lg:h-[22px] lg:w-[22px] 2xl:h-7 2xl:w-7"
       aria-hidden="true"
     >
       <path
@@ -103,7 +103,7 @@ function ChevronDown() {
       viewBox="0 0 36 36"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className="h-5 w-5 shrink-0 overflow-hidden 2xl:h-8 2xl:w-8"
+      className="h-5 w-5 shrink-0 overflow-hidden 2xl:h-6 2xl:w-6"
       aria-hidden="true"
     >
       <path
@@ -124,7 +124,7 @@ function ArrowIcon() {
       viewBox="0 0 30 30"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className="h-5 w-5 overflow-hidden 2xl:h-7 2xl:w-7"
+      className="h-5 w-5 overflow-hidden 2xl:h-6 2xl:w-6"
       aria-hidden="true"
     >
       <path
@@ -148,17 +148,17 @@ function SearchSelect({ item }: { item: SearchItem }) {
   return (
     <button
       type="button"
-      className="flex w-full min-w-0 items-center justify-between gap-2 rounded-[28px] px-1 py-0.5 text-left transition-colors hover:bg-white/10 sm:w-fit lg:min-w-[190px] lg:gap-4 2xl:min-w-[220px] 2xl:gap-5"
+      className="flex w-full min-w-0 items-center justify-between gap-2 rounded-[24px] px-1 py-0.5 text-left transition-colors hover:bg-white/10 sm:w-fit lg:min-w-[172px] lg:gap-3 2xl:min-w-[190px] 2xl:gap-4"
     >
       <span className="flex min-w-0 items-center gap-2.5 sm:gap-3">
         <span className="flex shrink-0 items-center rounded-[47.4px] border border-[#E4E4E4] p-1.5">
           <ItemIcon icon={item.icon} />
         </span>
         <span className="flex min-w-0 flex-col items-start">
-          <span className="w-fit font-urbanist text-sm leading-tight text-[#E4E4E4] sm:text-[15px] lg:text-base 2xl:text-[22px]">
+          <span className="w-fit font-urbanist text-sm leading-tight text-[#E4E4E4] sm:text-[15px] lg:text-[15px] 2xl:text-lg">
             {item.label}
           </span>
-          <span className="max-w-full truncate font-urbanist text-sm font-medium leading-tight text-[#FFF] sm:text-[15px] lg:text-base 2xl:text-[22px]">
+          <span className="max-w-full truncate font-urbanist text-sm font-medium leading-tight text-[#FFF] sm:text-[15px] lg:text-[15px] 2xl:text-lg">
             {item.value}
           </span>
         </span>
@@ -171,7 +171,7 @@ function SearchSelect({ item }: { item: SearchItem }) {
 function Divider() {
   return (
     <div
-      className="hidden h-9 w-px shrink-0 bg-[rgba(255,255,255,0.32)] xl:mx-1 xl:block 2xl:mx-2 2xl:h-11"
+      className="hidden h-8 w-px shrink-0 bg-[rgba(255,255,255,0.32)] xl:mx-1 xl:block 2xl:h-10"
       aria-hidden="true"
     />
   );
@@ -179,12 +179,12 @@ function Divider() {
 
 export default function SearchBar() {
   return (
-    <div className="mt-5 flex w-full max-w-[min(94vw,1040px)] flex-col items-stretch gap-2 overflow-hidden rounded-[26px] bg-[linear-gradient(0deg,rgba(51,51,51,0.30)_0%,rgba(51,51,51,0.30)_100%),rgba(243,243,243,0.60)] bg-blend-plus-lighter p-2 shadow-[0_18px_60px_rgba(0,0,0,0.18)] backdrop-blur-xl sm:mt-6 sm:rounded-[32px] sm:p-2.5 lg:mt-7 xl:w-fit xl:max-w-[calc(100vw-2rem)] xl:flex-row xl:items-center xl:gap-4 xl:rounded-[98.605px] 2xl:gap-6 2xl:p-3">
-      <div className="grid min-w-0 flex-1 grid-cols-1 gap-1.5 md:grid-cols-3 xl:flex xl:flex-none xl:items-center xl:gap-6 2xl:gap-8">
+    <div className="mt-4 flex w-full max-w-[min(92vw,940px)] flex-col items-stretch gap-2 overflow-hidden rounded-[24px] bg-[linear-gradient(0deg,rgba(51,51,51,0.30)_0%,rgba(51,51,51,0.30)_100%),rgba(243,243,243,0.60)] bg-blend-plus-lighter p-2 shadow-[0_18px_60px_rgba(0,0,0,0.18)] backdrop-blur-xl sm:mt-5 sm:rounded-[28px] lg:mt-6 xl:w-fit xl:max-w-[calc(100vw-2rem)] xl:flex-row xl:items-center xl:gap-3 xl:rounded-[98.605px] 2xl:gap-4 2xl:p-2.5">
+      <div className="grid min-w-0 flex-1 grid-cols-1 gap-1.5 md:grid-cols-3 xl:flex xl:flex-none xl:items-center xl:gap-4 2xl:gap-5">
         {searchItems.map((item, index) => (
           <div
             key={item.label}
-            className="contents xl:flex xl:items-center xl:gap-6 2xl:gap-8"
+            className="contents xl:flex xl:items-center xl:gap-4 2xl:gap-5"
           >
             {index > 0 && <Divider />}
             <SearchSelect item={item} />
@@ -196,10 +196,10 @@ export default function SearchBar() {
 
       <button
         type="button"
-        className="flex h-10 shrink-0 items-center justify-center gap-2.5 rounded-[113.1px] bg-[rgba(20,20,20,0.84)] py-1 pl-4 pr-1 font-urbanist text-[15px] text-[#FFF] shadow-[0_2px_4px_0_rgba(0,0,0,0.15)] transition-transform hover:scale-[1.02] active:scale-[0.98] sm:h-11 lg:text-base xl:w-fit 2xl:h-14 2xl:gap-3 2xl:text-xl"
+        className="flex h-10 shrink-0 items-center justify-center gap-2 rounded-[113.1px] bg-[rgba(20,20,20,0.84)] py-1 pl-4 pr-1 font-urbanist text-[15px] text-[#FFF] shadow-[0_2px_4px_0_rgba(0,0,0,0.15)] transition-transform hover:scale-[1.02] active:scale-[0.98] sm:h-10 lg:text-[15px] xl:w-fit 2xl:h-12 2xl:gap-2.5 2xl:text-lg"
       >
         <span className="w-fit text-nowrap">Find my trek</span>
-        <span className="flex items-center rounded-[76.6px] bg-[#FFF] p-1.5 2xl:gap-3 2xl:p-2.5">
+        <span className="flex items-center rounded-[76.6px] bg-[#FFF] p-1.5 2xl:gap-2 2xl:p-2">
           <ArrowIcon />
         </span>
       </button>

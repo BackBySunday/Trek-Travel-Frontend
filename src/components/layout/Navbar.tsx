@@ -2,10 +2,16 @@
 
 import { useState } from "react";
 
-export default function Navbar() {
-  const navLinks = ["Home", "Packages", "Gallery", "How it works", "Contact"];
+type NavbarProps = {
+  bookNowVariant?: "default" | "trekDetails";
+};
+
+const navLinks = ["Home", "Packages", "Gallery", "How it works", "Contact"];
+
+export default function Navbar({ bookNowVariant = "default" }: NavbarProps) {
   const [activeTab, setActiveTab] = useState("Home");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const isTrekDetailsBookNow = bookNowVariant === "trekDetails";
 
   return (
     <>
@@ -79,6 +85,7 @@ export default function Navbar() {
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               {mobileMenuOpen ? (
                 <path
@@ -103,19 +110,33 @@ export default function Navbar() {
         <div className="hidden min-w-0 flex-shrink-0 sm:flex">
           <button
             type="button"
-            className="liquid-glass-nav group inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full py-1.5 pl-3 pr-1.5 transition-all duration-300 hover:scale-[1.03] active:scale-95 xs:gap-2 sm:pl-3.5 md:gap-3 md:pl-4"
+            className={
+              isTrekDetailsBookNow
+                ? "group inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full bg-[rgba(20,20,20,0.84)] py-1.5 pl-3 pr-1.5 bg-blend-darken shadow-[0_2px_4px_0_rgba(0,0,0,0.15)] transition-transform duration-300 active:scale-95 xs:gap-2 sm:pl-3.5 md:gap-3 md:pl-4"
+                : "liquid-glass-nav group inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full py-1.5 pl-3 pr-1.5 transition-all duration-300 hover:scale-[1.03] active:scale-95 xs:gap-2 sm:pl-3.5 md:gap-3 md:pl-4"
+            }
           >
             <span className="select-none text-nowrap font-sans text-xs font-medium tracking-wide text-white md:text-sm">
               Book Now
             </span>
-            <div className="flex items-center justify-center rounded-full bg-white p-1.5 text-[#101010] shadow-sm transition-transform duration-300 group-hover:rotate-45">
+            <div
+              className={
+                isTrekDetailsBookNow
+                  ? "flex items-center justify-center rounded-full bg-white p-1.5 text-[#101010]"
+                  : "flex items-center justify-center rounded-full bg-white p-1.5 text-[#101010] shadow-sm transition-transform duration-300 group-hover:rotate-45"
+              }
+            >
               <svg
                 width="14"
                 height="14"
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                className="w-3.5 h-3.5"
+                className={
+                  isTrekDetailsBookNow
+                    ? "h-3.5 w-3.5 overflow-hidden"
+                    : "h-3.5 w-3.5"
+                }
               >
                 <path
                   d="M6 18L18 6M18 15V6H9"

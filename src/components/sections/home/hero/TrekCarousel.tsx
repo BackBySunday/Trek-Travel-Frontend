@@ -45,29 +45,29 @@ export default function TrekCarousel() {
   ];
 
   return (
-    <div className="mt-8 flex w-full max-w-[1280px] items-start justify-center gap-3 overflow-visible transition-transform duration-500 md:w-[calc(100vw-2rem)] md:translate-x-[clamp(2.25rem,5.25vw,4.5rem)] md:justify-end lg:mt-10 lg:max-w-[1220px] lg:translate-x-[clamp(3rem,6.25vw,5.75rem)] xl:max-w-[1320px] xl:translate-x-[clamp(3.75rem,7.25vw,7.25rem)]">
-      <article className="flex w-full max-w-[295px] -translate-y-2 flex-col items-center gap-2 text-left transition-all duration-500 sm:max-w-[325px] lg:max-w-[370px] 2xl:max-w-[405px] 2xl:gap-4">
+    <div className="mt-6 flex w-full max-w-[1140px] items-start justify-center gap-3 overflow-visible transition-transform duration-500 md:w-[calc(100vw-2rem)] md:translate-x-[clamp(5rem,8.75vw,7.75rem)] md:justify-end lg:mt-8 lg:max-w-[1080px] lg:translate-x-[clamp(6.75rem,10.5vw,9.75rem)] xl:max-w-[1180px] xl:translate-x-[clamp(8rem,12vw,12rem)]">
+      <article className="flex w-full max-w-[270px] -translate-y-2 flex-col items-center gap-2 text-left transition-all duration-500 sm:max-w-[300px] lg:max-w-[325px] 2xl:max-w-[355px] 2xl:gap-3">
         <Image
           src={orderedCards[0].image}
           alt={orderedCards[0].alt}
           width={400}
           height={250}
           priority
-          className="h-[155px] w-full rounded-[15px] object-cover sm:h-[175px] lg:h-[190px] 2xl:h-[230px]"
+          className="h-[122px] w-full rounded-[15px] object-cover sm:h-[142px] lg:h-[156px] 2xl:h-[182px]"
         />
 
-        <div className="flex w-full flex-col items-start gap-1.5 2xl:gap-2.5">
-          <h2 className="w-full font-urbanist text-base text-[#FFF] sm:text-[17px] lg:text-lg 2xl:text-[22px]">
+        <div className="flex w-full flex-col items-start gap-1.5 2xl:gap-2">
+          <h2 className="w-full font-urbanist text-base text-[#FFF] sm:text-[17px] lg:text-[17px] 2xl:text-xl">
             {orderedCards[0].title}
           </h2>
-          <p className="w-full font-urbanist text-xs leading-snug tracking-[0.02em] text-[#FFF] sm:text-sm lg:text-[15px] 2xl:text-base">
+          <p className="w-full font-urbanist text-xs leading-snug tracking-[0.02em] text-[#FFF] sm:text-sm lg:text-sm 2xl:text-[15px]">
             {orderedCards[0].description}
           </p>
         </div>
       </article>
 
       <div className="hidden translate-y-2 overflow-visible transition-all duration-500 md:block">
-        <div className="inline-flex items-start gap-3 xl:gap-4">
+        <div className="inline-flex items-start gap-3">
           {orderedCards.slice(1).map((card) => (
             <button
               key={card.title}
@@ -83,7 +83,7 @@ export default function TrekCarousel() {
                 alt={card.alt}
                 width={280}
                 height={360}
-                className="h-[215px] w-[162px] rounded-[15px] object-cover opacity-90 transition-opacity group-hover:opacity-100 lg:h-[238px] lg:w-[178px] xl:h-[248px] xl:w-[188px] 2xl:h-[285px] 2xl:w-[215px]"
+                className="h-[184px] w-[144px] rounded-[15px] object-cover opacity-90 transition-opacity group-hover:opacity-100 lg:h-[206px] lg:w-[160px] xl:h-[218px] xl:w-[170px] 2xl:h-[248px] 2xl:w-[192px]"
               />
             </button>
           ))}
