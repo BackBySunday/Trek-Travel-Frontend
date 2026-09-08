@@ -8,7 +8,11 @@ const socialLinks: Array<{
   href: string;
 }> = [
   { label: "Facebook", platform: "facebook", href: "#" },
-  { label: "Instagram", platform: "instagram", href: "#" },
+  {
+    label: "Instagram",
+    platform: "instagram",
+    href: "https://www.instagram.com/thebackbysunday/",
+  },
   { label: "X", platform: "x", href: "#" },
   { label: "WhatsApp", platform: "whatsapp", href: "#" },
 ];
@@ -16,7 +20,10 @@ const socialLinks: Array<{
 const quickLinks = ["Home", "Treks", "Packages", "Gallery"];
 
 const contactInfo = [
-  { label: "hello@backbysunday.in", href: "mailto:hello@backbysunday.in" },
+  {
+    label: "hello.backbysunday@gmail.com",
+    href: "mailto:hello.backbysunday@gmail.com",
+  },
   { label: "+91 9876543210", href: "tel:+919876543210" },
   { label: "Dehradun, Uttarakhand, India" },
 ];
@@ -111,14 +118,17 @@ export default function Footer() {
   return (
     <footer className="w-full bg-white pt-2 text-[#101010]">
       <div className="px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto grid w-full max-w-[1888px] grid-cols-1 gap-10 pt-8 sm:pt-10 md:grid-cols-[minmax(280px,1fr)_minmax(120px,160px)] md:items-start md:justify-between xl:grid-cols-[minmax(260px,517px)_120px_240px_minmax(320px,420px)] xl:gap-10 2xl:grid-cols-[minmax(320px,517px)_minmax(120px,140px)_minmax(250px,320px)_512px] 2xl:gap-16">
-          <div className="flex w-full max-w-[517px] flex-col items-start gap-4">
-            <div
-              className="h-[60px] w-full max-w-[240px] bg-[#D9D9D9]"
-              aria-label="Logo placeholder"
-              role="img"
+        <div className="mx-auto grid w-full max-w-[1500px] grid-cols-1 gap-8 pt-8 sm:pt-10 md:grid-cols-[minmax(260px,1fr)_minmax(120px,150px)] md:items-start md:justify-between xl:grid-cols-[minmax(260px,430px)_120px_220px_minmax(300px,380px)] xl:gap-8 2xl:grid-cols-[minmax(300px,460px)_minmax(120px,140px)_minmax(220px,280px)_420px] 2xl:gap-12">
+          <div className="flex w-full max-w-[460px] flex-col items-start gap-3.5">
+            <Image
+              src="/Footer/footer-logo.png"
+              alt="BackBySunday"
+              width={217}
+              height={72}
+              className="h-auto w-full max-w-[280px] object-contain"
+              sizes="280px"
             />
-            <p className="w-full font-urbanist text-base font-medium leading-[1.45] text-[#5E5E5E] sm:text-lg">
+            <p className="w-full font-urbanist text-sm font-medium leading-[1.5] text-[#5E5E5E] sm:text-base">
               We craft unforgettable trekking expertises across Indias most
               beautiful trails with expert guides, safe journeys, and
               responsible travel.
@@ -133,39 +143,39 @@ export default function Footer() {
             className="flex w-full max-w-[140px] flex-col items-start gap-5 md:w-[140px]"
             aria-label="Footer quick links"
           >
-            <p className="w-full font-urbanist text-xl font-semibold leading-[1.15] text-[#101010] sm:text-[22px]">
+            <p className="w-full font-urbanist text-lg font-semibold leading-[1.15] text-[#101010]">
               Quick Links
             </p>
-            <div className="flex w-full flex-col items-start gap-4">
+            <div className="flex w-full flex-col items-start gap-3">
               {quickLinks.map((link) => (
                 <a
                   key={link}
                   href="#"
-                  className="w-full font-urbanist text-base font-medium leading-[1.25] text-[#5E5E5E] transition-colors duration-200 hover:text-[#101010] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#101010] sm:text-lg"
+                  className="w-full font-urbanist text-sm font-medium leading-[1.3] text-[#5E5E5E] transition-colors duration-200 hover:text-[#101010] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#101010] sm:text-base"
                 >
                   {link}
                 </a>
               ))}
             </div>
           </nav>
-          <div className="flex w-full flex-col items-start gap-5 md:max-w-[320px]">
-            <p className="w-full font-urbanist text-xl font-semibold leading-[1.15] text-[#101010] sm:text-[22px]">
+          <div className="flex w-full flex-col items-start gap-5 md:max-w-[280px]">
+            <p className="w-full font-urbanist text-lg font-semibold leading-[1.15] text-[#101010]">
               Contact Info
             </p>
-            <address className="flex w-full flex-col items-start gap-4 not-italic">
+            <address className="flex w-full flex-col items-start gap-3 not-italic">
               {contactInfo.map((item) =>
                 item.href ? (
                   <a
                     key={item.label}
                     href={item.href}
-                    className="w-fit font-urbanist text-base font-medium leading-[1.25] text-[#5E5E5E] transition-colors duration-200 hover:text-[#101010] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#101010] sm:text-lg"
+                    className="w-fit font-urbanist text-sm font-medium leading-[1.3] text-[#5E5E5E] transition-colors duration-200 hover:text-[#101010] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#101010] sm:text-base"
                   >
                     {item.label}
                   </a>
                 ) : (
                   <p
                     key={item.label}
-                    className="w-fit font-urbanist text-base font-medium leading-[1.25] text-[#5E5E5E] sm:text-lg"
+                    className="w-fit font-urbanist text-sm font-medium leading-[1.3] text-[#5E5E5E] sm:text-base"
                   >
                     {item.label}
                   </p>
@@ -173,17 +183,17 @@ export default function Footer() {
               )}
             </address>
           </div>
-          <div className="flex w-full max-w-[512px] flex-col items-start gap-5 md:col-span-2 xl:col-span-1 2xl:w-[512px]">
-            <div className="flex w-full flex-col items-start gap-5">
-              <p className="w-fit font-urbanist text-xl font-semibold leading-[1.15] text-[#101010] sm:text-[22px]">
+          <div className="flex w-full max-w-[420px] flex-col items-start gap-4 md:col-span-2 xl:col-span-1">
+            <div className="flex w-full flex-col items-start gap-3">
+              <p className="w-fit font-urbanist text-lg font-semibold leading-[1.15] text-[#101010]">
                 Stay in the loop
               </p>
-              <p className="w-full font-urbanist text-base font-medium leading-[1.45] text-[#5E5E5E] sm:text-lg">
+              <p className="w-full font-urbanist text-sm font-medium leading-[1.5] text-[#5E5E5E] sm:text-base">
                 Get trekking stories, offers &amp; updates straight to your
                 inbox.
               </p>
             </div>
-            <form className="flex w-full flex-col gap-3 overflow-hidden rounded-[32px] bg-[#E9E9E9] p-3 shadow-[inset_0_1px_12px_rgba(255,255,255,0.45)] sm:min-h-[64px] sm:flex-row sm:items-center sm:gap-4 sm:rounded-[98.605px] sm:bg-[linear-gradient(0deg,rgba(51,51,51,0.04)_0%,rgba(51,51,51,0.04)_100%),rgba(201,201,201,0.60)] sm:py-2 sm:pl-5 sm:pr-2 2xl:gap-6">
+            <form className="flex w-full flex-col gap-2.5 overflow-hidden rounded-[28px] bg-[#E9E9E9] p-2.5 shadow-[inset_0_1px_12px_rgba(255,255,255,0.45)] sm:min-h-[56px] sm:flex-row sm:items-center sm:gap-3 sm:rounded-[98.605px] sm:bg-[linear-gradient(0deg,rgba(51,51,51,0.04)_0%,rgba(51,51,51,0.04)_100%),rgba(201,201,201,0.60)] sm:py-1.5 sm:pl-4 sm:pr-1.5">
               <label htmlFor="footer-email" className="sr-only">
                 Email address
               </label>
@@ -191,15 +201,15 @@ export default function Footer() {
                 id="footer-email"
                 type="email"
                 placeholder="Enter your email address"
-                className="min-h-10 min-w-0 flex-1 bg-transparent font-urbanist text-base font-normal leading-none text-[#101010] outline-none placeholder:text-[#999292] sm:text-lg"
+                className="min-h-9 min-w-0 flex-1 bg-transparent font-urbanist text-sm font-normal leading-none text-[#101010] outline-none placeholder:text-[#999292] sm:text-base"
               />
               <button
                 type="submit"
-                className="group flex h-11 shrink-0 items-center justify-center gap-2.5 rounded-[113.1px] bg-[rgba(20,20,20,0.84)] py-1 pl-4 pr-1 font-urbanist text-base font-normal text-white shadow-[0_2px_4px_0_rgba(0,0,0,0.15)] transition-transform duration-200 hover:scale-[1.02] active:scale-95 sm:h-12 sm:gap-3 sm:text-lg"
+                className="group flex h-10 shrink-0 items-center justify-center gap-2 rounded-[113.1px] bg-[rgba(20,20,20,0.84)] py-1 pl-3.5 pr-1 font-urbanist text-sm font-normal text-white shadow-[0_2px_4px_0_rgba(0,0,0,0.15)] transition-transform duration-200 hover:scale-[1.02] active:scale-95 sm:h-11 sm:gap-2.5 sm:text-base"
               >
                 <span>Subscribe</span>
-                <span className="flex h-9 w-9 items-center justify-center rounded-[76.6px] bg-white text-[#101010] sm:h-10 sm:w-10">
-                  <ArrowUpRightIcon className="h-5 w-5 overflow-hidden sm:h-6 sm:w-6" />
+                <span className="flex h-8 w-8 items-center justify-center rounded-[76.6px] bg-white text-[#101010] sm:h-9 sm:w-9">
+                  <ArrowUpRightIcon className="h-5 w-5 overflow-hidden" />
                 </span>
               </button>
             </form>
@@ -207,7 +217,7 @@ export default function Footer() {
         </div>
       </div>
       <div
-        className="relative mt-10 aspect-[1921/207] w-full overflow-hidden sm:mt-14 lg:mt-16"
+        className="relative mt-8 aspect-[1921/207] w-full overflow-hidden sm:mt-10 lg:mt-12"
         aria-label="Snow covered mountain range"
         role="img"
       >
@@ -219,7 +229,7 @@ export default function Footer() {
           sizes="100vw"
         />
         <div className="absolute inset-x-0 bottom-4 px-4 sm:px-6 lg:px-8">
-          <p className="mx-auto w-full max-w-[1888px] text-center font-urbanist text-base font-medium leading-[1.1] text-[#5E5E5E] sm:text-lg">
+          <p className="mx-auto w-full max-w-[1500px] text-center font-urbanist text-sm font-medium leading-[1.1] text-[#5E5E5E] sm:text-base">
             Copyright 2026 backbysunday,in All rights reserved
           </p>
         </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 
 type NavbarProps = {
@@ -39,13 +40,22 @@ export default function Navbar({ bookNowVariant = "default" }: NavbarProps) {
       </svg>
 
       {/* Header Container with Navbar & Book Now Button */}
-      <div className="relative flex w-full items-center justify-between gap-2 sm:gap-3">
-        {/* Left spacer for desktop layout symmetry */}
-        <div className="hidden w-[clamp(92px,10vw,132px)] flex-shrink-0 lg:block" />
+      <div className="relative grid w-full grid-cols-[1fr_auto_1fr] items-center gap-2 sm:gap-3">
+        <div className="flex w-[clamp(132px,28vw,180px)] items-center justify-self-start lg:w-[clamp(190px,15vw,240px)]">
+          <Image
+            src="/Hero/hero-logo.png"
+            alt="BackBySunday"
+            width={217}
+            height={72}
+            priority
+            className="h-auto w-full object-contain"
+            sizes="(min-width: 1024px) 240px, 180px"
+          />
+        </div>
 
         {/* Desktop Liquid Glass Navigation Links */}
         <nav
-          className="liquid-glass-nav mx-auto hidden max-w-full items-center gap-1 overflow-x-auto p-1.5 transition-all duration-300 md:flex lg:mx-0 lg:gap-2"
+          className="liquid-glass-nav hidden max-w-full items-center gap-1 overflow-x-auto p-1.5 transition-all duration-300 md:flex lg:gap-2"
           aria-label="Primary navigation"
         >
           {navLinks.map((link) => {
@@ -107,7 +117,7 @@ export default function Navbar({ bookNowVariant = "default" }: NavbarProps) {
         </div>
 
         {/* Liquid Glass Book Now Button */}
-        <div className="hidden min-w-0 flex-shrink-0 sm:flex">
+        <div className="hidden min-w-0 justify-self-end sm:flex">
           <button
             type="button"
             className={

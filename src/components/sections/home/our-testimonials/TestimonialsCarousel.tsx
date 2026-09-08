@@ -67,11 +67,11 @@ export default function TestimonialsCarousel() {
   return (
     <div className="relative mt-10 w-full overflow-hidden sm:mt-12 lg:mt-14">
       <div
-        className="pointer-events-none absolute inset-x-0 top-0 z-10 h-20 bg-gradient-to-b from-white to-white/0"
+        className="pointer-events-none absolute inset-x-0 top-0 z-10 h-20 bg-gradient-to-b from-[var(--bg)] to-transparent"
         aria-hidden="true"
       />
       <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-20 bg-gradient-to-t from-white to-white/0"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-20 bg-gradient-to-t from-[var(--bg)] to-transparent"
         aria-hidden="true"
       />
 

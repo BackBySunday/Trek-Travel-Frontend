@@ -1,6 +1,6 @@
 export default function TrekDetailsHeroImage() {
   const imageClass =
-    "rounded-[22px] bg-[url('/Hero/hero-background.png')] bg-cover bg-center bg-no-repeat sm:rounded-[26px] lg:rounded-[30px]";
+    "rounded-[22px] bg-cover bg-center bg-no-repeat sm:rounded-[26px] lg:rounded-[30px]";
 
   return (
     <section className="mt-[calc(var(--hero-header-top)+var(--hero-nav-height)+var(--hero-gap))] w-full px-4 [--hero-gap:16px] [--hero-header-top:max(1rem,env(safe-area-inset-top))] [--hero-nav-height:44px] sm:px-6 sm:[--hero-gap:24px] md:[--hero-header-top:32px] md:[--hero-nav-height:54px] lg:px-5 lg:[--hero-gap:20px] xl:[--hero-gap:max(20px,(100vw-1860px)/2)] xl:[--hero-header-top:40px]">
@@ -8,7 +8,7 @@ export default function TrekDetailsHeroImage() {
         <div
           aria-label="Vasota Fort Trek landscape"
           role="img"
-          className={`${imageClass} relative min-h-[430px] overflow-hidden md:min-h-[560px] lg:h-full`}
+          className={`${imageClass} relative min-h-[430px] overflow-hidden bg-[url('/Hero/card-1.png')] md:min-h-[560px] lg:h-full`}
         >
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.08)_0%,rgba(0,0,0,0.56)_100%)]" />
           <div className="absolute inset-x-0 bottom-8 flex flex-col items-center gap-3 px-5 text-center sm:bottom-10 lg:bottom-12">
@@ -34,24 +34,24 @@ export default function TrekDetailsHeroImage() {
             <div
               aria-label="Vasota trek preview"
               role="img"
-              className={`${imageClass} min-h-[250px] lg:flex-[640]`}
+              className={`${imageClass} min-h-[250px] bg-[url('/Hero/card-2.png')] lg:flex-[640]`}
             />
             <div
               aria-label="Vasota trek preview"
               role="img"
-              className={`${imageClass} min-h-[250px] lg:flex-[390]`}
+              className={`${imageClass} min-h-[250px] bg-[url('/Hero/card-3.png')] lg:flex-[390]`}
             />
           </div>
           <div className="contents lg:flex lg:flex-1 lg:gap-5">
             <div
               aria-label="Vasota trek preview"
               role="img"
-              className={`${imageClass} min-h-[250px] lg:flex-[390]`}
+              className={`${imageClass} min-h-[250px] bg-[url('/Hero/western-ghats-cliff.jpg')] lg:flex-[390]`}
             />
             <div
               aria-label="Vasota trek preview"
               role="img"
-              className={`${imageClass} min-h-[250px] lg:flex-[640]`}
+              className={`${imageClass} min-h-[250px] bg-[url('/Hero/mountain-ridge-trail.jpg')] lg:flex-[640]`}
             />
           </div>
         </div>

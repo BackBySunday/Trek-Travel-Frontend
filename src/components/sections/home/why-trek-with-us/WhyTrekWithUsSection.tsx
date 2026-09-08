@@ -81,7 +81,7 @@ const benefits: WhyTrekBenefitCardProps[] = [
 
 export default function WhyTrekWithUsSection() {
   return (
-    <section className="w-full bg-white px-4 py-8 sm:py-10 lg:px-[30px]">
+    <section className="w-full bg-[var(--bg)] px-4 py-8 sm:py-10 lg:px-[30px]">
       <div className="mx-auto flex w-full max-w-[1500px] flex-col items-center gap-6 rounded-[26px] bg-[#101010] px-4 py-7 text-white sm:gap-7 sm:rounded-[32px] sm:px-5 sm:py-8 lg:rounded-[38px]">
         <div className="flex w-full max-w-5xl flex-col items-center gap-4 text-center">
           <SectionBadge variant="dark">Why Trek With Us</SectionBadge>

@@ -12,7 +12,7 @@ import WhyTrekWithUsSection from "@/components/sections/home/why-trek-with-us/Wh
 
 export default function Home() {
   return (
-    <main className="relative isolate flex min-h-[100svh] w-full flex-col items-center overflow-x-hidden bg-white px-4 text-white sm:min-h-[900px] sm:px-6 lg:min-h-[100svh] lg:px-8">
+    <main className="relative isolate flex min-h-[100svh] w-full flex-col items-center overflow-x-hidden bg-[var(--bg)] px-4 text-white [--bg:#eef1f6] sm:min-h-[900px] sm:px-6 lg:min-h-[100svh] lg:px-8">
       <HeroBackgroundSlider />
 
       {/* Fixed Header Bar */}

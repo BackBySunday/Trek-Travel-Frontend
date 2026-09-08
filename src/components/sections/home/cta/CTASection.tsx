@@ -24,7 +24,7 @@ function ArrowIcon() {
 
 export default function CTASection() {
   return (
-    <section className="w-full bg-white px-4 py-10 sm:py-14 lg:px-[30px] lg:py-16">
+    <section className="w-full bg-[var(--bg)] px-4 py-10 sm:py-14 lg:px-[30px] lg:py-16">
       <div className="mx-auto w-full max-w-[1888px]">
         <div
           className="relative flex aspect-[1888/760] min-h-[320px] w-full flex-col items-center justify-center overflow-hidden rounded-[28px] px-5 py-10 sm:min-h-[430px] sm:rounded-[36px] sm:px-[30px] sm:py-14 lg:min-h-[520px] lg:rounded-[44px]"

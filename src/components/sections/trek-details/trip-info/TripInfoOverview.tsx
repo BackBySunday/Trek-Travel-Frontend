@@ -3,6 +3,11 @@
 import { useState } from "react";
 
 export default function TripInfoOverview() {
+  const itineraryImages = [
+    "/Hero/card-1.png",
+    "/Hero/card-2.png",
+    "/Hero/card-3.png",
+  ];
   const includedItems = [
     "Japan Rail (JR) pass for 7 days",
     "Hiroshima Peace Park visit",
@@ -224,12 +229,13 @@ export default function TripInfoOverview() {
 
                 {isOpen && (
                   <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-3">
-                    {[1, 2, 3].map((imageIndex) => (
+                    {itineraryImages.map((image, imageIndex) => (
                       <div
-                        key={imageIndex}
-                        aria-label={`Itinerary ${day.day} preview ${imageIndex}`}
+                        key={image}
+                        aria-label={`Itinerary ${day.day} preview ${imageIndex + 1}`}
                         role="img"
-                        className="h-[160px] rounded-[20px] bg-[url('/Hero/hero-background.png')] bg-cover bg-center bg-no-repeat sm:h-[175px] lg:h-[190px]"
+                        className="h-[160px] rounded-[20px] bg-cover bg-center bg-no-repeat sm:h-[175px] lg:h-[190px]"
+                        style={{ backgroundImage: `url(${image})` }}
                       />
                     ))}
                   </div>
