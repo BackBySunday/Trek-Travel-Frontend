@@ -12,15 +12,15 @@ export default function WhyTrekBenefitCard({
   description,
 }: WhyTrekBenefitCardProps) {
   return (
-    <article className="flex h-full flex-col items-start gap-4 rounded-[28px] bg-[#262626] p-5 text-left sm:gap-5 sm:rounded-[34px] sm:p-6 lg:min-h-[265px] lg:rounded-[40px] xl:min-h-[285px]">
-      <div className="liquid-glass-nav flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full p-2.5 text-[#E3E3E3] xl:h-[78px] xl:w-[78px] xl:p-[13px]">
+    <article className="flex h-full flex-col items-start gap-3 rounded-[22px] bg-[#262626] p-4 text-left sm:rounded-[26px] sm:p-5 lg:min-h-[220px] lg:rounded-[30px] xl:min-h-[230px]">
+      <div className="liquid-glass-nav flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full p-2 text-[#E3E3E3] xl:h-14 xl:w-14">
         {icon}
       </div>
-      <div className="flex flex-col gap-3 sm:gap-4">
-        <h3 className="font-urbanist text-xl font-medium leading-tight text-white sm:text-2xl">
+      <div className="flex flex-col gap-2">
+        <h3 className="font-urbanist text-lg font-medium leading-tight text-white sm:text-xl lg:text-2xl">
           {title}
         </h3>
-        <p className="font-urbanist text-sm font-medium leading-6 text-[#888] sm:text-base sm:leading-7 lg:text-[15px] xl:text-base">
+        <p className="font-urbanist text-sm font-medium leading-snug text-[#888] sm:text-[15px] lg:text-base">
           {description}
         </p>
       </div>

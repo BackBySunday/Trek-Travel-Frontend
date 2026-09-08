@@ -4,7 +4,7 @@ Homepage-only sections live in this folder.
 
 Current structure:
 
-- `hero` - homepage hero, title, search bar and carousel.
+- `hero` - homepage hero, background slides, title, and search bar.
 - `top-categories` - trek category cards and view-all action.
 - `our-partners` - partner intro and partner carousel.
 - `featured-destinations` - featured trek destination cards.

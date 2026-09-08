@@ -14,7 +14,7 @@ export default function WhyTrekWithUsIntro() {
           trails, everything you need to make every journey count.
         </>
       }
-      titleClassName="w-full max-w-[772px] text-[#666]"
+      titleClassName="w-full max-w-[1120px] text-[#666] lg:text-nowrap"
       descriptionClassName="max-w-[591px] text-[#8C8C8C]"
     />
   );

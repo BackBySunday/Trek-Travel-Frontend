@@ -16,7 +16,7 @@ export default function OurPartnersIntro() {
           meaningful, and rewarding.
         </>
       }
-      titleClassName="max-w-full text-[clamp(1.75rem,5vw,4.25rem)] sm:text-nowrap"
+      titleClassName="max-w-full sm:text-nowrap"
       descriptionClassName="max-w-[859px]"
     />
   );

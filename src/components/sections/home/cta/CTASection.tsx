@@ -24,10 +24,10 @@ function ArrowIcon() {
 
 export default function CTASection() {
   return (
-    <section className="w-full bg-white px-4 py-12 sm:py-16 lg:px-5 lg:py-20">
+    <section className="w-full bg-white px-4 py-10 sm:py-14 lg:px-[30px] lg:py-16">
       <div className="mx-auto w-full max-w-[1888px]">
         <div
-          className="relative flex aspect-[1888/1000] min-h-[360px] w-full flex-col items-center justify-center overflow-hidden rounded-[30px] px-5 py-12 sm:min-h-[520px] sm:rounded-[40px] sm:px-[30px] sm:py-20 lg:min-h-[720px] lg:rounded-[50px]"
+          className="relative flex aspect-[1888/760] min-h-[320px] w-full flex-col items-center justify-center overflow-hidden rounded-[28px] px-5 py-10 sm:min-h-[430px] sm:rounded-[36px] sm:px-[30px] sm:py-14 lg:min-h-[520px] lg:rounded-[44px]"
           aria-label="Trekkers overlooking a mountain range at sunset"
           role="img"
         >
@@ -39,27 +39,26 @@ export default function CTASection() {
             sizes="(min-width: 1920px) 1888px, calc(100vw - 2rem)"
           />
           <div className="absolute inset-0 bg-black/20" aria-hidden="true" />
-          <div className="relative z-10 flex w-full flex-col items-center gap-10 text-center">
-            <div className="flex w-full flex-col items-center gap-4">
-              <div className="flex w-full flex-col items-center gap-1">
-                <p className="w-full font-urbanist text-[clamp(2.5rem,5vw,4.75rem)] font-light leading-none text-white">
-                  Experience the Magic of
-                </p>
-                <p className="w-full font-urbanist text-[clamp(2.35rem,4.75vw,4.5rem)] font-normal leading-none text-white">
-                  Trails, in Your Way
-                </p>
-              </div>
-              <p className="w-full max-w-[628px] text-center font-urbanist text-base font-normal leading-normal tracking-[0.02em] text-[#E1E1E1] sm:text-xl">
+          <div className="relative z-10 flex w-full flex-col items-center gap-7 text-center sm:gap-8">
+            <div className="flex w-full flex-col items-center gap-3">
+              <h2 className="flex w-full max-w-[1180px] flex-col items-center gap-0.5 font-urbanist text-[clamp(2rem,4.6vw,3.75rem)] font-normal leading-none text-white">
+                <span>
+                  <span className="font-light">Experience the Magic of</span>{" "}
+                  Trails,
+                </span>
+                <span>in Your Way</span>
+              </h2>
+              <p className="w-full max-w-[628px] text-center font-urbanist text-sm font-normal leading-6 tracking-[0.02em] text-[#E1E1E1] sm:text-base lg:text-lg">
                 Custom treks for your group, your dates, and your pace. Tell us
                 what you have in mind, and we&apos;ll take care of the rest.
               </p>
             </div>
             <button
               type="button"
-              className="liquid-glass-nav group flex h-14 items-center gap-[14.591px] rounded-[113.078px] py-[4.864px] pl-[14.591px] pr-[4.864px] font-urbanist text-lg text-white transition-transform duration-300 hover:scale-[1.03] active:scale-95 sm:h-[60px] sm:text-[22px]"
+              className="liquid-glass-nav group flex h-11 items-center gap-2.5 rounded-[113.078px] py-1 pl-4 pr-1 font-urbanist text-base text-white transition-transform duration-300 hover:scale-[1.03] active:scale-95 sm:h-12 sm:text-lg"
             >
               <span className="w-fit text-nowrap">Send us Message</span>
-              <span className="flex w-fit items-center gap-3 rounded-[76.6px] bg-white p-2.5 shadow-sm transition-transform duration-300 group-hover:rotate-45">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[76.6px] bg-white shadow-sm transition-transform duration-300 group-hover:rotate-45 sm:h-10 sm:w-10">
                 <ArrowIcon />
               </span>
             </button>

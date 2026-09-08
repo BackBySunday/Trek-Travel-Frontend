@@ -81,21 +81,21 @@ const benefits: WhyTrekBenefitCardProps[] = [
 
 export default function WhyTrekWithUsSection() {
   return (
-    <section className="w-full bg-white px-4 py-12 sm:py-16 lg:px-5">
-      <div className="mx-auto flex w-full max-w-[1500px] flex-col items-center gap-10 rounded-[32px] bg-[#101010] px-4 py-9 text-white sm:gap-12 sm:rounded-[40px] sm:px-5 sm:py-12 lg:gap-12 lg:rounded-[50px] lg:py-14">
-        <div className="flex w-full max-w-5xl flex-col items-center gap-8 text-center">
+    <section className="w-full bg-white px-4 py-8 sm:py-10 lg:px-[30px]">
+      <div className="mx-auto flex w-full max-w-[1500px] flex-col items-center gap-6 rounded-[26px] bg-[#101010] px-4 py-7 text-white sm:gap-7 sm:rounded-[32px] sm:px-5 sm:py-8 lg:rounded-[38px]">
+        <div className="flex w-full max-w-5xl flex-col items-center gap-4 text-center">
           <SectionBadge variant="dark">Why Trek With Us</SectionBadge>
           <WhyTrekWithUsIntro />
         </div>
 
-        <div className="grid w-full gap-4 sm:gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(320px,420px)_minmax(0,1fr)] lg:items-stretch xl:grid-cols-[minmax(0,1fr)_minmax(360px,460px)_minmax(0,1fr)]">
-          <div className="grid gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-1 lg:grid-rows-2">
+        <div className="grid w-full gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(300px,380px)_minmax(0,1fr)] lg:items-stretch xl:grid-cols-[minmax(0,1fr)_minmax(320px,400px)_minmax(0,1fr)]">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-1 lg:grid-rows-2">
             {benefits.slice(0, 2).map((benefit) => (
               <WhyTrekBenefitCard key={benefit.title} {...benefit} />
             ))}
           </div>
 
-          <div className="relative min-h-[300px] overflow-hidden rounded-[28px] sm:min-h-[430px] sm:rounded-[34px] lg:min-h-full lg:rounded-[40px]">
+          <div className="relative min-h-[260px] overflow-hidden rounded-[24px] sm:min-h-[350px] sm:rounded-[28px] lg:min-h-full lg:rounded-[30px]">
             <Image
               src="/Why-Trek-With-Us/Card-1.png"
               alt="Trekkers enjoying a mountain trail"
@@ -105,7 +105,7 @@ export default function WhyTrekWithUsSection() {
             />
           </div>
 
-          <div className="grid gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-1 lg:grid-rows-2">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-1 lg:grid-rows-2">
             {benefits.slice(2).map((benefit) => (
               <WhyTrekBenefitCard key={benefit.title} {...benefit} />
             ))}
@@ -114,10 +114,10 @@ export default function WhyTrekWithUsSection() {
 
         <button
           type="button"
-          className="inline-flex h-14 items-center gap-3 rounded-full bg-white/20 py-1 pl-5 pr-1 font-urbanist text-lg text-white shadow-[0_2px_4px_rgba(0,0,0,0.15)] transition-transform hover:scale-[1.02] active:scale-[0.98] sm:h-[60px] sm:gap-[15px] sm:text-[22px]"
+          className="inline-flex h-11 items-center gap-2.5 rounded-full bg-white/20 py-1 pl-4 pr-1 font-urbanist text-base text-white shadow-[0_2px_4px_rgba(0,0,0,0.15)] transition-transform hover:scale-[1.02] active:scale-[0.98] sm:h-12 sm:text-lg"
         >
           <span className="text-nowrap">Send us Message</span>
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white sm:h-[50px] sm:w-[50px]">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white sm:h-10 sm:w-10">
             <ArrowIcon />
           </span>
         </button>

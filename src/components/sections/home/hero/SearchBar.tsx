@@ -1,25 +1,121 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+
 type SearchItem = {
   label: string;
   value: string;
   icon: "region" | "destination" | "date";
 };
 
-const searchItems: SearchItem[] = [
-  {
+type SearchItemKey = SearchItem["icon"];
+type DateMode = "quick" | "calendar";
+
+const TODAY = new Date("2026-09-08T00:00:00+05:30");
+
+const searchItems: Record<SearchItemKey, SearchItem> = {
+  region: {
     label: "Regions",
     value: "Pune",
     icon: "region",
   },
-  {
+  destination: {
     label: "Destinations",
     value: "Lohagad Trek",
     icon: "destination",
   },
-  {
+  date: {
     label: "Date",
     value: "Aug 17, 2026",
     icon: "date",
   },
+};
+
+const searchItemOrder: SearchItemKey[] = ["region", "destination", "date"];
+
+const searchOptions: Record<SearchItemKey, string[]> = {
+  region: ["Pune", "Mumbai", "Uttarakhand", "Himachal Pradesh", "Karnataka"],
+  destination: [
+    "Lohagad Trek",
+    "Rajmachi Trek",
+    "Kalsubai Trek",
+    "Vasota Fort",
+    "Harishchandragad",
+  ],
+  date: [],
+};
+
+const defaultSelections: Record<SearchItemKey, string> = {
+  region: searchItems.region.value,
+  destination: searchItems.destination.value,
+  date: searchItems.date.value,
+};
+
+function formatDateLabel(date: Date) {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(date);
+}
+
+function getRelativeDate(offsetDays: number) {
+  const next = new Date(TODAY);
+  next.setDate(next.getDate() + offsetDays);
+  return next;
+}
+
+function getRelativeDateLabel(offsetDays: number) {
+  return formatDateLabel(getRelativeDate(offsetDays));
+}
+
+function getThisWeekendLabel() {
+  const nextSaturday = new Date(TODAY);
+  const day = nextSaturday.getDay();
+  const daysUntilSaturday = (6 - day + 7) % 7 || 7;
+  nextSaturday.setDate(nextSaturday.getDate() + daysUntilSaturday);
+  const nextSunday = new Date(nextSaturday);
+  nextSunday.setDate(nextSaturday.getDate() + 1);
+  return `${formatDateLabel(nextSaturday)} - ${formatDateLabel(nextSunday)}`;
+}
+
+function getNextWeekendLabel() {
+  const nextSaturday = new Date(TODAY);
+  const day = nextSaturday.getDay();
+  const daysUntilSaturday = (6 - day + 7) % 7 || 7;
+  nextSaturday.setDate(nextSaturday.getDate() + daysUntilSaturday + 7);
+  const nextSunday = new Date(nextSaturday);
+  nextSunday.setDate(nextSaturday.getDate() + 1);
+  return `${formatDateLabel(nextSaturday)} - ${formatDateLabel(nextSunday)}`;
+}
+
+function getCalendarMonth(monthOffset = 0) {
+  return new Date(TODAY.getFullYear(), TODAY.getMonth() + monthOffset, 1);
+}
+
+function getCalendarCells(monthOffset = 0) {
+  const monthStart = getCalendarMonth(monthOffset);
+  const year = monthStart.getFullYear();
+  const month = monthStart.getMonth();
+  const firstDay = monthStart.getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const cells: Array<Date | null> = [];
+
+  for (let index = 0; index < firstDay; index += 1) {
+    cells.push(null);
+  }
+
+  for (let day = 1; day <= daysInMonth; day += 1) {
+    cells.push(new Date(year, month, day));
+  }
+
+  return cells;
+}
+
+const DATE_QUICK_OPTIONS = [
+  { label: "Tomorrow", detail: getRelativeDateLabel(1) },
+  { label: "This weekend", detail: getThisWeekendLabel() },
+  { label: "Next weekend", detail: getNextWeekendLabel() },
 ];
 
 function RegionIcon() {
@@ -138,33 +234,335 @@ function ArrowIcon() {
   );
 }
 
+function BackIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+      className="h-3.5 w-3.5"
+    >
+      <path
+        d="M8.75 3.25L5 7L8.75 10.75"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function MonthNextIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+      className="h-3.5 w-3.5"
+    >
+      <path
+        d="M3.25 5.25L7 9L10.75 5.25"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function MonthPrevIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+      className="h-3.5 w-3.5"
+    >
+      <path
+        d="M10.75 8.75L7 5L3.25 8.75"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function CalendarMiniIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+      className="h-3.5 w-3.5"
+    >
+      <path
+        d="M4.5 1.75V3.25M9.5 1.75V3.25M2.25 5.25H11.75M3.125 2.75H10.875C11.4963 2.75 12 3.25368 12 3.875V10.875C12 11.4963 11.4963 12 10.875 12H3.125C2.50368 12 2 11.4963 2 10.875V3.875C2 3.25368 2.50368 2.75 3.125 2.75Z"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function ItemIcon({ icon }: { icon: SearchItem["icon"] }) {
   if (icon === "region") return <RegionIcon />;
   if (icon === "destination") return <DestinationIcon />;
   return <DateIcon />;
 }
 
-function SearchSelect({ item }: { item: SearchItem }) {
+function DateDropdownPanel({
+  mode,
+  selected,
+  monthOffset,
+  onModeChange,
+  onPrevMonth,
+  onNextMonth,
+  onPick,
+}: {
+  mode: DateMode;
+  selected: string;
+  monthOffset: number;
+  onModeChange: (mode: DateMode) => void;
+  onPrevMonth: () => void;
+  onNextMonth: () => void;
+  onPick: (value: string) => void;
+}) {
+  const monthStart = getCalendarMonth(monthOffset);
+  const monthLabel = new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    year: "numeric",
+  }).format(monthStart);
+  const weekdayLabels = ["S", "M", "T", "W", "T", "F", "S"];
+  const calendarCells = getCalendarCells(monthOffset);
+
   return (
-    <button
-      type="button"
-      className="flex w-full min-w-0 items-center justify-between gap-2 rounded-[24px] px-1 py-0.5 text-left transition-colors hover:bg-white/10 sm:w-fit lg:min-w-[172px] lg:gap-3 2xl:min-w-[190px] 2xl:gap-4"
-    >
-      <span className="flex min-w-0 items-center gap-2.5 sm:gap-3">
-        <span className="flex shrink-0 items-center rounded-[47.4px] border border-[#E4E4E4] p-1.5">
-          <ItemIcon icon={item.icon} />
-        </span>
-        <span className="flex min-w-0 flex-col items-start">
-          <span className="w-fit font-urbanist text-sm leading-tight text-[#E4E4E4] sm:text-[15px] lg:text-[15px] 2xl:text-lg">
-            {item.label}
+    <div className="absolute left-0 top-[calc(100%+0.35rem)] z-50 h-[240px] w-full min-w-[220px] overflow-hidden rounded-[22px] border border-white/25 bg-[linear-gradient(0deg,rgba(35,35,35,0.52)_0%,rgba(35,35,35,0.52)_100%),rgba(243,243,243,0.50)] bg-blend-plus-lighter p-1.5 text-left shadow-[0_18px_60px_rgba(0,0,0,0.28)] backdrop-blur-xl sm:left-1/2 sm:-translate-x-1/2">
+      {mode === "quick" ? (
+        <div className="relative flex h-full flex-col">
+          <div className="flex flex-1 flex-col gap-0.5 overflow-hidden px-1.5 pb-1 pt-1">
+            {DATE_QUICK_OPTIONS.map((option) => (
+              <button
+                key={option.label}
+                type="button"
+                onClick={() => onPick(option.label)}
+                className={`flex w-full items-center justify-between rounded-[16px] px-3 py-2 font-urbanist text-sm transition-colors hover:bg-white/12 ${
+                  selected === option.label ? "text-[#FFF]" : "text-[#E4E4E4]"
+                }`}
+              >
+                <span className="flex min-w-0 flex-col items-start">
+                  <span className="truncate">{option.label}</span>
+                  <span className="text-[11px] text-[#D9D9D9]/85">
+                    {option.detail}
+                  </span>
+                </span>
+                <span
+                  className={`h-1.5 w-1.5 shrink-0 rounded-full ${
+                    selected === option.label ? "bg-[#FFF]" : "bg-transparent"
+                  }`}
+                />
+              </button>
+            ))}
+
+            <button
+              type="button"
+              onClick={() => onModeChange("calendar")}
+              className="flex w-full items-center justify-between rounded-[16px] px-3 py-2 font-urbanist text-sm transition-colors hover:bg-white/12 text-[#E4E4E4]"
+            >
+              <span className="flex min-w-0 items-center gap-2">
+                <CalendarMiniIcon />
+                <span className="truncate">Calendar</span>
+              </span>
+              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-transparent" />
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="relative flex h-full flex-col">
+          <div className="flex items-center justify-between px-2.5 pt-1.5">
+            <button
+              type="button"
+              onClick={() => onModeChange("quick")}
+              className="inline-flex h-7 w-7 items-center justify-center rounded-full text-[#E4E4E4] transition-colors hover:bg-white/10 hover:text-white"
+              aria-label="Back to quick date options"
+            >
+              <BackIcon />
+            </button>
+            <div className="flex flex-1 items-center justify-center gap-2">
+              <span className="font-urbanist text-[13px] text-[#FFF]">
+                {monthLabel}
+              </span>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={onPrevMonth}
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-full text-[#E4E4E4] transition-colors hover:bg-white/10 hover:text-white"
+                  aria-label="Previous month"
+                >
+                  <MonthPrevIcon />
+                </button>
+                <button
+                  type="button"
+                  onClick={onNextMonth}
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-full text-[#E4E4E4] transition-colors hover:bg-white/10 hover:text-white"
+                  aria-label="Next month"
+                >
+                  <MonthNextIcon />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-1 flex-col px-2 pb-1 pt-2">
+            <div className="grid grid-cols-7 gap-1 px-1 text-center font-urbanist text-[11px] tracking-[0.02em] text-[#E4E4E4]">
+              {weekdayLabels.map((label, index) => (
+                <span key={`${label}-${index}`}>{label}</span>
+              ))}
+            </div>
+
+            <div className="mt-1.5 grid grid-cols-7 gap-1">
+              {calendarCells.map((cell, index) => {
+                if (!cell) {
+                  return <span key={`empty-${index}`} className="h-7" />;
+                }
+
+                const disabled = cell.getTime() < TODAY.getTime();
+                const value = formatDateLabel(cell);
+                const isSelected = selected === value;
+
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    disabled={disabled}
+                    onClick={() => onPick(value)}
+                    className={`h-7 rounded-full font-urbanist text-[12px] transition-colors ${
+                      disabled
+                        ? "cursor-not-allowed text-white/20"
+                        : isSelected
+                          ? "bg-white text-black"
+                          : "text-[#E4E4E4] hover:bg-white/10 hover:text-white"
+                    }`}
+                  >
+                    {cell.getDate()}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SearchSelect({
+  item,
+  isOpen,
+  options,
+  selected,
+  onPick,
+  onToggle,
+  monthOffset,
+  onPrevMonth,
+  onNextMonth,
+  dateMode,
+  onDateModeChange,
+}: {
+  item: SearchItem;
+  isOpen: boolean;
+  options: string[];
+  selected: string;
+  onPick: (value: string) => void;
+  onToggle: () => void;
+  monthOffset: number;
+  onPrevMonth: () => void;
+  onNextMonth: () => void;
+  dateMode?: DateMode;
+  onDateModeChange?: (mode: DateMode) => void;
+}) {
+  return (
+    <div className="relative w-full min-w-0 sm:w-fit">
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={isOpen}
+        className="flex w-full min-w-0 items-center justify-between gap-2 rounded-[24px] px-1 py-0.5 text-left transition-colors hover:bg-white/10 sm:w-fit lg:min-w-[172px] lg:gap-3 2xl:min-w-[190px] 2xl:gap-4"
+      >
+        <span className="flex min-w-0 items-center gap-2.5 sm:gap-3">
+          <span className="flex shrink-0 items-center rounded-[47.4px] border border-[#E4E4E4] p-1.5">
+            <ItemIcon icon={item.icon} />
           </span>
-          <span className="max-w-full truncate font-urbanist text-sm font-medium leading-tight text-[#FFF] sm:text-[15px] lg:text-[15px] 2xl:text-lg">
-            {item.value}
+          <span className="flex min-w-0 flex-col items-start">
+            <span className="w-fit font-urbanist text-sm leading-tight text-[#E4E4E4] sm:text-[15px] lg:text-[15px] 2xl:text-lg">
+              {item.label}
+            </span>
+            <span className="max-w-full truncate font-urbanist text-sm font-medium leading-tight text-[#FFF] sm:text-[15px] lg:text-[15px] 2xl:text-lg">
+              {selected}
+            </span>
           </span>
         </span>
-      </span>
-      <ChevronDown />
-    </button>
+        <span
+          className={
+            isOpen ? "rotate-180 transition-transform" : "transition-transform"
+          }
+        >
+          <ChevronDown />
+        </span>
+      </button>
+
+      {isOpen &&
+        (item.icon === "date" ? (
+          <DateDropdownPanel
+            selected={selected}
+            monthOffset={monthOffset}
+            mode={dateMode ?? "quick"}
+            onModeChange={onDateModeChange ?? (() => {})}
+            onPrevMonth={onPrevMonth}
+            onNextMonth={onNextMonth}
+            onPick={onPick}
+          />
+      ) : (
+          <div className="absolute left-0 top-[calc(100%+0.55rem)] z-50 w-full min-w-[220px] overflow-hidden rounded-[22px] border border-white/25 bg-[linear-gradient(0deg,rgba(35,35,35,0.52)_0%,rgba(35,35,35,0.52)_100%),rgba(243,243,243,0.50)] bg-blend-plus-lighter p-1.5 text-left shadow-[0_18px_60px_rgba(0,0,0,0.28)] backdrop-blur-xl sm:left-1/2 sm:-translate-x-1/2">
+            <div className="flex max-h-[240px] flex-col overflow-y-auto">
+              {options.map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  onClick={() => onPick(option)}
+                  className={`flex w-full items-center justify-between gap-3 rounded-[16px] px-3 py-2.5 font-urbanist text-sm transition-colors hover:bg-white/12 ${
+                    selected === option ? "text-[#FFF]" : "text-[#E4E4E4]"
+                  }`}
+                >
+                  <span className="truncate">{option}</span>
+                  <span
+                    className={`h-1.5 w-1.5 shrink-0 rounded-full ${
+                      selected === option ? "bg-[#FFF]" : "bg-transparent"
+                    }`}
+                  />
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+    </div>
   );
 }
 
@@ -178,31 +576,114 @@ function Divider() {
 }
 
 export default function SearchBar() {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [openItem, setOpenItem] = useState<SearchItemKey | null>(null);
+  const [dateMode, setDateMode] = useState<DateMode>("quick");
+  const [monthOffset, setMonthOffset] = useState(0);
+  const [selections, setSelections] =
+    useState<Record<SearchItemKey, string>>(defaultSelections);
+
+  useEffect(() => {
+    if (!openItem) {
+      return;
+    }
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
+        setOpenItem(null);
+        setDateMode("quick");
+        setMonthOffset(0);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpenItem(null);
+        setDateMode("quick");
+        setMonthOffset(0);
+      }
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [openItem]);
+
   return (
-    <div className="mt-4 flex w-full max-w-[min(92vw,940px)] flex-col items-stretch gap-2 overflow-hidden rounded-[24px] bg-[linear-gradient(0deg,rgba(51,51,51,0.30)_0%,rgba(51,51,51,0.30)_100%),rgba(243,243,243,0.60)] bg-blend-plus-lighter p-2 shadow-[0_18px_60px_rgba(0,0,0,0.18)] backdrop-blur-xl sm:mt-5 sm:rounded-[28px] lg:mt-6 xl:w-fit xl:max-w-[calc(100vw-2rem)] xl:flex-row xl:items-center xl:gap-3 xl:rounded-[98.605px] 2xl:gap-4 2xl:p-2.5">
-      <div className="grid min-w-0 flex-1 grid-cols-1 gap-1.5 md:grid-cols-3 xl:flex xl:flex-none xl:items-center xl:gap-4 2xl:gap-5">
-        {searchItems.map((item, index) => (
+    <div
+      ref={wrapperRef}
+      className="mt-4 flex w-full max-w-[min(89vw,880px)] flex-col items-stretch gap-2 sm:mt-5 lg:mt-6"
+    >
+      <div className="flex w-full items-center gap-2 overflow-hidden rounded-[24px] bg-[linear-gradient(0deg,rgba(51,51,51,0.30)_0%,rgba(51,51,51,0.30)_100%),rgba(243,243,243,0.60)] bg-blend-plus-lighter p-2 shadow-[0_18px_60px_rgba(0,0,0,0.18)] backdrop-blur-xl sm:rounded-[28px] xl:gap-3 xl:rounded-[98.605px] 2xl:gap-4 2xl:p-2.5">
+        <input
+          type="search"
+          placeholder="Search treks, destinations, or regions"
+          className="min-w-0 flex-1 bg-transparent px-3 font-urbanist text-sm font-medium leading-tight text-[#FFF] outline-none placeholder:text-[#E4E4E4] sm:text-[15px] lg:text-[15px] 2xl:px-4 2xl:text-lg"
+        />
+
+        <Divider />
+
+        <button
+          type="button"
+          className="flex h-10 shrink-0 items-center justify-center gap-2 rounded-[113.1px] bg-[rgba(20,20,20,0.84)] py-1 pl-4 pr-1 font-urbanist text-[15px] text-[#FFF] shadow-[0_2px_4px_0_rgba(0,0,0,0.15)] transition-transform hover:scale-[1.02] active:scale-[0.98] sm:h-10 lg:text-[15px] xl:w-fit 2xl:h-12 2xl:gap-2.5 2xl:text-lg"
+        >
+          <span className="w-fit text-nowrap">Find my trek</span>
+          <span className="flex items-center rounded-[76.6px] bg-[#FFF] p-1.5 2xl:gap-2 2xl:p-2">
+            <ArrowIcon />
+          </span>
+        </button>
+      </div>
+
+      <div className="grid min-w-0 grid-cols-1 gap-1.5 md:grid-cols-3 xl:flex xl:flex-none xl:items-center xl:justify-center xl:gap-4 2xl:gap-5">
+        {searchItemOrder.map((key, index) => (
           <div
-            key={item.label}
+            key={key}
             className="contents xl:flex xl:items-center xl:gap-4 2xl:gap-5"
           >
             {index > 0 && <Divider />}
-            <SearchSelect item={item} />
+            <SearchSelect
+              item={searchItems[key]}
+              isOpen={openItem === key}
+              options={searchOptions[key]}
+              selected={selections[key]}
+              monthOffset={monthOffset}
+              onPrevMonth={() =>
+                setMonthOffset((current) => Math.max(0, current - 1))
+              }
+              onNextMonth={() => setMonthOffset((current) => current + 1)}
+              dateMode={dateMode}
+              onDateModeChange={setDateMode}
+              onToggle={() => {
+                if (openItem === key) {
+                  setOpenItem(null);
+                  setDateMode("quick");
+                  setMonthOffset(0);
+                  return;
+                }
+
+                setOpenItem(key);
+                if (key === "date") {
+                  setDateMode("quick");
+                  setMonthOffset(0);
+                }
+              }}
+              onPick={(value) => {
+                setSelections((current) => ({ ...current, [key]: value }));
+                setOpenItem(null);
+                setDateMode("quick");
+                setMonthOffset(0);
+              }}
+            />
           </div>
         ))}
       </div>
-
-      <Divider />
-
-      <button
-        type="button"
-        className="flex h-10 shrink-0 items-center justify-center gap-2 rounded-[113.1px] bg-[rgba(20,20,20,0.84)] py-1 pl-4 pr-1 font-urbanist text-[15px] text-[#FFF] shadow-[0_2px_4px_0_rgba(0,0,0,0.15)] transition-transform hover:scale-[1.02] active:scale-[0.98] sm:h-10 lg:text-[15px] xl:w-fit 2xl:h-12 2xl:gap-2.5 2xl:text-lg"
-      >
-        <span className="w-fit text-nowrap">Find my trek</span>
-        <span className="flex items-center rounded-[76.6px] bg-[#FFF] p-1.5 2xl:gap-2 2xl:p-2">
-          <ArrowIcon />
-        </span>
-      </button>
     </div>
   );
 }

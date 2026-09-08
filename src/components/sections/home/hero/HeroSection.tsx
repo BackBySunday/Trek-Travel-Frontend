@@ -1,7 +1,6 @@
 import HeaderBadge from "./HeaderBadge";
 import HeroTitle from "./HeroTitle";
 import SearchBar from "./SearchBar";
-import TrekCarousel from "./TrekCarousel";
 
 export default function HeroSection() {
   return (
@@ -9,7 +8,6 @@ export default function HeroSection() {
       <HeaderBadge />
       <HeroTitle />
       <SearchBar />
-      <TrekCarousel />
     </section>
   );
 }
