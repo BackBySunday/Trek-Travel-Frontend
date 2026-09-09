@@ -1,31 +1,39 @@
+"use client";
+
 import Image from "next/image";
+import { useComingSoon } from "./ComingSoonProvider";
 
 type SocialPlatform = "facebook" | "instagram" | "x" | "whatsapp";
 
 const socialLinks: Array<{
   label: string;
   platform: SocialPlatform;
-  href: string;
+  href?: string;
 }> = [
-  { label: "Facebook", platform: "facebook", href: "#" },
+  { label: "Facebook", platform: "facebook" },
   {
     label: "Instagram",
     platform: "instagram",
     href: "https://www.instagram.com/thebackbysunday/",
   },
-  { label: "X", platform: "x", href: "#" },
-  { label: "WhatsApp", platform: "whatsapp", href: "#" },
+  { label: "X", platform: "x", href: "https://x.com/TheBackBySunday" },
+  { label: "WhatsApp", platform: "whatsapp" },
 ];
 
-const quickLinks = ["Home", "Treks", "Packages", "Gallery"];
+const quickLinks = [
+  { label: "Home", href: "/" },
+  { label: "Treks" },
+  { label: "Packages" },
+  { label: "Gallery" },
+];
 
 const contactInfo = [
   {
     label: "hello.backbysunday@gmail.com",
     href: "mailto:hello.backbysunday@gmail.com",
   },
-  { label: "+91 9876543210", href: "tel:+919876543210" },
-  { label: "Dehradun, Uttarakhand, India" },
+  { label: "Pune, Maharashtra, India" },
+  { label: "New Delhi, India" },
 ];
 
 function SocialIcon({ platform }: { platform: SocialPlatform }) {
@@ -75,16 +83,33 @@ function SocialIcon({ platform }: { platform: SocialPlatform }) {
 function SocialLink({
   href,
   label,
+  onComingSoon,
   platform,
 }: {
-  href: string;
+  href?: string;
   label: string;
+  onComingSoon: (label: string) => void;
   platform: SocialPlatform;
 }) {
+  if (!href) {
+    return (
+      <button
+        type="button"
+        onClick={() => onComingSoon(label)}
+        aria-label={label}
+        className="flex h-[37px] w-[37px] items-center justify-center rounded-full border border-[#999292] text-[#999292] transition-colors duration-200 hover:border-[#101010] hover:text-[#101010] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#101010]"
+      >
+        <SocialIcon platform={platform} />
+      </button>
+    );
+  }
+
   return (
     <a
       href={href}
       aria-label={label}
+      target="_blank"
+      rel="noreferrer"
       className="flex h-[37px] w-[37px] items-center justify-center rounded-full border border-[#999292] text-[#999292] transition-colors duration-200 hover:border-[#101010] hover:text-[#101010] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#101010]"
     >
       <SocialIcon platform={platform} />
@@ -115,6 +140,8 @@ function ArrowUpRightIcon({ className }: { className: string }) {
 }
 
 export default function Footer() {
+  const { openComingSoon } = useComingSoon();
+
   return (
     <footer id="contact" className="w-full bg-white pt-2 text-[#101010]">
       <div className="px-4 sm:px-6 lg:px-8">
@@ -135,7 +162,11 @@ export default function Footer() {
             </p>
             <div className="flex w-fit items-center gap-[9px]">
               {socialLinks.map((link) => (
-                <SocialLink key={link.platform} {...link} />
+                <SocialLink
+                  key={link.platform}
+                  {...link}
+                  onComingSoon={openComingSoon}
+                />
               ))}
             </div>
           </div>
@@ -147,15 +178,26 @@ export default function Footer() {
               Quick Links
             </p>
             <div className="flex w-full flex-col items-start gap-3">
-              {quickLinks.map((link) => (
-                <a
-                  key={link}
-                  href="#"
-                  className="w-full font-urbanist text-sm font-medium leading-[1.3] text-[#5E5E5E] transition-colors duration-200 hover:text-[#101010] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#101010] sm:text-base"
-                >
-                  {link}
-                </a>
-              ))}
+              {quickLinks.map((link) =>
+                link.href ? (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    className="w-full font-urbanist text-sm font-medium leading-[1.3] text-[#5E5E5E] transition-colors duration-200 hover:text-[#101010] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#101010] sm:text-base"
+                  >
+                    {link.label}
+                  </a>
+                ) : (
+                  <button
+                    key={link.label}
+                    type="button"
+                    onClick={() => openComingSoon(link.label)}
+                    className="w-full text-left font-urbanist text-sm font-medium leading-[1.3] text-[#5E5E5E] transition-colors duration-200 hover:text-[#101010] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#101010] sm:text-base"
+                  >
+                    {link.label}
+                  </button>
+                ),
+              )}
             </div>
           </nav>
           <div className="flex w-full flex-col items-start gap-5 md:max-w-[280px]">

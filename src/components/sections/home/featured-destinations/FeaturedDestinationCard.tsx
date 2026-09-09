@@ -1,5 +1,7 @@
+"use client";
+
 import Image from "next/image";
-import Link from "next/link";
+import { useComingSoon } from "@/components/layout/ComingSoonProvider";
 
 export type FeaturedDestinationCardProps = {
   image: string;
@@ -18,11 +20,13 @@ export default function FeaturedDestinationCard({
   title,
   description,
   isTall = false,
-  href = "/trek-details",
 }: FeaturedDestinationCardProps) {
+  const { openComingSoon } = useComingSoon();
+
   return (
-    <Link
-      href={href}
+    <button
+      type="button"
+      onClick={() => openComingSoon(title)}
       className={`featured-destination-card group relative min-h-[280px] overflow-hidden rounded-[30px] bg-[#d9d9d9] no-underline outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-4 focus-visible:ring-offset-[#101010] ${
         isTall ? "is-tall" : ""
       }`}
@@ -52,6 +56,6 @@ export default function FeaturedDestinationCard({
           {description}
         </p>
       </div>
-    </Link>
+    </button>
   );
 }

@@ -4,58 +4,60 @@ import FeaturedDestinationCard, {
 } from "./FeaturedDestinationCard";
 import FeaturedDestinationsIntro from "./FeaturedDestinationsIntro";
 
-const destinationTitle = "Vasota Fort Trek";
-const destinationDescription =
-  "Vasota Fort is located at an altitude of 1171 m near Bamnoli village in Satara district.";
-
 const destinationColumns: FeaturedDestinationCardProps[][] = [
   [
     {
       image: "/Featured-Destination/featured-himachal-pradesh-upper.png",
-      alt: "Featured travel destination upper card one",
+      alt: "Wooden Himachali temple with snow covered Himalayan mountains",
       label: "Himachal Pradesh",
-      title: destinationTitle,
-      description: destinationDescription,
+      title: "Himachal Temple Valley",
+      description:
+        "A wooden Himalayan temple complex framed by snow peaks, cedar slopes, and mountain village views.",
     },
     {
       image: "/Featured-Destination/featured-uttarakhand-lower.png",
-      alt: "Featured travel destination lower card one",
-      label: "Uttrakhand",
-      title: destinationTitle,
-      description: destinationDescription,
+      alt: "Green Uttarakhand valley village with terraced fields and streams",
+      label: "Uttarakhand",
+      title: "Uttarakhand Valley Retreat",
+      description:
+        "Terraced hill villages, pine-covered slopes, and clear mountain streams below cloudy Himalayan ridges.",
     },
   ],
   [
     {
-      image: "/Featured-Destination/featured-pune-tall.png",
-      alt: "Featured travel destination upper card two",
-      label: "Pune",
-      title: destinationTitle,
-      description: destinationDescription,
+      image: "/Featured-Destination/featured-jaipur-amer-fort.png",
+      alt: "Amer Fort and hill ramparts overlooking Maota Lake in Jaipur",
+      label: "Rajasthan",
+      title: "Jaipur Amer Fort",
+      description:
+        "Sandstone fort walls, Aravalli hill ramparts, and lake views from one of Jaipur's classic heritage landmarks.",
       isTall: true,
     },
     {
       image: "/Featured-Destination/featured-uttarakhand-secondary.png",
-      alt: "Featured travel destination lower card two",
-      label: "uttrakhand",
-      title: destinationTitle,
-      description: destinationDescription,
+      alt: "Trekkers looking across a rocky high altitude Himalayan pass",
+      label: "Ladakh",
+      title: "High Himalayan Pass",
+      description:
+        "A rugged high-altitude trail across barren ridges, wide valleys, and cloud-brushed mountain passes.",
     },
   ],
   [
     {
       image: "/Featured-Destination/featured-pune-upper.png",
-      alt: "Featured travel destination upper card three",
-      label: "Pune",
-      title: destinationTitle,
-      description: destinationDescription,
+      alt: "Agra Fort walls overlooking the Yamuna with the Taj Mahal in the distance",
+      label: "Agra",
+      title: "Agra Fort & Taj View",
+      description:
+        "Red sandstone fort walls overlooking the Yamuna, with the Taj Mahal visible across the river.",
     },
     {
       image: "/Featured-Destination/featured-pune-lower.png",
-      alt: "Featured travel destination lower card three",
-      label: "Pune",
-      title: destinationTitle,
-      description: destinationDescription,
+      alt: "Misty Himalayan trekking trail beside a rocky mountain stream",
+      label: "Himachal Pradesh",
+      title: "Hampta Valley Trek",
+      description:
+        "A misty Himalayan trail following a cold mountain stream through rocky meadows and green valley slopes.",
     },
   ],
 ];

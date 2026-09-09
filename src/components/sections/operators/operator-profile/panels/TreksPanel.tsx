@@ -55,7 +55,7 @@ export default function TreksPanel({
           <div className="col-span-2 lg:row-span-2">
             <Link
               href="/trek-details"
-              className="group relative flex h-full min-h-[300px] flex-col justify-end overflow-hidden rounded-[20px] border border-[#E5E5E5] p-6"
+              className="group relative flex h-full min-h-[300px] w-full flex-col justify-end overflow-hidden rounded-[20px] border border-[#E5E5E5] p-6 text-left"
             >
               <Image
                 src={featured.coverUrl}
@@ -140,7 +140,7 @@ export default function TreksPanel({
       </h2>
       <div className="grid grid-cols-2 gap-4 sm:gap-5 xl:grid-cols-4">
         {treks.map((trek) => (
-          <TrekCard key={trek.id} {...trek} />
+          <TrekCard key={trek.id} {...trek} comingSoon={false} />
         ))}
       </div>
     </>

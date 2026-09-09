@@ -70,7 +70,7 @@ const operator: Operator = {
   bio:
     "Local mountain operators running small-batch Sahyadri and Himalayan treks with trained leads, clean logistics, and clear pre-departure communication.",
   region: "Sahyadris",
-  coverUrl: "/Hero/hero-background.png",
+  coverUrl: "/Hero/sahyadri-fort-sunrise.png",
   markUrl: "/Hero/card-1.png",
 };
 
@@ -81,8 +81,8 @@ const treks: OperatorTrek[] = [
     title: "Vasota Fort Trek",
     description:
       "Forest trails, boat crossings, and wide backwater views around the Sahyadri range.",
-    image: "/Top-Categories/Trek-Card.png",
-    coverUrl: "/Top-Categories/Trek-Card.png",
+    image: "/Hero/sahyadri-fort-sunrise.png",
+    coverUrl: "/Hero/sahyadri-fort-sunrise.png",
     alt: "Trekkers climbing rocks near a lake",
     durationTag: "1N/2D",
     durationLabel: "1N/2D",
@@ -252,8 +252,8 @@ const moreTreks: OperatorTrek[] = [
     title: "Lohagad Fort Trek",
     description:
       "A beginner-friendly fort trail with stone steps, green valleys, and easy access from Pune.",
-    image: "/Top-Categories/Trek-Card.png",
-    coverUrl: "/Top-Categories/Trek-Card.png",
+    image: "/Hero/sahyadri-fort-sunrise.png",
+    coverUrl: "/Hero/sahyadri-fort-sunrise.png",
     alt: "Trekkers climbing near a lake",
     durationTag: "1D",
     durationLabel: "1D",
@@ -312,7 +312,7 @@ const videos: OperatorVideo[] = [
   {
     id: "food-on-trail",
     title: "What meals look like on trail",
-    thumb: "/Top-Categories/Trek-Card.png",
+    thumb: "/Hero/sahyadri-fort-sunrise.png",
     duration: "4:56",
     views: "11k",
     posted: "2 months ago",
@@ -334,7 +334,7 @@ const galleryImages = [
   "/Featured-Destination/featured-pune-lower.png",
   "/Featured-Destination/featured-uttarakhand-secondary.png",
   "/Featured-Destination/featured-himachal-pradesh-upper.png",
-  "/Top-Categories/Trek-Card.png",
+  "/Hero/sahyadri-fort-sunrise.png",
   "/CTA/Card-1.png",
 ];
 

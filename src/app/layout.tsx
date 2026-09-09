@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Sans, Inter, Urbanist } from "next/font/google";
+import ComingSoonProvider from "@/components/layout/ComingSoonProvider";
 import "./globals.css";
 
 const urbanist = Urbanist({
@@ -37,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="en"
       className={`${urbanist.variable} ${ibmPlexSans.variable} ${inter.variable}`}
     >
-      <body>{children}</body>
+      <body><ComingSoonProvider>{children}</ComingSoonProvider></body>
     </html>
   );
 }

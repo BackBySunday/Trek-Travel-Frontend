@@ -24,7 +24,7 @@ export default function MoreTreksSection({ treks }: { treks: OperatorTrek[] }) {
       </h2>
       <div className="mt-6 grid w-full grid-cols-2 gap-4 sm:gap-5 xl:grid-cols-4">
         {treks.map((trek) => (
-          <TrekCard key={trek.id} {...trek} />
+          <TrekCard key={trek.id} {...trek} comingSoon={false} />
         ))}
       </div>
       <div className="mt-5 flex w-full justify-center sm:mt-8">
