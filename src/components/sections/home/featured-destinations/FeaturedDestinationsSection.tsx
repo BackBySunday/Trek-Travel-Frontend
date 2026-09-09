@@ -62,7 +62,7 @@ const destinationColumns: FeaturedDestinationCardProps[][] = [
 
 export default function FeaturedDestinationsSection() {
   return (
-    <section className="featured-destinations-section w-full bg-[var(--bg)] px-4 py-12 text-[#101010] sm:py-16 lg:px-[30px]">
+    <section id="destinations" className="featured-destinations-section w-full bg-[var(--bg)] px-4 py-12 text-[#101010] sm:py-16 lg:px-[30px]">
       <div className="mx-auto flex w-full max-w-[1500px] flex-col items-center gap-5 sm:gap-6">
         <SectionBadge>Featured Destinations</SectionBadge>
         <FeaturedDestinationsIntro />

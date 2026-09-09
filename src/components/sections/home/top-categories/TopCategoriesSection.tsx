@@ -147,7 +147,7 @@ const trekCards: TrekCardProps[] = [
 
 export default function TopCategoriesSection() {
   return (
-    <section className="w-full bg-[var(--bg)] px-4 pb-10 pt-16 text-[#101010] sm:pb-12 lg:px-[30px]">
+    <section id="treks" className="w-full bg-[var(--bg)] px-4 pb-10 pt-16 text-[#101010] sm:pb-12 lg:px-[30px]">
       <TrekCardGlassFilters />
       <div className="mx-auto flex w-full max-w-[1500px] flex-col items-center gap-5 sm:gap-6">
         <SectionBadge>Tour Categories</SectionBadge>

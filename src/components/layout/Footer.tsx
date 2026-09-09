@@ -116,7 +116,7 @@ function ArrowUpRightIcon({ className }: { className: string }) {
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-white pt-2 text-[#101010]">
+    <footer id="contact" className="w-full bg-white pt-2 text-[#101010]">
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="mx-auto grid w-full max-w-[1500px] grid-cols-1 gap-8 pt-8 sm:pt-10 md:grid-cols-[minmax(260px,1fr)_minmax(120px,150px)] md:items-start md:justify-between xl:grid-cols-[minmax(260px,430px)_120px_220px_minmax(300px,380px)] xl:gap-8 2xl:grid-cols-[minmax(300px,460px)_minmax(120px,140px)_minmax(220px,280px)_420px] 2xl:gap-12">
           <div className="flex w-full max-w-[460px] flex-col items-start gap-3.5">

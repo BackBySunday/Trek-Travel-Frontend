@@ -7,10 +7,16 @@ type NavbarProps = {
   bookNowVariant?: "default" | "trekDetails";
 };
 
-const navLinks = ["Home", "Packages", "Gallery", "How it works", "Contact"];
+const navLinks = [
+  { label: "Home", href: "/" },
+  { label: "Treks", href: "/#treks" },
+  { label: "Destinations", href: "/#destinations" },
+  { label: "Partners", href: "/#partners" },
+  { label: "Contact", href: "/#contact" },
+];
 
 export default function Navbar({ bookNowVariant = "default" }: NavbarProps) {
-  const [activeTab, setActiveTab] = useState("Home");
+  const [activeTab, setActiveTab] = useState(navLinks[0].label);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isTrekDetailsBookNow = bookNowVariant === "trekDetails";
 
@@ -59,12 +65,12 @@ export default function Navbar({ bookNowVariant = "default" }: NavbarProps) {
           aria-label="Primary navigation"
         >
           {navLinks.map((link) => {
-            const isActive = activeTab === link;
+            const isActive = activeTab === link.label;
             return (
-              <button
-                key={link}
-                type="button"
-                onClick={() => setActiveTab(link)}
+              <a
+                key={link.label}
+                href={link.href}
+                onClick={() => setActiveTab(link.label)}
                 className={`relative flex cursor-pointer text-nowrap rounded-full px-3 py-1.5 text-center transition-all duration-300 lg:px-4 ${
                   isActive
                     ? "liquid-glass-active text-[#101010] font-medium shadow-sm"
@@ -73,25 +79,25 @@ export default function Navbar({ bookNowVariant = "default" }: NavbarProps) {
                 aria-current={isActive ? "page" : undefined}
               >
                 <span className="select-none font-sans text-xs tracking-wide md:text-sm">
-                  {link}
+                  {link.label}
                 </span>
-              </button>
+              </a>
             );
           })}
         </nav>
 
         {/* Mobile Menu Toggle Button */}
-        <div className="flex md:hidden">
+        <div className="col-start-3 flex justify-self-end md:hidden">
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             type="button"
-            className="liquid-glass-nav flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-full p-2.5 text-white"
+            className="liquid-glass-nav flex min-h-10 min-w-10 cursor-pointer items-center justify-center rounded-full p-2 text-white"
             aria-label="Toggle Navigation Menu"
             aria-expanded={mobileMenuOpen}
             aria-controls="mobile-navigation"
           >
             <svg
-              className="w-5 h-5"
+              className="h-4.5 w-4.5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -168,29 +174,29 @@ export default function Navbar({ bookNowVariant = "default" }: NavbarProps) {
             aria-label="Mobile navigation"
           >
             {navLinks.map((link) => {
-              const isActive = activeTab === link;
+              const isActive = activeTab === link.label;
               return (
-                <button
-                  key={link}
-                  type="button"
+                <a
+                  key={link.label}
+                  href={link.href}
                   onClick={() => {
-                    setActiveTab(link);
+                    setActiveTab(link.label);
                     setMobileMenuOpen(false);
                   }}
                   className={`w-full rounded-2xl px-5 py-3 text-left font-sans text-base transition-all duration-200 ${
                     isActive
-                      ? "mobile-menu-active text-[#101010] font-medium"
-                      : "text-white/90 hover:bg-white/10"
+                      ? "mobile-menu-active text-white font-medium"
+                      : "text-[#101010]/90 hover:bg-black/10"
                   }`}
                   aria-current={isActive ? "page" : undefined}
                 >
-                  {link}
-                </button>
+                  {link.label}
+                </a>
               );
             })}
             <button
               type="button"
-              className="mt-1 flex w-full items-center justify-between rounded-2xl bg-white px-5 py-3 font-sans text-base font-medium text-[#101010] transition-transform active:scale-[0.98]"
+              className="mt-1 flex w-full items-center justify-between rounded-2xl bg-[#101010] px-5 py-3 font-sans text-base font-medium text-white transition-transform active:scale-[0.98]"
               onClick={() => setMobileMenuOpen(false)}
             >
               <span>Book Now</span>

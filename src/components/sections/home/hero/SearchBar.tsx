@@ -11,8 +11,6 @@ type SearchItem = {
 type SearchItemKey = SearchItem["icon"];
 type DateMode = "quick" | "calendar";
 
-const TODAY = new Date("2026-09-08T00:00:00+05:30");
-
 const searchItems: Record<SearchItemKey, SearchItem> = {
   region: {
     label: "Regions",
@@ -26,7 +24,7 @@ const searchItems: Record<SearchItemKey, SearchItem> = {
   },
   date: {
     label: "Date",
-    value: "Aug 17, 2026",
+    value: "",
     icon: "date",
   },
 };
@@ -45,11 +43,10 @@ const searchOptions: Record<SearchItemKey, string[]> = {
   date: [],
 };
 
-const defaultSelections: Record<SearchItemKey, string> = {
-  region: searchItems.region.value,
-  destination: searchItems.destination.value,
-  date: searchItems.date.value,
-};
+function getToday() {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+}
 
 function formatDateLabel(date: Date) {
   return new Intl.DateTimeFormat("en-US", {
@@ -59,18 +56,18 @@ function formatDateLabel(date: Date) {
   }).format(date);
 }
 
-function getRelativeDate(offsetDays: number) {
-  const next = new Date(TODAY);
+function getRelativeDate(today: Date, offsetDays: number) {
+  const next = new Date(today);
   next.setDate(next.getDate() + offsetDays);
   return next;
 }
 
-function getRelativeDateLabel(offsetDays: number) {
-  return formatDateLabel(getRelativeDate(offsetDays));
+function getRelativeDateLabel(today: Date, offsetDays: number) {
+  return formatDateLabel(getRelativeDate(today, offsetDays));
 }
 
-function getThisWeekendLabel() {
-  const nextSaturday = new Date(TODAY);
+function getThisWeekendLabel(today: Date) {
+  const nextSaturday = new Date(today);
   const day = nextSaturday.getDay();
   const daysUntilSaturday = (6 - day + 7) % 7 || 7;
   nextSaturday.setDate(nextSaturday.getDate() + daysUntilSaturday);
@@ -79,8 +76,8 @@ function getThisWeekendLabel() {
   return `${formatDateLabel(nextSaturday)} - ${formatDateLabel(nextSunday)}`;
 }
 
-function getNextWeekendLabel() {
-  const nextSaturday = new Date(TODAY);
+function getNextWeekendLabel(today: Date) {
+  const nextSaturday = new Date(today);
   const day = nextSaturday.getDay();
   const daysUntilSaturday = (6 - day + 7) % 7 || 7;
   nextSaturday.setDate(nextSaturday.getDate() + daysUntilSaturday + 7);
@@ -89,12 +86,12 @@ function getNextWeekendLabel() {
   return `${formatDateLabel(nextSaturday)} - ${formatDateLabel(nextSunday)}`;
 }
 
-function getCalendarMonth(monthOffset = 0) {
-  return new Date(TODAY.getFullYear(), TODAY.getMonth() + monthOffset, 1);
+function getCalendarMonth(today: Date, monthOffset = 0) {
+  return new Date(today.getFullYear(), today.getMonth() + monthOffset, 1);
 }
 
-function getCalendarCells(monthOffset = 0) {
-  const monthStart = getCalendarMonth(monthOffset);
+function getCalendarCells(today: Date, monthOffset = 0) {
+  const monthStart = getCalendarMonth(today, monthOffset);
   const year = monthStart.getFullYear();
   const month = monthStart.getMonth();
   const firstDay = monthStart.getDay();
@@ -112,11 +109,21 @@ function getCalendarCells(monthOffset = 0) {
   return cells;
 }
 
-const DATE_QUICK_OPTIONS = [
-  { label: "Tomorrow", detail: getRelativeDateLabel(1) },
-  { label: "This weekend", detail: getThisWeekendLabel() },
-  { label: "Next weekend", detail: getNextWeekendLabel() },
-];
+function getDateQuickOptions(today: Date) {
+  return [
+    { label: "Tomorrow", detail: getRelativeDateLabel(today, 1) },
+    { label: "This weekend", detail: getThisWeekendLabel(today) },
+    { label: "Next weekend", detail: getNextWeekendLabel(today) },
+  ];
+}
+
+function getDefaultSelections(today: Date): Record<SearchItemKey, string> {
+  return {
+    region: searchItems.region.value,
+    destination: searchItems.destination.value,
+    date: formatDateLabel(today),
+  };
+}
 
 function RegionIcon() {
   return (
@@ -331,6 +338,7 @@ function ItemIcon({ icon }: { icon: SearchItem["icon"] }) {
 function DateDropdownPanel({
   mode,
   selected,
+  today,
   monthOffset,
   onModeChange,
   onPrevMonth,
@@ -339,26 +347,28 @@ function DateDropdownPanel({
 }: {
   mode: DateMode;
   selected: string;
+  today: Date;
   monthOffset: number;
   onModeChange: (mode: DateMode) => void;
   onPrevMonth: () => void;
   onNextMonth: () => void;
   onPick: (value: string) => void;
 }) {
-  const monthStart = getCalendarMonth(monthOffset);
+  const monthStart = getCalendarMonth(today, monthOffset);
   const monthLabel = new Intl.DateTimeFormat("en-US", {
     month: "long",
     year: "numeric",
   }).format(monthStart);
   const weekdayLabels = ["S", "M", "T", "W", "T", "F", "S"];
-  const calendarCells = getCalendarCells(monthOffset);
+  const calendarCells = getCalendarCells(today, monthOffset);
+  const quickOptions = getDateQuickOptions(today);
 
   return (
     <div className="absolute left-0 top-[calc(100%+0.35rem)] z-50 h-[240px] w-full min-w-[220px] overflow-hidden rounded-[22px] border border-white/25 bg-[linear-gradient(0deg,rgba(35,35,35,0.52)_0%,rgba(35,35,35,0.52)_100%),rgba(243,243,243,0.50)] bg-blend-plus-lighter p-1.5 text-left shadow-[0_18px_60px_rgba(0,0,0,0.28)] backdrop-blur-xl sm:left-1/2 sm:-translate-x-1/2">
       {mode === "quick" ? (
         <div className="relative flex h-full flex-col">
           <div className="flex flex-1 flex-col gap-0.5 overflow-hidden px-1.5 pb-1 pt-1">
-            {DATE_QUICK_OPTIONS.map((option) => (
+            {quickOptions.map((option) => (
               <button
                 key={option.label}
                 type="button"
@@ -443,7 +453,7 @@ function DateDropdownPanel({
                   return <span key={`empty-${index}`} className="h-7" />;
                 }
 
-                const disabled = cell.getTime() < TODAY.getTime();
+                const disabled = cell.getTime() < today.getTime();
                 const value = formatDateLabel(cell);
                 const isSelected = selected === value;
 
@@ -478,6 +488,7 @@ function SearchSelect({
   isOpen,
   options,
   selected,
+  today,
   onPick,
   onToggle,
   monthOffset,
@@ -490,6 +501,7 @@ function SearchSelect({
   isOpen: boolean;
   options: string[];
   selected: string;
+  today: Date;
   onPick: (value: string) => void;
   onToggle: () => void;
   monthOffset: number;
@@ -532,6 +544,7 @@ function SearchSelect({
         (item.icon === "date" ? (
           <DateDropdownPanel
             selected={selected}
+            today={today}
             monthOffset={monthOffset}
             mode={dateMode ?? "quick"}
             onModeChange={onDateModeChange ?? (() => {})}
@@ -580,8 +593,41 @@ export default function SearchBar() {
   const [openItem, setOpenItem] = useState<SearchItemKey | null>(null);
   const [dateMode, setDateMode] = useState<DateMode>("quick");
   const [monthOffset, setMonthOffset] = useState(0);
+  const [today, setToday] = useState(getToday);
   const [selections, setSelections] =
-    useState<Record<SearchItemKey, string>>(defaultSelections);
+    useState<Record<SearchItemKey, string>>(() => getDefaultSelections(getToday()));
+
+  useEffect(() => {
+    const updateToday = () => {
+      const nextToday = getToday();
+
+      setToday((currentToday) => {
+        if (currentToday.getTime() === nextToday.getTime()) {
+          return currentToday;
+        }
+
+        setSelections((currentSelections) => {
+          const previousDefaultDate = formatDateLabel(currentToday);
+
+          if (currentSelections.date !== previousDefaultDate) {
+            return currentSelections;
+          }
+
+          return {
+            ...currentSelections,
+            date: formatDateLabel(nextToday),
+          };
+        });
+
+        return nextToday;
+      });
+    };
+
+    updateToday();
+    const intervalId = window.setInterval(updateToday, 60_000);
+
+    return () => window.clearInterval(intervalId);
+  }, []);
 
   useEffect(() => {
     if (!openItem) {
@@ -653,6 +699,7 @@ export default function SearchBar() {
               isOpen={openItem === key}
               options={searchOptions[key]}
               selected={selections[key]}
+              today={today}
               monthOffset={monthOffset}
               onPrevMonth={() =>
                 setMonthOffset((current) => Math.max(0, current - 1))
