@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { useComingSoon } from "./ComingSoonProvider";
 
 type NavbarProps = {
   bookNowVariant?: "default" | "trekDetails";
@@ -18,6 +19,7 @@ const navLinks = [
 export default function Navbar({ bookNowVariant = "default" }: NavbarProps) {
   const [activeTab, setActiveTab] = useState(navLinks[0].label);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { openWaitlist } = useComingSoon();
   const isTrekDetailsBookNow = bookNowVariant === "trekDetails";
 
   return (
@@ -126,6 +128,7 @@ export default function Navbar({ bookNowVariant = "default" }: NavbarProps) {
         <div className="hidden min-w-0 justify-self-end sm:flex">
           <button
             type="button"
+            onClick={() => openWaitlist()}
             className={
               isTrekDetailsBookNow
                 ? "group inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full bg-[rgba(20,20,20,0.84)] py-1.5 pl-3 pr-1.5 bg-blend-darken shadow-[0_2px_4px_0_rgba(0,0,0,0.15)] transition-transform duration-300 active:scale-95 xs:gap-2 sm:pl-3.5 md:gap-3 md:pl-4"
@@ -133,7 +136,7 @@ export default function Navbar({ bookNowVariant = "default" }: NavbarProps) {
             }
           >
             <span className="select-none text-nowrap font-sans text-xs font-medium tracking-wide text-white md:text-sm">
-              Book Now
+              Join Waitlist
             </span>
             <div
               className={
@@ -197,9 +200,12 @@ export default function Navbar({ bookNowVariant = "default" }: NavbarProps) {
             <button
               type="button"
               className="mt-1 flex w-full items-center justify-between rounded-2xl bg-[#101010] px-5 py-3 font-sans text-base font-medium text-white transition-transform active:scale-[0.98]"
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={() => {
+                setMobileMenuOpen(false);
+                openWaitlist();
+              }}
             >
-              <span>Book Now</span>
+              <span>Join Waitlist</span>
               <svg
                 width="18"
                 height="18"

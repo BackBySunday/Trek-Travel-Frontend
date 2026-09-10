@@ -3,21 +3,24 @@
 import Image from "next/image";
 import { useComingSoon } from "./ComingSoonProvider";
 
-type SocialPlatform = "facebook" | "instagram" | "x" | "whatsapp";
+type SocialPlatform = "facebook" | "instagram" | "x";
 
 const socialLinks: Array<{
   label: string;
   platform: SocialPlatform;
   href?: string;
 }> = [
-  { label: "Facebook", platform: "facebook" },
+  {
+    label: "Facebook",
+    platform: "facebook",
+    href: "https://www.facebook.com/backbysunday",
+  },
   {
     label: "Instagram",
     platform: "instagram",
     href: "https://www.instagram.com/thebackbysunday/",
   },
   { label: "X", platform: "x", href: "https://x.com/TheBackBySunday" },
-  { label: "WhatsApp", platform: "whatsapp" },
 ];
 
 const quickLinks = [
@@ -25,6 +28,12 @@ const quickLinks = [
   { label: "Treks" },
   { label: "Packages" },
   { label: "Gallery" },
+];
+
+const legalLinks = [
+  { label: "Privacy Policy", href: "/privacy-policy" },
+  { label: "Terms & Conditions", href: "/terms-and-conditions" },
+  { label: "Cancellation & Refund Policy", href: "/cancellation-and-refund-policy" },
 ];
 
 const contactInfo = [
@@ -59,21 +68,10 @@ function SocialIcon({ platform }: { platform: SocialPlatform }) {
     );
   }
 
-  if (platform === "x") {
-    return (
-      <svg viewBox="0 0 24 24" className="h-[20px] w-[20px]" aria-hidden="true">
-        <path
-          d="M13.7 10.62 20.34 3h-1.57l-5.77 6.62L8.39 3H3.08l6.97 10.02L3.08 21h1.57l6.1-6.99L15.61 21h5.31l-7.22-10.38Zm-2.16 2.48-.71-1-5.62-7.93h2.43l4.54 6.41.71 1 5.89 8.31h-2.43l-4.81-6.79Z"
-          fill="currentColor"
-        />
-      </svg>
-    );
-  }
-
   return (
-    <svg viewBox="0 0 24 24" className="h-[22px] w-[22px]" aria-hidden="true">
+    <svg viewBox="0 0 24 24" className="h-[20px] w-[20px]" aria-hidden="true">
       <path
-        d="M12.02 2.25a9.66 9.66 0 0 0-8.33 14.55L2.5 21.75l5.08-1.16a9.66 9.66 0 1 0 4.44-18.34Zm0 1.7a7.96 7.96 0 0 1 0 15.92 7.8 7.8 0 0 1-3.9-1.04l-.28-.16-2.94.67.69-2.86-.19-.3a7.96 7.96 0 0 1 6.62-12.23Zm-3.2 3.83c.17 0 .34 0 .49.01.14.01.36-.05.56.42.21.51.7 1.77.76 1.89.06.13.1.28.02.45-.08.17-.13.28-.25.43-.13.15-.27.34-.38.45-.13.13-.26.27-.11.53.15.25.67 1.1 1.43 1.78.98.87 1.81 1.14 2.07 1.27.25.13.4.11.55-.06.15-.17.63-.74.8-.99.17-.25.34-.21.57-.13.23.08 1.48.7 1.73.82.25.13.42.19.48.3.06.13.06.7-.15 1.37-.21.68-1.23 1.3-1.72 1.34-.44.04-1 .06-1.62-.1-.38-.1-.86-.28-1.48-.55-2.6-1.12-4.3-3.74-4.43-3.91-.13-.17-1.06-1.41-1.06-2.7 0-1.29.67-1.92.91-2.18.24-.25.53-.32.71-.32h.35Z"
+        d="M13.7 10.62 20.34 3h-1.57l-5.77 6.62L8.39 3H3.08l6.97 10.02L3.08 21h1.57l6.1-6.99L15.61 21h5.31l-7.22-10.38Zm-2.16 2.48-.71-1-5.62-7.93h2.43l4.54 6.41.71 1 5.89 8.31h-2.43l-4.81-6.79Z"
         fill="currentColor"
       />
     </svg>
@@ -140,12 +138,12 @@ function ArrowUpRightIcon({ className }: { className: string }) {
 }
 
 export default function Footer() {
-  const { openComingSoon } = useComingSoon();
+  const { openComingSoon, openWaitlist } = useComingSoon();
 
   return (
     <footer id="contact" className="w-full bg-white pt-2 text-[#101010]">
       <div className="px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto grid w-full max-w-[1500px] grid-cols-1 gap-8 pt-8 sm:pt-10 md:grid-cols-[minmax(260px,1fr)_minmax(120px,150px)] md:items-start md:justify-between xl:grid-cols-[minmax(260px,430px)_120px_220px_minmax(300px,380px)] xl:gap-8 2xl:grid-cols-[minmax(300px,460px)_minmax(120px,140px)_minmax(220px,280px)_420px] 2xl:gap-12">
+        <div className="mx-auto grid w-full max-w-[1500px] grid-cols-1 gap-8 pt-8 sm:pt-10 md:grid-cols-[minmax(260px,1fr)_minmax(120px,150px)_minmax(120px,170px)] md:items-start md:justify-between xl:grid-cols-[minmax(260px,390px)_120px_170px_220px_minmax(280px,360px)] xl:gap-8 2xl:grid-cols-[minmax(300px,430px)_minmax(120px,140px)_minmax(150px,190px)_minmax(220px,260px)_390px] 2xl:gap-10">
           <div className="flex w-full max-w-[460px] flex-col items-start gap-3.5">
             <Image
               src="/Footer/footer-logo.png"
@@ -156,7 +154,7 @@ export default function Footer() {
               sizes="280px"
             />
             <p className="w-full font-urbanist text-sm font-medium leading-[1.5] text-[#5E5E5E] sm:text-base">
-              We craft unforgettable trekking expertises across Indias most
+              We craft unforgettable trekking experiences across India&apos;s most
               beautiful trails with expert guides, safe journeys, and
               responsible travel.
             </p>
@@ -202,6 +200,25 @@ export default function Footer() {
           </nav>
           <div className="flex w-full flex-col items-start gap-5 md:max-w-[280px]">
             <p className="w-full font-urbanist text-lg font-semibold leading-[1.15] text-[#101010]">
+              Legal
+            </p>
+            <nav
+              className="flex w-full flex-col items-start gap-3"
+              aria-label="Footer legal links"
+            >
+              {legalLinks.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className="w-fit font-urbanist text-sm font-medium leading-[1.3] text-[#5E5E5E] transition-colors duration-200 hover:text-[#101010] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#101010] sm:text-base"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </nav>
+          </div>
+          <div className="flex w-full flex-col items-start gap-5 md:max-w-[280px]">
+            <p className="w-full font-urbanist text-lg font-semibold leading-[1.15] text-[#101010]">
               Contact Info
             </p>
             <address className="flex w-full flex-col items-start gap-3 not-italic">
@@ -225,7 +242,7 @@ export default function Footer() {
               )}
             </address>
           </div>
-          <div className="flex w-full max-w-[420px] flex-col items-start gap-4 md:col-span-2 xl:col-span-1">
+          <div className="flex w-full max-w-[420px] flex-col items-start gap-4 md:col-span-3 xl:col-span-1">
             <div className="flex w-full flex-col items-start gap-3">
               <p className="w-fit font-urbanist text-lg font-semibold leading-[1.15] text-[#101010]">
                 Stay in the loop
@@ -235,7 +252,13 @@ export default function Footer() {
                 inbox.
               </p>
             </div>
-            <form className="flex w-full flex-col gap-2.5 overflow-hidden rounded-[28px] bg-[#E9E9E9] p-2.5 shadow-[inset_0_1px_12px_rgba(255,255,255,0.45)] sm:min-h-[56px] sm:flex-row sm:items-center sm:gap-3 sm:rounded-[98.605px] sm:bg-[linear-gradient(0deg,rgba(51,51,51,0.04)_0%,rgba(51,51,51,0.04)_100%),rgba(201,201,201,0.60)] sm:py-1.5 sm:pl-4 sm:pr-1.5">
+            <form
+              className="flex w-full flex-col gap-2.5 overflow-hidden rounded-[28px] bg-[#E9E9E9] p-2.5 shadow-[inset_0_1px_12px_rgba(255,255,255,0.45)] sm:min-h-[56px] sm:flex-row sm:items-center sm:gap-3 sm:rounded-[98.605px] sm:bg-[linear-gradient(0deg,rgba(51,51,51,0.04)_0%,rgba(51,51,51,0.04)_100%),rgba(201,201,201,0.60)] sm:py-1.5 sm:pl-4 sm:pr-1.5"
+              onSubmit={(event) => {
+                event.preventDefault();
+                openWaitlist("updates");
+              }}
+            >
               <label htmlFor="footer-email" className="sr-only">
                 Email address
               </label>
@@ -272,7 +295,7 @@ export default function Footer() {
         />
         <div className="absolute inset-x-0 bottom-4 px-4 sm:px-6 lg:px-8">
           <p className="mx-auto w-full max-w-[1500px] text-center font-urbanist text-sm font-medium leading-[1.1] text-[#5E5E5E] sm:text-base">
-            Copyright 2026 backbysunday,in All rights reserved
+            Copyright 2026 backbysunday.in All rights reserved
           </p>
         </div>
       </div>

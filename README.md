@@ -27,6 +27,8 @@ Responsive web application frontend for BackBySunday, a trekking and travel expe
 
 ```txt
 public/
+|-- Animation/
+|-- Banner/
 |-- CTA/
 |-- Featured-Destination/
 |-- Footer/
@@ -37,11 +39,17 @@ public/
 
 src/
 |-- app/
+|   |-- api/
+|   |-- cancellation-and-refund-policy/
 |   |-- globals.css
 |   |-- layout.tsx
+|   |-- privacy-policy/
+|   |-- terms-and-conditions/
 |   `-- page.tsx
 `-- components/
     |-- layout/
+    |   |-- coming-soon/
+    |   |-- ComingSoonProvider.tsx
     |   |-- Footer.tsx
     |   |-- Navbar.tsx
     |   |-- SectionBadge.tsx
@@ -62,7 +70,9 @@ src/
 
 - `src/app/page.tsx`: Composes the full landing page.
 - `src/app/layout.tsx`: Metadata, viewport settings, and font loading.
+- `src/app/api/waitlist/route.ts`: Waitlist API route backed by Supabase REST.
 - `src/app/globals.css`: Tailwind import, theme variables, glass effects, animation utilities, and base styles.
+- `src/components/layout/ComingSoonProvider.tsx`: Shared modal provider for coming soon and waitlist flows.
 - `src/components/layout/Navbar.tsx`: Responsive navigation and mobile menu.
 - `src/components/layout/Footer.tsx`: Reusable footer with a logo placeholder, quick links, contact info, newsletter form, mountain image, and copyright.
 - `src/components/layout/TrekCard.tsx`: Reusable trek package card.
@@ -93,6 +103,8 @@ Open the app at:
 ```txt
 http://localhost:3000
 ```
+
+Create `.env` from `.env.example` and set the required Supabase values before testing the waitlist API.
 
 ## Available Scripts
 
@@ -129,12 +141,27 @@ npm run lint
 npm run build
 ```
 
+## Vercel Deployment
+
+Use the default Vercel settings for a Next.js app.
+
+Required environment variables:
+
+```txt
+NEXT_PUBLIC_SUPABASE_URL
+SUPABASE_SERVICE_ROLE_KEY
+```
+
+Keep `SUPABASE_SERVICE_ROLE_KEY` server-only. Do not expose it with a `NEXT_PUBLIC_` prefix.
+
 ## Assets
 
 All application assets live in `public/` and are referenced by route-relative paths such as `/Hero/hero-background.png`.
 
 Current asset groups:
 
+- `public/Animation/`: Coming soon video and waitlist role icons.
+- `public/Banner/`: Social preview image.
 - `public/Hero/`: Hero background and carousel cards.
 - `public/Top-Categories/`: Trek category card imagery.
 - `public/Our-Partners/`: Partner logo/card imagery.

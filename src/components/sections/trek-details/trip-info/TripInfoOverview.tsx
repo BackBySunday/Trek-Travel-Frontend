@@ -9,36 +9,36 @@ export default function TripInfoOverview() {
     "/Hero/card-3.png",
   ];
   const includedItems = [
-    "Japan Rail (JR) pass for 7 days",
-    "Hiroshima Peace Park visit",
-    "Kyoto Temple tour",
+    "Forest entry coordination",
+    "Local trek lead",
+    "Basic first-aid support",
   ];
-  const excludedItems = ["Daily Lunch", "Shopping Expenses", "Flight Tickets"];
+  const excludedItems = ["Personal expenses", "Pickup outside listed points", "Meals not mentioned"];
   const itineraryDays = [
     {
       day: "Day 1",
-      title: "Arrival in Marrakech",
+      title: "Depart from Pune and reach Bamnoli",
       description:
-        "Arrive and settle into your riad. As evening approaches, step into the medina where the citys movement, sound, and energy create your first impression.",
+        "Start early from Pune and drive toward Bamnoli near the Koyna backwaters. After basic checks and local coordination, continue toward the Vasota trail access point.",
       isOpen: true,
     },
     {
       day: "Day 2",
-      title: "Osaka to Hiroshima",
+      title: "Boat ride across Shivsagar backwaters",
       description:
-        "Arrive and settle into your riad. As evening approaches, step into the medina where the citys movement, sound, and energy create your first impression.",
+        "Cross the backwaters by boat and enter the forested section leading toward Vasota Fort. The route is known for quiet water views and dense Sahyadri vegetation.",
     },
     {
       day: "Day 3",
-      title: "Osaka to Hiroshima",
+      title: "Trek to Vasota Fort",
       description:
-        "Arrive and settle into your riad. As evening approaches, step into the medina where the citys movement, sound, and energy create your first impression.",
+        "Walk through forest trails and gradual climbs to reach the fort area. Explore viewpoints, old ruins, and wide views of the Koyna landscape before beginning the descent.",
     },
     {
       day: "Day 4",
-      title: "Osaka to Hiroshima",
+      title: "Return to Bamnoli and Pune",
       description:
-        "Arrive and settle into your riad. As evening approaches, step into the medina where the citys movement, sound, and energy create your first impression.",
+        "Return by boat to Bamnoli and continue the drive back toward Pune, with arrival depending on weather, traffic, and local route conditions.",
     },
   ];
   const [openDays, setOpenDays] = useState(() =>
@@ -66,19 +66,16 @@ export default function TripInfoOverview() {
   return (
     <div className="flex w-full flex-col items-start gap-7 text-[#101010] sm:gap-8">
       <div className="flex w-full flex-col items-start gap-4">
-        <h1 className="w-fit font-urbanist text-[clamp(1.875rem,3vw,44px)] font-medium leading-tight">
-          Japan Express: Osaka to Tokyo
-        </h1>
+        <h2 className="w-fit font-urbanist text-[clamp(1.875rem,3vw,44px)] font-medium leading-tight">
+          Vasota Fort Trek Overview
+        </h2>
         <div className="h-px w-full border-b border-dashed border-b-[rgba(26,26,23,0.50)]" />
         <p className="w-full max-w-[860px] font-urbanist text-base leading-[1.45] tracking-[0.02em] sm:text-lg">
-          Marrakech begins with movement. Streets feel dense, sounds overlap,
-          and every corner brings something new into view. But as the journey
-          continues, that intensity gradually falls away. Roads begin to
-          stretch, the air feels wider, and the surroundings become quieter. By
-          the time the desert appears, everything changes. Space replaces
-          structure, and silence becomes part of the experience. This shift from
-          city to open landscape defines the entire journey, creating a sense of
-          progression that unfolds naturally over each day.
+          Vasota Fort is a forest trek near the Koyna backwaters, known for its
+          boat approach, quiet trails, old fort remains, and wide Sahyadri
+          views. It is a strong weekend option for travellers from Pune who want
+          a refreshing route with nature, history, and a little adventure packed
+          into a short escape.
         </p>
       </div>
 
@@ -125,7 +122,7 @@ export default function TripInfoOverview() {
         </svg>
         <p className="font-urbanist text-sm leading-[1.32] tracking-[0.02em] sm:text-base">
           Next departure: Oct 4, 2026&nbsp;&nbsp; Limited to 20 travellers&nbsp;&nbsp;
-          6 spots left&nbsp;&nbsp; Free cancellation
+          6 spots left&nbsp;&nbsp; Operator cancellation rules apply
         </p>
       </div>
 
@@ -135,16 +132,16 @@ export default function TripInfoOverview() {
         </h2>
         <div className="h-px w-full border-b border-dashed border-b-[rgba(26,26,23,0.50)]" />
         <p className="w-full max-w-[860px] font-urbanist text-base leading-[1.45] tracking-[0.02em] sm:text-lg">
-          Japan is a land of contrasts, where ancient traditions blend
-          seamlessly with futuristic technology, This 9-day journey is designed
-          to give you a taste of the country&apos;s incredible diversity,
-          travelling at a pace that allows you to take it all in.
+          The route combines a scenic boat ride, forest walking, and fort
+          exploration without feeling like a long expedition. Expect changing
+          weather, uneven terrain, and a route that rewards steady pacing more
+          than speed.
         </p>
       </div>
 
       <div className="flex w-full flex-col items-start gap-4">
         <h2 className="w-fit font-urbanist text-[clamp(1.875rem,3vw,44px)] font-medium leading-tight">
-          Whats Included
+          What&apos;s Included
         </h2>
         <div className="grid w-full gap-5 rounded-[20px] bg-[#F6F7F7] px-5 py-6 sm:px-8 lg:grid-cols-[minmax(0,1fr)_minmax(220px,0.7fr)] xl:px-8 xl:py-7">
           <div className="flex flex-col items-start gap-3">
@@ -176,8 +173,8 @@ export default function TripInfoOverview() {
             Full Itinerary
           </h2>
           <p className="w-full max-w-[860px] font-urbanist text-base leading-[1.45] tracking-[0.02em] sm:text-lg">
-            Five days moving from dense city streets into open desert
-            landscapes.
+            A compact weekend route from Pune to Bamnoli, across the Koyna
+            backwaters, and up to Vasota Fort.
           </p>
         </div>
         <div className="h-px w-full border-b border-dashed border-b-[rgba(26,26,23,0.50)]" />

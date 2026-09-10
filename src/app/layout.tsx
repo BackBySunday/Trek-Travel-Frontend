@@ -22,8 +22,63 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Trek & Travel",
-  description: "Explore the world with Trek and Travel",
+  metadataBase: new URL("https://backbysunday.in"),
+  title: {
+    default: "BackBySunday | Weekend Treks, Trips & Travel Experiences",
+    template: "%s | BackBySunday",
+  },
+  description:
+    "Discover weekend treks, short trips, and refreshing travel experiences across India with BackBySunday.",
+  applicationName: "BackBySunday",
+  keywords: [
+    "BackBySunday",
+    "weekend trips India",
+    "weekend treks",
+    "trekking trips",
+    "Pune treks",
+    "Sahyadri treks",
+    "short travel experiences",
+    "travel marketplace India",
+    "travel company India",
+    "travel booking platform",
+    "travel experience marketplace",
+    "tour marketplace India",
+    "adventure travel company",
+    "trek booking platform",
+    "weekend travel marketplace",
+    "short trips from Pune",
+    "adventure trips India",
+    "group travel experiences",
+    "verified travel operators",
+    "local trek operators",
+    "curated weekend getaways",
+  ],
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "BackBySunday | Weekend Treks, Trips & Travel Experiences",
+    description:
+      "Discover weekend treks, short trips, and refreshing travel experiences across India with BackBySunday.",
+    url: "/",
+    siteName: "BackBySunday",
+    images: [
+      {
+        url: "/Banner/Banner.png",
+        width: 1200,
+        height: 630,
+        alt: "BackBySunday",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "BackBySunday | Weekend Treks, Trips & Travel Experiences",
+    description:
+      "Discover weekend treks, short trips, and refreshing travel experiences across India with BackBySunday.",
+    images: ["/Banner/Banner.png"],
+  },
 };
 
 export const viewport: Viewport = {

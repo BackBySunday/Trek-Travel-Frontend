@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useComingSoon } from "@/components/layout/ComingSoonProvider";
 
 type SearchItem = {
   label: string;
@@ -589,13 +590,33 @@ function Divider() {
 }
 
 export default function SearchBar() {
+  const { openComingSoon } = useComingSoon();
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [openItem, setOpenItem] = useState<SearchItemKey | null>(null);
   const [dateMode, setDateMode] = useState<DateMode>("quick");
   const [monthOffset, setMonthOffset] = useState(0);
   const [today, setToday] = useState(getToday);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchError, setSearchError] = useState("");
   const [selections, setSelections] =
     useState<Record<SearchItemKey, string>>(() => getDefaultSelections(getToday()));
+
+  const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const destination = searchQuery.trim();
+
+    if (!destination) {
+      setSearchError("Please enter a trek or destination.");
+      return;
+    }
+
+    setSearchError("");
+    setOpenItem(null);
+    setDateMode("quick");
+    setMonthOffset(0);
+    openComingSoon(destination);
+  };
 
   useEffect(() => {
     const updateToday = () => {
@@ -665,19 +686,29 @@ export default function SearchBar() {
   return (
     <div
       ref={wrapperRef}
-      className="mt-4 flex w-full max-w-[min(89vw,880px)] flex-col items-stretch gap-2 sm:mt-5 lg:mt-6"
+      className="relative mt-4 flex w-full max-w-[min(89vw,880px)] flex-col items-stretch gap-2 sm:mt-5 lg:mt-6"
     >
-      <div className="flex w-full items-center gap-2 overflow-hidden rounded-[24px] bg-[linear-gradient(0deg,rgba(51,51,51,0.30)_0%,rgba(51,51,51,0.30)_100%),rgba(243,243,243,0.60)] bg-blend-plus-lighter p-2 shadow-[0_18px_60px_rgba(0,0,0,0.18)] backdrop-blur-xl sm:rounded-[28px] xl:gap-3 xl:rounded-[98.605px] 2xl:gap-4 2xl:p-2.5">
+      <form
+        className="flex w-full items-center gap-2 overflow-hidden rounded-[24px] bg-[linear-gradient(0deg,rgba(51,51,51,0.30)_0%,rgba(51,51,51,0.30)_100%),rgba(243,243,243,0.60)] bg-blend-plus-lighter p-2 shadow-[0_18px_60px_rgba(0,0,0,0.18)] backdrop-blur-xl sm:rounded-[28px] xl:gap-3 xl:rounded-[98.605px] 2xl:gap-4 2xl:p-2.5"
+        onSubmit={handleSearchSubmit}
+      >
         <input
           type="search"
           placeholder="Search treks, destinations, or regions"
+          value={searchQuery}
+          onChange={(event) => {
+            setSearchQuery(event.target.value);
+            if (searchError) setSearchError("");
+          }}
+          aria-invalid={Boolean(searchError)}
+          aria-describedby={searchError ? "hero-search-error" : undefined}
           className="min-w-0 flex-1 bg-transparent px-3 font-urbanist text-sm font-medium leading-tight text-[#FFF] outline-none placeholder:text-[#E4E4E4] sm:text-[15px] lg:text-[15px] 2xl:px-4 2xl:text-lg"
         />
 
         <Divider />
 
         <button
-          type="button"
+          type="submit"
           className="flex h-10 shrink-0 items-center justify-center gap-2 rounded-[113.1px] bg-[rgba(20,20,20,0.84)] py-1 pl-4 pr-1 font-urbanist text-[15px] text-[#FFF] shadow-[0_2px_4px_0_rgba(0,0,0,0.15)] transition-transform hover:scale-[1.02] active:scale-[0.98] sm:h-10 lg:text-[15px] xl:w-fit 2xl:h-12 2xl:gap-2.5 2xl:text-lg"
         >
           <span className="w-fit text-nowrap">Find my trek</span>
@@ -685,7 +716,16 @@ export default function SearchBar() {
             <ArrowIcon />
           </span>
         </button>
-      </div>
+      </form>
+      {searchError && (
+        <div
+          id="hero-search-error"
+          className="hero-search-callout absolute -top-14 left-2 right-2 z-30 w-fit max-w-[calc(100%-1rem)] rounded-[18px] border border-white/30 bg-white/75 px-3.5 py-2.5 font-urbanist text-sm font-semibold leading-snug text-[#18231e] shadow-[0_14px_34px_rgba(0,0,0,0.18)] backdrop-blur-[2px] after:absolute after:-bottom-2 after:left-7 after:h-0 after:w-0 after:border-l-[8px] after:border-r-[8px] after:border-t-[8px] after:border-l-transparent after:border-r-transparent after:border-t-white/75 sm:-top-12 sm:left-3 sm:right-auto sm:max-w-[min(86vw,360px)] sm:px-4 sm:leading-normal sm:after:left-8"
+          role="alert"
+        >
+          <span>{searchError}</span>
+        </div>
+      )}
 
       <div className="grid min-w-0 grid-cols-1 gap-1.5 md:grid-cols-3 xl:flex xl:flex-none xl:items-center xl:justify-center xl:gap-4 2xl:gap-5">
         {searchItemOrder.map((key, index) => (
@@ -731,6 +771,28 @@ export default function SearchBar() {
           </div>
         ))}
       </div>
+      <style jsx global>{`
+        .hero-search-callout {
+          animation: hero-search-callout-in 220ms ease-out both;
+        }
+
+        @keyframes hero-search-callout-in {
+          from {
+            opacity: 0;
+            transform: translateY(6px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .hero-search-callout {
+            animation: none;
+          }
+        }
+      `}</style>
     </div>
   );
 }

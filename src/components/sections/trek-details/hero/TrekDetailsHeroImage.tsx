@@ -18,14 +18,14 @@ export default function TrekDetailsHeroImage() {
               <span className="trek-pill-glass-shine" />
               <p className="trek-pill-glass-content">Adventure</p>
             </div>
-            <div className="flex flex-col items-center gap-1">
-              <p className="font-urbanist text-[clamp(2rem,4vw,52px)] font-medium leading-none text-white">
+            <h1 className="flex flex-col items-center gap-1">
+              <span className="font-urbanist text-[clamp(2rem,4vw,52px)] font-medium leading-none text-white">
                 Vasota Fort
-              </p>
-              <p className="font-urbanist text-[clamp(1.75rem,3.5vw,48px)] font-medium leading-none text-white">
+              </span>
+              <span className="font-urbanist text-[clamp(1.75rem,3.5vw,48px)] font-medium leading-none text-white">
                 Trek - Pune
-              </p>
-            </div>
+              </span>
+            </h1>
           </div>
         </div>
 
