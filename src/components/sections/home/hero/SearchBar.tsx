@@ -720,7 +720,7 @@ export default function SearchBar() {
       {searchError && (
         <div
           id="hero-search-error"
-          className="hero-search-callout absolute -top-14 left-2 right-2 z-30 w-fit max-w-[calc(100%-1rem)] rounded-[18px] border border-white/30 bg-white/75 px-3.5 py-2.5 font-urbanist text-sm font-semibold leading-snug text-[#18231e] shadow-[0_14px_34px_rgba(0,0,0,0.18)] backdrop-blur-[2px] after:absolute after:-bottom-2 after:left-7 after:h-0 after:w-0 after:border-l-[8px] after:border-r-[8px] after:border-t-[8px] after:border-l-transparent after:border-r-transparent after:border-t-white/75 sm:-top-12 sm:left-3 sm:right-auto sm:max-w-[min(86vw,360px)] sm:px-4 sm:leading-normal sm:after:left-8"
+          className="hero-search-callout absolute -top-14 left-2 right-2 z-30 w-fit max-w-[calc(100%-1rem)] rounded-[18px] bg-white/60 px-3.5 py-2.5 font-urbanist text-sm font-semibold leading-snug text-[#18231e] shadow-[0_14px_34px_rgba(0,0,0,0.18)] backdrop-blur-[2px] after:absolute after:-bottom-2 after:left-7 after:h-0 after:w-0 after:border-l-[8px] after:border-r-[8px] after:border-t-[8px] after:border-l-transparent after:border-r-transparent after:border-t-white/60 sm:-top-12 sm:left-3 sm:right-auto sm:max-w-[min(86vw,360px)] sm:px-4 sm:leading-normal sm:after:left-8"
           role="alert"
         >
           <span>{searchError}</span>

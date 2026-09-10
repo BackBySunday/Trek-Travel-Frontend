@@ -79,6 +79,18 @@ export const metadata: Metadata = {
       "Discover weekend treks, short trips, and refreshing travel experiences across India with BackBySunday.",
     images: ["/Banner/Banner.png"],
   },
+  icons: {
+    icon: [
+      { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
+  manifest: "/site.webmanifest",
+  appleWebApp: {
+    title: "BackBySunday",
+  },
 };
 
 export const viewport: Viewport = {
