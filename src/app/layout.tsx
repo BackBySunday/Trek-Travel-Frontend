@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Sans, Inter, Urbanist } from "next/font/google";
+import Script from "next/script";
 import ComingSoonProvider from "@/components/layout/ComingSoonProvider";
 import "./globals.css";
 
@@ -21,14 +22,17 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
+const googleAnalyticsId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+const siteDescription =
+  "Discover curated weekend treks, short trips, and refreshing travel experiences across India with BackBySunday's trusted travel marketplace.";
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://backbysunday.in"),
   title: {
     default: "BackBySunday | Weekend Treks, Trips & Travel Experiences",
     template: "%s | BackBySunday",
   },
-  description:
-    "Discover weekend treks, short trips, and refreshing travel experiences across India with BackBySunday.",
+  description: siteDescription,
   applicationName: "BackBySunday",
   keywords: [
     "BackBySunday",
@@ -58,8 +62,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "BackBySunday | Weekend Treks, Trips & Travel Experiences",
-    description:
-      "Discover weekend treks, short trips, and refreshing travel experiences across India with BackBySunday.",
+    description: siteDescription,
     url: "/",
     siteName: "BackBySunday",
     images: [
@@ -75,8 +78,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "BackBySunday | Weekend Treks, Trips & Travel Experiences",
-    description:
-      "Discover weekend treks, short trips, and refreshing travel experiences across India with BackBySunday.",
+    description: siteDescription,
     images: ["/Banner/Banner.png"],
   },
   icons: {
@@ -105,7 +107,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="en"
       className={`${urbanist.variable} ${ibmPlexSans.variable} ${inter.variable}`}
     >
-      <body><ComingSoonProvider>{children}</ComingSoonProvider></body>
+      <body>
+        <ComingSoonProvider>{children}</ComingSoonProvider>
+        {googleAnalyticsId ? (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${googleAnalyticsId}');
+              `}
+            </Script>
+          </>
+        ) : null}
+      </body>
     </html>
   );
 }

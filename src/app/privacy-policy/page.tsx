@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Footer from "@/components/layout/Footer";
+import JsonLd from "@/components/layout/JsonLd";
 import Navbar from "@/components/layout/Navbar";
 
 export const metadata: Metadata = {
@@ -223,12 +224,35 @@ const summaryItems = [
 ];
 
 export default function PrivacyPolicyPage() {
+  const siteUrl = "https://backbysunday.in";
+  const pageUrl = `${siteUrl}/privacy-policy`;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Privacy Policy",
+    url: pageUrl,
+    description: metadata.description,
+    dateModified: "2026-09-10",
+    isPartOf: {
+      "@type": "WebSite",
+      name: "BackBySunday",
+      url: siteUrl,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "BackBySunday",
+      url: siteUrl,
+      logo: `${siteUrl}/Hero/hero-logo.png`,
+    },
+  };
+
   return (
     <main className="relative isolate min-h-[100svh] overflow-x-hidden bg-[#f7f5ef] text-[#101010]">
+      <JsonLd data={jsonLd} />
       <section className="relative bg-[#101010] text-white">
         <Image
-          src="/Banner/ChatGPT%20Image%20Sep%2010%2C%202026%2C%2012_50_11%20PM.png"
-          alt=""
+          src="/Banner/Banner.png"
+          alt="BackBySunday mountain travel banner"
           fill
           priority
           className="object-cover object-center"

@@ -1,0 +1,33 @@
+# BackBySunday
+
+> BackBySunday is a travel and trekking discovery and booking platform for curated weekend treks, short trips, adventure travel experiences, and verified travel operators in India.
+
+## Website
+
+- Homepage: https://backbysunday.in/
+- Sitemap: https://backbysunday.in/sitemap.xml
+- Robots: https://backbysunday.in/robots.txt
+
+## Important Pages
+
+- Privacy Policy: https://backbysunday.in/privacy-policy
+- Terms & Conditions: https://backbysunday.in/terms-and-conditions
+- Cancellation & Refund Policy: https://backbysunday.in/cancellation-and-refund-policy
+
+## Primary Topics
+
+- Weekend treks in India
+- Short travel experiences
+- Trekking trips from Pune
+- Sahyadri treks
+- Adventure travel marketplace
+- Verified trek operators
+- Group travel experiences
+- Curated weekend getaways
+
+## Contact
+
+- Email: hello.backbysunday@gmail.com
+- Instagram: https://instagram.com/thebackbysunday
+- Facebook: https://facebook.com/backbysunday
+- X: https://x.com/TheBackBySunday
