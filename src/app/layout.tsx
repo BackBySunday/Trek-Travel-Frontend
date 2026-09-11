@@ -90,6 +90,9 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
   manifest: "/site.webmanifest",
+  verification: {
+    google: "8vdIiR-dPutlQmCBYfvupg9GHoIRqYdHcMqKiEZMnY0",
+  },
   appleWebApp: {
     title: "BackBySunday",
   },
