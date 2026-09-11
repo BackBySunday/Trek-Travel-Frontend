@@ -5,6 +5,8 @@ const siteUrl = "https://backbysunday.in";
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     "",
+    "/operators",
+    "/trek-details",
     "/privacy-policy",
     "/terms-and-conditions",
     "/cancellation-and-refund-policy",

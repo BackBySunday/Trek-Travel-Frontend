@@ -49,7 +49,7 @@ export default function OperatorsPageContent() {
       <JsonLd data={jsonLd} />
       <TrekCardGlassFilters />
       <header className="absolute inset-x-0 top-[max(1rem,env(safe-area-inset-top))] z-50 mx-auto w-full max-w-7xl px-4 sm:top-6 sm:px-6 md:top-8 lg:px-8 xl:top-10">
-        <Navbar bookNowVariant="trekDetails" />
+        <Navbar />
       </header>
 
       <OperatorProfileSection />

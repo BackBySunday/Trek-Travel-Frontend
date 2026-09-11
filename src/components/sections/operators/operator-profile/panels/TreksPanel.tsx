@@ -140,7 +140,7 @@ export default function TreksPanel({
       </h2>
       <div className="grid grid-cols-2 gap-4 sm:gap-5 xl:grid-cols-4">
         {treks.map((trek) => (
-          <TrekCard key={trek.id} {...trek} comingSoon={false} />
+          <TrekCard key={trek.id} {...trek} />
         ))}
       </div>
     </>

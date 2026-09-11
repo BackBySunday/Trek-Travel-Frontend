@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { useComingSoon } from "@/components/layout/ComingSoonProvider";
+import { useRouter } from "next/navigation";
 
 type SearchItem = {
   label: string;
@@ -590,7 +590,7 @@ function Divider() {
 }
 
 export default function SearchBar() {
-  const { openComingSoon } = useComingSoon();
+  const router = useRouter();
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [openItem, setOpenItem] = useState<SearchItemKey | null>(null);
   const [dateMode, setDateMode] = useState<DateMode>("quick");
@@ -615,7 +615,7 @@ export default function SearchBar() {
     setOpenItem(null);
     setDateMode("quick");
     setMonthOffset(0);
-    openComingSoon(destination);
+    router.push("/trek-details");
   };
 
   useEffect(() => {

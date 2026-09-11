@@ -1,7 +1,4 @@
-"use client";
-
 import Image from "next/image";
-import { useComingSoon } from "@/components/layout/ComingSoonProvider";
 
 export type FeaturedDestinationCardProps = {
   image: string;
@@ -10,7 +7,6 @@ export type FeaturedDestinationCardProps = {
   title: string;
   description: string;
   isTall?: boolean;
-  href?: string;
 };
 
 export default function FeaturedDestinationCard({
@@ -21,16 +17,11 @@ export default function FeaturedDestinationCard({
   description,
   isTall = false,
 }: FeaturedDestinationCardProps) {
-  const { openComingSoon } = useComingSoon();
-
   return (
-    <button
-      type="button"
-      onClick={() => openComingSoon(title)}
-      className={`featured-destination-card group relative min-h-[280px] overflow-hidden rounded-[30px] bg-[#d9d9d9] no-underline outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-4 focus-visible:ring-offset-[#101010] ${
+    <article
+      className={`featured-destination-card group relative min-h-[280px] overflow-hidden rounded-[30px] bg-[#d9d9d9] ${
         isTall ? "is-tall" : ""
       }`}
-      aria-label={`View details for ${title}`}
     >
       <Image
         src={image}
@@ -56,6 +47,6 @@ export default function FeaturedDestinationCard({
           {description}
         </p>
       </div>
-    </button>
+    </article>
   );
 }

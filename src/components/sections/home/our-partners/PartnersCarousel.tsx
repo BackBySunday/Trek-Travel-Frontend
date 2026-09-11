@@ -1,7 +1,5 @@
-"use client";
-
 import Image from "next/image";
-import { useComingSoon } from "@/components/layout/ComingSoonProvider";
+import Link from "next/link";
 
 // Sample partner statistics until live organiser data is connected.
 const partnerLogos = [
@@ -60,8 +58,6 @@ const partnerLogos = [
 const logoGroup = Array.from({ length: 3 }, () => partnerLogos).flat();
 
 export default function PartnersCarousel() {
-  const { openComingSoon } = useComingSoon();
-
   return (
     <div className="relative mt-8 w-screen overflow-hidden sm:mt-10">
       <div
@@ -80,13 +76,12 @@ export default function PartnersCarousel() {
             aria-hidden={groupIndex === 1}
           >
             {logoGroup.map((logo, logoIndex) => (
-              <button
+              <Link
                 key={`${logo.src}-${groupIndex}-${logoIndex}`}
-                type="button"
-                onClick={() => openComingSoon(logo.name)}
-                tabIndex={groupIndex === 0 && logoIndex < partnerLogos.length ? 0 : -1}
+                href="/operators"
                 aria-hidden={groupIndex !== 0 || logoIndex >= partnerLogos.length}
-                className="group flex h-14 w-[240px] shrink-0 cursor-pointer items-center gap-2 rounded-lg border border-[#dce1e5] bg-white p-1.5 text-left transition-colors hover:border-[#9aa6a0] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#426857] sm:h-[72px]"
+                tabIndex={groupIndex === 0 && logoIndex < partnerLogos.length ? 0 : -1}
+                className="flex h-14 w-[240px] shrink-0 items-center gap-2 rounded-lg border border-[#dce1e5] bg-white p-1.5 text-left transition-colors hover:border-[#9aa6a0] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#426857] sm:h-[72px]"
               >
                 <span className="relative h-10 w-14 shrink-0 overflow-hidden rounded-xl bg-[#f6f7f7] sm:h-14 sm:w-16">
                   <Image
@@ -110,7 +105,7 @@ export default function PartnersCarousel() {
                     <span title={`${logo.followers} followers`}>{logo.followers}</span>
                   </span>
                 </span>
-              </button>
+              </Link>
             ))}
           </div>
         ))}

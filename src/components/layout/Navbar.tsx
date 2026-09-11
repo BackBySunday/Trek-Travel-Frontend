@@ -1,12 +1,8 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
-import { useComingSoon } from "./ComingSoonProvider";
-
-type NavbarProps = {
-  bookNowVariant?: "default" | "trekDetails";
-};
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -16,11 +12,14 @@ const navLinks = [
   { label: "Contact", href: "/#contact" },
 ];
 
-export default function Navbar({ bookNowVariant = "default" }: NavbarProps) {
+type NavbarProps = {
+  variant?: "default" | "solid";
+};
+
+export default function Navbar({ variant = "default" }: NavbarProps) {
   const [activeTab, setActiveTab] = useState(navLinks[0].label);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { openWaitlist } = useComingSoon();
-  const isTrekDetailsBookNow = bookNowVariant === "trekDetails";
+  const isSolid = variant === "solid";
 
   return (
     <>
@@ -63,7 +62,11 @@ export default function Navbar({ bookNowVariant = "default" }: NavbarProps) {
 
         {/* Desktop Liquid Glass Navigation Links */}
         <nav
-          className="liquid-glass-nav hidden max-w-full items-center gap-1 overflow-x-auto p-1.5 transition-all duration-300 md:flex lg:gap-2"
+          className={
+            isSolid
+              ? "hidden max-w-full items-center gap-1 overflow-x-auto rounded-full bg-[rgba(20,20,20,0.84)] bg-blend-darken p-1.5 shadow-[0_2px_4px_0_rgba(0,0,0,0.15)] transition-all duration-300 md:flex lg:gap-2"
+              : "liquid-glass-nav hidden max-w-full items-center gap-1 overflow-x-auto p-1.5 transition-all duration-300 md:flex lg:gap-2"
+          }
           aria-label="Primary navigation"
         >
           {navLinks.map((link) => {
@@ -73,11 +76,19 @@ export default function Navbar({ bookNowVariant = "default" }: NavbarProps) {
                 key={link.label}
                 href={link.href}
                 onClick={() => setActiveTab(link.label)}
-                className={`relative flex cursor-pointer text-nowrap rounded-full px-3 py-1.5 text-center transition-all duration-300 lg:px-4 ${
-                  isActive
-                    ? "liquid-glass-active text-[#101010] font-medium shadow-sm"
-                    : "text-white/80 hover:text-white hover:bg-white/10"
-                }`}
+                className={
+                  isSolid
+                    ? `relative flex cursor-pointer text-nowrap rounded-full px-3 py-1.5 text-center transition-all duration-300 lg:px-4 ${
+                        isActive
+                          ? "bg-white font-medium text-[#101010] shadow-sm"
+                          : "text-white hover:bg-white/10"
+                      }`
+                    : `relative flex cursor-pointer text-nowrap rounded-full px-3 py-1.5 text-center transition-all duration-300 lg:px-4 ${
+                        isActive
+                          ? "liquid-glass-active text-[#101010] font-medium shadow-sm"
+                          : "text-white/80 hover:text-white hover:bg-white/10"
+                      }`
+                }
                 aria-current={isActive ? "page" : undefined}
               >
                 <span className="select-none font-sans text-xs tracking-wide md:text-sm">
@@ -126,36 +137,25 @@ export default function Navbar({ bookNowVariant = "default" }: NavbarProps) {
 
         {/* Liquid Glass Book Now Button */}
         <div className="hidden min-w-0 justify-self-end sm:flex">
-          <button
-            type="button"
-            onClick={() => openWaitlist()}
+          <Link
+            href="/trek-details"
             className={
-              isTrekDetailsBookNow
-                ? "group inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full bg-[rgba(20,20,20,0.84)] py-1.5 pl-3 pr-1.5 bg-blend-darken shadow-[0_2px_4px_0_rgba(0,0,0,0.15)] transition-transform duration-300 active:scale-95 xs:gap-2 sm:pl-3.5 md:gap-3 md:pl-4"
+              isSolid
+                ? "group inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full bg-[rgba(20,20,20,0.84)] bg-blend-darken py-1.5 pl-3 pr-1.5 shadow-[0_2px_4px_0_rgba(0,0,0,0.15)] transition-all duration-300 hover:scale-[1.03] active:scale-95 xs:gap-2 sm:pl-3.5 md:gap-3 md:pl-4"
                 : "liquid-glass-nav group inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full py-1.5 pl-3 pr-1.5 transition-all duration-300 hover:scale-[1.03] active:scale-95 xs:gap-2 sm:pl-3.5 md:gap-3 md:pl-4"
             }
           >
             <span className="select-none text-nowrap font-sans text-xs font-medium tracking-wide text-white md:text-sm">
-              Join Waitlist
+              Book Now
             </span>
-            <div
-              className={
-                isTrekDetailsBookNow
-                  ? "flex items-center justify-center rounded-full bg-white p-1.5 text-[#101010]"
-                  : "flex items-center justify-center rounded-full bg-white p-1.5 text-[#101010] shadow-sm transition-transform duration-300 group-hover:rotate-45"
-              }
-            >
+            <div className="flex items-center justify-center rounded-full bg-white p-1.5 text-[#101010] shadow-sm transition-transform duration-300 group-hover:rotate-45">
               <svg
                 width="14"
                 height="14"
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                className={
-                  isTrekDetailsBookNow
-                    ? "h-3.5 w-3.5 overflow-hidden"
-                    : "h-3.5 w-3.5"
-                }
+                className="h-3.5 w-3.5"
               >
                 <path
                   d="M6 18L18 6M18 15V6H9"
@@ -166,7 +166,7 @@ export default function Navbar({ bookNowVariant = "default" }: NavbarProps) {
                 />
               </svg>
             </div>
-          </button>
+          </Link>
         </div>
 
         {/* Mobile Dropdown Menu */}
@@ -186,26 +186,22 @@ export default function Navbar({ bookNowVariant = "default" }: NavbarProps) {
                     setActiveTab(link.label);
                     setMobileMenuOpen(false);
                   }}
-                  className={`w-full rounded-2xl px-5 py-3 text-left font-sans text-base transition-all duration-200 ${
-                    isActive
+                  className={`w-full rounded-2xl px-5 py-3 text-left font-sans text-base transition-all duration-200 ${isActive
                       ? "mobile-menu-active text-white font-medium"
                       : "text-[#101010]/90 hover:bg-black/10"
-                  }`}
+                    }`}
                   aria-current={isActive ? "page" : undefined}
                 >
                   {link.label}
                 </a>
               );
             })}
-            <button
-              type="button"
+            <Link
+              href="/trek-details"
               className="mt-1 flex w-full items-center justify-between rounded-2xl bg-[#101010] px-5 py-3 font-sans text-base font-medium text-white transition-transform active:scale-[0.98]"
-              onClick={() => {
-                setMobileMenuOpen(false);
-                openWaitlist();
-              }}
+              onClick={() => setMobileMenuOpen(false)}
             >
-              <span>Join Waitlist</span>
+              <span>Book Now</span>
               <svg
                 width="18"
                 height="18"
@@ -222,7 +218,7 @@ export default function Navbar({ bookNowVariant = "default" }: NavbarProps) {
                   strokeLinejoin="round"
                 />
               </svg>
-            </button>
+            </Link>
           </nav>
         )}
       </div>

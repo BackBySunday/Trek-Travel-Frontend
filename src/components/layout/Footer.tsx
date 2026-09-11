@@ -1,7 +1,4 @@
-"use client";
-
 import Image from "next/image";
-import { useComingSoon } from "./ComingSoonProvider";
 
 type SocialPlatform = "facebook" | "instagram" | "x";
 
@@ -81,24 +78,20 @@ function SocialIcon({ platform }: { platform: SocialPlatform }) {
 function SocialLink({
   href,
   label,
-  onComingSoon,
   platform,
 }: {
   href?: string;
   label: string;
-  onComingSoon: (label: string) => void;
   platform: SocialPlatform;
 }) {
   if (!href) {
     return (
-      <button
-        type="button"
-        onClick={() => onComingSoon(label)}
+      <span
         aria-label={label}
-        className="flex h-[37px] w-[37px] items-center justify-center rounded-full border border-[#999292] text-[#999292] transition-colors duration-200 hover:border-[#101010] hover:text-[#101010] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#101010]"
+        className="flex h-[37px] w-[37px] items-center justify-center rounded-full border border-[#999292] text-[#999292]"
       >
         <SocialIcon platform={platform} />
-      </button>
+      </span>
     );
   }
 
@@ -138,8 +131,6 @@ function ArrowUpRightIcon({ className }: { className: string }) {
 }
 
 export default function Footer() {
-  const { openComingSoon, openWaitlist } = useComingSoon();
-
   return (
     <footer id="contact" className="w-full bg-white pt-2 text-[#101010]">
       <div className="px-4 sm:px-6 lg:px-8">
@@ -160,11 +151,7 @@ export default function Footer() {
             </p>
             <div className="flex w-fit items-center gap-[9px]">
               {socialLinks.map((link) => (
-                <SocialLink
-                  key={link.platform}
-                  {...link}
-                  onComingSoon={openComingSoon}
-                />
+                <SocialLink key={link.platform} {...link} />
               ))}
             </div>
           </div>
@@ -186,14 +173,12 @@ export default function Footer() {
                     {link.label}
                   </a>
                 ) : (
-                  <button
+                  <span
                     key={link.label}
-                    type="button"
-                    onClick={() => openComingSoon(link.label)}
-                    className="w-full text-left font-urbanist text-sm font-medium leading-[1.3] text-[#5E5E5E] transition-colors duration-200 hover:text-[#101010] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#101010] sm:text-base"
+                    className="w-full text-left font-urbanist text-sm font-medium leading-[1.3] text-[#5E5E5E] sm:text-base"
                   >
                     {link.label}
-                  </button>
+                  </span>
                 ),
               )}
             </div>
@@ -252,13 +237,7 @@ export default function Footer() {
                 inbox.
               </p>
             </div>
-            <form
-              className="flex w-full flex-col gap-2.5 overflow-hidden rounded-[28px] bg-[#E9E9E9] p-2.5 shadow-[inset_0_1px_12px_rgba(255,255,255,0.45)] sm:min-h-[56px] sm:flex-row sm:items-center sm:gap-3 sm:rounded-[98.605px] sm:bg-[linear-gradient(0deg,rgba(51,51,51,0.04)_0%,rgba(51,51,51,0.04)_100%),rgba(201,201,201,0.60)] sm:py-1.5 sm:pl-4 sm:pr-1.5"
-              onSubmit={(event) => {
-                event.preventDefault();
-                openWaitlist("updates");
-              }}
-            >
+            <div className="flex w-full flex-col gap-2.5 overflow-hidden rounded-[28px] bg-[#E9E9E9] p-2.5 shadow-[inset_0_1px_12px_rgba(255,255,255,0.45)] sm:min-h-[56px] sm:flex-row sm:items-center sm:gap-3 sm:rounded-[98.605px] sm:bg-[linear-gradient(0deg,rgba(51,51,51,0.04)_0%,rgba(51,51,51,0.04)_100%),rgba(201,201,201,0.60)] sm:py-1.5 sm:pl-4 sm:pr-1.5">
               <label htmlFor="footer-email" className="sr-only">
                 Email address
               </label>
@@ -269,7 +248,7 @@ export default function Footer() {
                 className="min-h-9 min-w-0 flex-1 bg-transparent font-urbanist text-sm font-normal leading-none text-[#101010] outline-none placeholder:text-[#999292] sm:text-base"
               />
               <button
-                type="submit"
+                type="button"
                 className="group flex h-10 shrink-0 items-center justify-center gap-2 rounded-[113.1px] bg-[rgba(20,20,20,0.84)] py-1 pl-3.5 pr-1 font-urbanist text-sm font-normal text-white shadow-[0_2px_4px_0_rgba(0,0,0,0.15)] transition-transform duration-200 hover:scale-[1.02] active:scale-95 sm:h-11 sm:gap-2.5 sm:text-base"
               >
                 <span>Subscribe</span>
@@ -277,7 +256,7 @@ export default function Footer() {
                   <ArrowUpRightIcon className="h-5 w-5 overflow-hidden" />
                 </span>
               </button>
-            </form>
+            </div>
           </div>
         </div>
       </div>

@@ -4,7 +4,6 @@
 import { useState, type CSSProperties, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useComingSoon } from "./ComingSoonProvider";
 
 export type TrekCardProps = {
   title: string;
@@ -22,7 +21,6 @@ export type TrekCardProps = {
   operator: string;
   price: string;
   href?: string;
-  comingSoon?: boolean;
 };
 
 function ArrowIcon() {
@@ -206,10 +204,8 @@ export default function TrekCard({
   operator,
   price,
   href = "/trek-details",
-  comingSoon = true,
 }: TrekCardProps) {
   const [saved, setSaved] = useState(false);
-  const { openComingSoon } = useComingSoon();
   const [sparkKey, setSparkKey] = useState(0);
   const [shakeKey, setShakeKey] = useState(0);
   const difficultyColor =
@@ -235,20 +231,11 @@ export default function TrekCard({
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/95 via-black/45 to-black/10" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/35 to-transparent" />
 
-      {comingSoon ? (
-        <button
-          type="button"
-          onClick={() => openComingSoon(title)}
-          className="absolute inset-0 z-10"
-          aria-label={`View details for ${title}`}
-        />
-      ) : (
-        <Link
-          href={href}
-          className="absolute inset-0 z-10"
-          aria-label={`View details for ${title}`}
-        />
-      )}
+      <Link
+        href={href}
+        className="absolute inset-0 z-10"
+        aria-label={`View details for ${title}`}
+      />
 
       <button
         type="button"
@@ -370,30 +357,17 @@ export default function TrekCard({
                 /person
               </p>
             </div>
-            {comingSoon ? (
-              <button
-                type="button"
-                onClick={() => openComingSoon(title)}
-                className="pointer-events-auto inline-flex h-7 w-full shrink-0 items-center justify-between gap-1.5 rounded-full bg-white py-1 pl-2.5 pr-1 font-urbanist text-[11px] font-medium text-[#101010] transition-transform hover:scale-[1.02] active:scale-[0.98] sm:h-9 sm:w-fit sm:gap-2 sm:pl-3 sm:pr-1.5 sm:text-sm"
-              >
-                <span className="text-nowrap">Book Now</span>
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#101010] text-white sm:h-6 sm:w-6">
-                  <ArrowIcon />
-                </span>
-              </button>
-            ) : (
-              <Link
-                href={href}
-                tabIndex={-1}
-                aria-hidden="true"
-                className="pointer-events-auto inline-flex h-7 w-full shrink-0 items-center justify-between gap-1.5 rounded-full bg-white py-1 pl-2.5 pr-1 font-urbanist text-[11px] font-medium text-[#101010] transition-transform hover:scale-[1.02] active:scale-[0.98] sm:h-9 sm:w-fit sm:gap-2 sm:pl-3 sm:pr-1.5 sm:text-sm"
-              >
-                <span className="text-nowrap">Book Now</span>
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#101010] text-white sm:h-6 sm:w-6">
-                  <ArrowIcon />
-                </span>
-              </Link>
-            )}
+            <Link
+              href={href}
+              tabIndex={-1}
+              aria-hidden="true"
+              className="pointer-events-auto inline-flex h-7 w-full shrink-0 items-center justify-between gap-1.5 rounded-full bg-white py-1 pl-2.5 pr-1 font-urbanist text-[11px] font-medium text-[#101010] transition-transform hover:scale-[1.02] active:scale-[0.98] sm:h-9 sm:w-fit sm:gap-2 sm:pl-3 sm:pr-1.5 sm:text-sm"
+            >
+              <span className="text-nowrap">Book Now</span>
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#101010] text-white sm:h-6 sm:w-6">
+                <ArrowIcon />
+              </span>
+            </Link>
           </div>
         </div>
       </div>

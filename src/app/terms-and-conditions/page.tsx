@@ -397,7 +397,7 @@ export default function TermsAndConditionsPage() {
         />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(16,16,16,0.88),rgba(16,16,16,0.62)_48%,rgba(16,16,16,0.72)),linear-gradient(180deg,rgba(16,16,16,0.42),rgba(16,16,16,0.78))]" />
         <header className="relative z-20 mx-auto w-full max-w-7xl px-4 pt-[max(1rem,env(safe-area-inset-top))] sm:px-6 sm:pt-6 md:pt-8 lg:px-8 xl:pt-10">
-          <Navbar bookNowVariant="trekDetails" />
+          <Navbar />
         </header>
 
         <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col gap-7 px-4 pb-14 pt-20 sm:px-6 sm:pb-18 sm:pt-24 lg:px-8 lg:pb-20">
