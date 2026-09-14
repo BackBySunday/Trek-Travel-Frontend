@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-type SocialPlatform = "facebook" | "instagram" | "x";
+type SocialPlatform = "facebook" | "instagram" | "x" | "linkedin";
 
 const socialLinks: Array<{
   label: string;
@@ -18,6 +18,11 @@ const socialLinks: Array<{
     href: "https://www.instagram.com/thebackbysunday/",
   },
   { label: "X", platform: "x", href: "https://x.com/TheBackBySunday" },
+  {
+    label: "LinkedIn",
+    platform: "linkedin",
+    href: "https://www.linkedin.com/company/backbysunday/",
+  },
 ];
 
 const quickLinks = [
@@ -59,6 +64,17 @@ function SocialIcon({ platform }: { platform: SocialPlatform }) {
       <svg viewBox="0 0 24 24" className="h-[21px] w-[21px]" aria-hidden="true">
         <path
           d="M7.5 2.75h9A4.75 4.75 0 0 1 21.25 7.5v9a4.75 4.75 0 0 1-4.75 4.75h-9a4.75 4.75 0 0 1-4.75-4.75v-9A4.75 4.75 0 0 1 7.5 2.75Zm0 1.7A3.05 3.05 0 0 0 4.45 7.5v9a3.05 3.05 0 0 0 3.05 3.05h9a3.05 3.05 0 0 0 3.05-3.05v-9a3.05 3.05 0 0 0-3.05-3.05h-9Zm4.5 3.3a4.25 4.25 0 1 1 0 8.5 4.25 4.25 0 0 1 0-8.5Zm0 1.7a2.55 2.55 0 1 0 0 5.1 2.55 2.55 0 0 0 0-5.1Zm5.13-2.18a1.08 1.08 0 1 1 0 2.16 1.08 1.08 0 0 1 0-2.16Z"
+          fill="currentColor"
+        />
+      </svg>
+    );
+  }
+
+  if (platform === "linkedin") {
+    return (
+      <svg viewBox="0 0 24 24" className="h-[20px] w-[20px]" aria-hidden="true">
+        <path
+          d="M6.94 8.98H3.76V20h3.18V8.98ZM5.35 4A1.84 1.84 0 1 0 5.3 7.68 1.84 1.84 0 0 0 5.35 4Zm5.29 4.98H7.59V20h3.18v-5.45c0-1.44.27-2.83 2.05-2.83 1.76 0 1.78 1.65 1.78 2.93V20h3.18v-6.03c0-2.96-.64-5.23-4.1-5.23-1.66 0-2.78.91-3.24 1.78h-.04l.04-1.54Z"
           fill="currentColor"
         />
       </svg>

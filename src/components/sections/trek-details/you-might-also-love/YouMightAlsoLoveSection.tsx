@@ -111,7 +111,7 @@ function ViewAllTreksButton() {
 
 export default function YouMightAlsoLoveSection() {
   return (
-    <section className="w-full bg-white px-4 py-12 text-[#101010] sm:py-16 lg:px-5">
+    <section id="related-treks" className="w-full scroll-mt-20 bg-white px-4 py-12 text-[#101010] sm:py-16 lg:px-[30px]">
       <div className="mx-auto flex w-full max-w-[1500px] flex-col items-center gap-5 sm:gap-6">
         <div className="flex w-full flex-col items-center">
           <div className="mx-auto flex w-full max-w-[977px] flex-col items-center gap-8">

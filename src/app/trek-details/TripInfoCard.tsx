@@ -10,15 +10,16 @@ type TripFact = {
 
 const basePrice = 2110;
 const maxTravelers = 10;
+const spotsLeft = 6;
 const pickupOptions = ["Toll Road - Dehradun", "City Center", "Railway Station"];
 const genderOptions = ["Male", "Female", "Other"];
 const foodPreferenceOptions = ["Non-Veg", "Veg", "Jain"];
 
 const tripFacts: TripFact[] = [
-  { label: "Duration", value: "5 D / 4 N", icon: "duration" },
+  { label: "Trip duration", value: "5 D / 4 N", icon: "duration" },
   { label: "Departure", value: "October 14, 2026", icon: "departure" },
   { label: "Destination", value: "Vasota Fort", icon: "destination" },
-  { label: "Trek Duration", value: "6 Hours", icon: "trekDuration" },
+  { label: "Trail time", value: "6 Hours", icon: "trekDuration" },
   { label: "Trek Rating", value: "Light", icon: "rating" },
   { label: "Group size", value: "Max 10 Travelers", icon: "group" },
 ];
@@ -97,12 +98,54 @@ function ArrowIcon() {
   );
 }
 
+function ChevronUpIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 shrink-0" aria-hidden="true">
+      <path
+        d="M6 15L12 9L18 15"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 shrink-0" aria-hidden="true">
+      <path
+        d="M6 6L18 18M18 6L6 18"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+    </svg>
+  );
+}
+
 function TripFactIcon({ icon }: { icon: TripFact["icon"] }) {
   if (icon === "duration") return <ClockIcon />;
   if (icon === "departure") return <BusIcon />;
   if (icon === "destination") return <PinIcon />;
   if (icon === "group") return <GroupIcon />;
   return <TrekIcon />;
+}
+
+function SpotPerson({ isOpen }: { isOpen: boolean }) {
+  return (
+    <span
+      className={`relative block h-[15px] w-[11px] ${
+        isOpen ? "text-white" : "text-white/30"
+      }`}
+      aria-hidden="true"
+    >
+      <span className="absolute left-[3px] top-0 h-1 w-1 rounded-full bg-current" />
+      <span className="absolute bottom-0 left-px h-1.5 w-2 rounded-t-[6px] border-[1.35px] border-b-0 border-current" />
+    </span>
+  );
 }
 
 function Divider() {
@@ -279,7 +322,7 @@ function DropdownPill({
   );
 }
 
-export default function TripInfoCard() {
+function BookingForm({ className = "" }: { className?: string }) {
   const [pickupSpot, setPickupSpot] = useState("Toll Road - Dehradun");
   const [travelers, setTravelers] = useState(1);
   const [travelerName, setTravelerName] = useState("Rishabh");
@@ -296,26 +339,42 @@ export default function TripInfoCard() {
   }
 
   return (
-    <aside className="w-full max-w-[460px]">
-      <form
-        className="flex w-full flex-col items-center gap-4 rounded-[26px] bg-[#F6F7F7] pb-5 text-[#1A1A17] sm:gap-5 sm:rounded-[30px] sm:pb-6"
-        onSubmit={(event) => event.preventDefault()}
-      >
-        <div className="flex w-full flex-col items-start gap-2.5 rounded-[26px] bg-[#1A1A17] px-7 py-5 sm:rounded-[30px] sm:px-8 sm:py-6">
-          <p className="w-full font-urbanist text-sm font-semibold leading-[1.32em] tracking-[0.02em] text-[#FFF]">
-            Starting From
-          </p>
-          <p className="flex w-fit items-end font-urbanist leading-none">
-            <span className="text-[32px] font-semibold tracking-[0.01em] text-white sm:text-[34px]">
-              $3,150
-            </span>
-            <span className="pb-1 text-sm font-normal tracking-[0.02em] text-[#D9D9D9]">
-              /person
-            </span>
-          </p>
-        </div>
+    <form
+      className={`flex w-full flex-col items-center gap-4 rounded-[26px] bg-[#F6F7F7] pb-5 text-[#1A1A17] sm:gap-5 sm:rounded-[30px] sm:pb-6 ${className}`}
+      onSubmit={(event) => event.preventDefault()}
+    >
+        <div className="grid w-full grid-cols-[minmax(0,1fr)_10px_minmax(0,1fr)] items-stretch overflow-hidden rounded-[26px] text-white sm:rounded-[30px]">
+          <div className="min-w-0 rounded-l-[26px] rounded-r-[5px] bg-[#1A1A17] px-7 py-5 sm:rounded-l-[30px] sm:px-8 sm:py-6">
+            <p className="w-full font-urbanist text-sm font-semibold leading-[1.32em] tracking-[0.02em] text-white">
+              Starting From
+            </p>
+            <p className="flex w-fit items-end font-urbanist leading-none">
+              <span className="text-[32px] font-semibold tracking-[0.01em] text-white sm:text-[34px]">
+                $3,150
+              </span>
+              <span className="pb-1 text-sm font-normal tracking-[0.02em] text-[#D9D9D9]">
+                /person
+              </span>
+            </p>
+          </div>
 
-        <Divider />
+          <span className="-my-px block bg-[#F6F7F7]" aria-hidden="true" />
+
+          <div className="flex min-w-0 flex-col items-end justify-center gap-1.5 rounded-l-[5px] rounded-r-[26px] bg-[#1A1A17] py-5 pl-1 pr-5 sm:rounded-r-[30px] sm:py-6 sm:pr-6">
+            <p className="flex items-center gap-2 whitespace-nowrap font-urbanist text-sm font-bold leading-none text-white sm:text-[15px]">
+              <span className="h-1.5 w-1.5 rounded-full bg-white shadow-[0_0_0_4px_rgba(255,255,255,0.14)]" />
+              {spotsLeft} spots left
+            </p>
+            <div
+              className="grid grid-cols-10 items-center gap-[5px]"
+              aria-label={`${spotsLeft} of ${maxTravelers} spots remaining`}
+            >
+              {Array.from({ length: maxTravelers }, (_, index) => (
+                <SpotPerson key={index} isOpen={index < spotsLeft} />
+              ))}
+            </div>
+          </div>
+        </div>
 
         <div className="flex w-full flex-col items-center gap-4 px-5 sm:gap-5 sm:px-6">
           <div className="flex w-full flex-col items-start gap-4 sm:gap-5">
@@ -437,7 +496,100 @@ export default function TripInfoCard() {
             <ArrowIcon />
           </span>
         </button>
-      </form>
+    </form>
+  );
+}
+
+export default function TripInfoCard() {
+  return (
+    <aside className="hidden w-full max-w-[460px] lg:sticky lg:top-2 lg:block lg:self-start">
+      <BookingForm />
     </aside>
+  );
+}
+
+export function MobileTripBookingBar() {
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isSheetOpen) return;
+
+    const originalOverflow = document.body.style.overflow;
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsSheetOpen(false);
+      }
+    }
+
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isSheetOpen]);
+
+  return (
+    <>
+      <div className="fixed inset-x-0 bottom-0 z-[70] px-4 pb-[max(12px,env(safe-area-inset-bottom))] lg:hidden">
+        <div className="mx-auto flex w-full max-w-[520px] items-center gap-3 rounded-[24px] border border-white/20 bg-[#1A1A17] p-2 pl-4 text-white shadow-[0_14px_38px_rgba(16,16,16,0.24)]">
+          <div className="min-w-0 flex-1">
+            <p className="font-urbanist text-[11px] font-semibold leading-none tracking-[0.02em] text-white/70">
+              Starting From
+            </p>
+            <div className="mt-1 flex min-w-0 items-end gap-2">
+              <p className="font-urbanist text-[22px] font-semibold leading-none tracking-[0.01em] text-white">
+                $3,150
+              </p>
+              <p className="pb-0.5 font-urbanist text-xs tracking-[0.02em] text-white/70">
+                {spotsLeft} spots left
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-full bg-white px-4 font-urbanist text-sm font-semibold tracking-[0.02em] text-[#101010] transition-transform active:scale-[0.98]"
+            onClick={() => setIsSheetOpen(true)}
+            aria-expanded={isSheetOpen}
+            aria-controls="mobile-booking-sheet"
+          >
+            Book now
+            <ChevronUpIcon />
+          </button>
+        </div>
+      </div>
+
+      {isSheetOpen && (
+        <div className="fixed inset-0 z-[80] lg:hidden" role="dialog" aria-modal="true">
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/45"
+            onClick={() => setIsSheetOpen(false)}
+            aria-label="Close booking details"
+          />
+          <div
+            id="mobile-booking-sheet"
+            className="absolute inset-x-0 bottom-0 max-h-[60svh] overflow-y-auto rounded-t-[30px] bg-[#F6F7F7] px-3 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 shadow-[0_-18px_48px_rgba(16,16,16,0.22)]"
+          >
+            <div className="mx-auto mb-3 flex w-full max-w-[520px] items-center justify-between px-1">
+              <span className="h-1.5 w-12 rounded-full bg-[#D7D7D7]" aria-hidden="true" />
+              <button
+                type="button"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#101010] shadow-sm"
+                onClick={() => setIsSheetOpen(false)}
+                aria-label="Close booking details"
+              >
+                <CloseIcon />
+              </button>
+            </div>
+            <div className="mx-auto w-full max-w-[520px]">
+              <BookingForm className="rounded-t-[24px] shadow-none" />
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

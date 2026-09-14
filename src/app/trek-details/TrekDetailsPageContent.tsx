@@ -2,7 +2,9 @@ import Footer from "@/components/layout/Footer";
 import JsonLd from "@/components/layout/JsonLd";
 import Navbar from "@/components/layout/Navbar";
 import { TrekCardGlassFilters } from "@/components/layout/TrekCard";
+import { MobileTripBookingBar } from "@/app/trek-details/TripInfoCard";
 import TrekDetailsHeroImage from "@/components/sections/trek-details/hero/TrekDetailsHeroImage";
+import TrekDetailsSectionNav from "@/components/sections/trek-details/section-nav/TrekDetailsSectionNav";
 import TripInfoSection from "@/components/sections/trek-details/trip-info/TripInfoSection";
 import YouMightAlsoLoveSection from "@/components/sections/trek-details/you-might-also-love/YouMightAlsoLoveSection";
 
@@ -45,16 +47,18 @@ export default function TrekDetailsPageContent() {
   ];
 
   return (
-    <main className="relative isolate min-h-[100svh] overflow-x-hidden bg-white text-white">
+    <main className="relative isolate min-h-[100svh] overflow-x-clip bg-white text-white">
       <JsonLd data={jsonLd} />
       <TrekCardGlassFilters />
-      <header className="absolute inset-x-0 top-[max(1rem,env(safe-area-inset-top))] z-50 mx-auto w-full max-w-7xl px-4 sm:top-6 sm:px-6 md:top-8 lg:px-8 xl:top-10">
-        <Navbar variant="solid" />
+      <header className="relative z-50 mx-auto w-full max-w-7xl px-4 pt-[max(1rem,env(safe-area-inset-top))] sm:px-6 sm:pt-6 md:pt-8 lg:px-8 xl:pt-10">
+        <Navbar variant="solid" logoSrc="/Footer/footer-logo.png" />
       </header>
 
       <TrekDetailsHeroImage />
+      <TrekDetailsSectionNav />
       <TripInfoSection />
       <YouMightAlsoLoveSection />
+      <MobileTripBookingBar />
       <Footer />
     </main>
   );

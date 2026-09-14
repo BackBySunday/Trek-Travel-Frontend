@@ -14,9 +14,13 @@ const navLinks = [
 
 type NavbarProps = {
   variant?: "default" | "solid";
+  logoSrc?: string;
 };
 
-export default function Navbar({ variant = "default" }: NavbarProps) {
+export default function Navbar({
+  variant = "default",
+  logoSrc = "/Hero/hero-logo.png",
+}: NavbarProps) {
   const [activeTab, setActiveTab] = useState(navLinks[0].label);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isSolid = variant === "solid";
@@ -50,11 +54,12 @@ export default function Navbar({ variant = "default" }: NavbarProps) {
       <div className="relative grid w-full grid-cols-[1fr_auto_1fr] items-center gap-2 sm:gap-3">
         <div className="flex w-[clamp(132px,28vw,180px)] items-center justify-self-start lg:w-[clamp(190px,15vw,240px)]">
           <Image
-            src="/Hero/hero-logo.png"
+            src={logoSrc}
             alt="BackBySunday"
             width={217}
             height={72}
-            priority
+            loading="eager"
+            fetchPriority="high"
             className="h-auto w-full object-contain"
             sizes="(min-width: 1024px) 240px, 180px"
           />
@@ -104,7 +109,11 @@ export default function Navbar({ variant = "default" }: NavbarProps) {
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             type="button"
-            className="liquid-glass-nav flex min-h-10 min-w-10 cursor-pointer items-center justify-center rounded-full p-2 text-white"
+            className={
+              isSolid
+                ? "flex min-h-10 min-w-10 cursor-pointer items-center justify-center rounded-full bg-[#101010] p-2 text-white shadow-[0_2px_4px_0_rgba(0,0,0,0.15)]"
+                : "liquid-glass-nav flex min-h-10 min-w-10 cursor-pointer items-center justify-center rounded-full p-2 text-white"
+            }
             aria-label="Toggle Navigation Menu"
             aria-expanded={mobileMenuOpen}
             aria-controls="mobile-navigation"
