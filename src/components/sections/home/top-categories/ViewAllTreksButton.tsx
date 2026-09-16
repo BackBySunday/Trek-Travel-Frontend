@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 function ArrowUpRightIcon() {
   return (
     <svg
@@ -20,16 +22,20 @@ function ArrowUpRightIcon() {
   );
 }
 
-export default function ViewAllTreksButton() {
+export default function ViewAllTreksButton({
+  href = "/search",
+}: {
+  href?: string;
+}) {
   return (
-    <button
-      type="button"
+    <Link
+      href={href}
       className="inline-flex h-10 items-center gap-2.5 rounded-full bg-[rgba(20,20,20,0.84)] py-1 pl-3.5 pr-1 font-urbanist text-sm text-white shadow-[0_2px_4px_0_rgba(0,0,0,0.15)] transition-transform hover:scale-[1.02] active:scale-[0.98] sm:h-12 sm:gap-3 sm:pl-4 sm:text-lg"
     >
       <span className="text-nowrap">View all treks</span>
       <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white sm:h-10 sm:w-10">
         <ArrowUpRightIcon />
       </span>
-    </button>
+    </Link>
   );
 }
