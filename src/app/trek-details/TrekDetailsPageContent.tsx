@@ -2,7 +2,7 @@ import Footer from "@/components/layout/Footer";
 import JsonLd from "@/components/layout/JsonLd";
 import Navbar from "@/components/layout/Navbar";
 import { TrekCardGlassFilters } from "@/components/layout/TrekCard";
-import { MobileTripBookingBar } from "@/app/trek-details/TripInfoCard";
+import { MobileTripBookingBar } from "@/components/sections/trek-details/trip-info/TripInfoCard";
 import TrekDetailsHeroImage from "@/components/sections/trek-details/hero/TrekDetailsHeroImage";
 import TrekDetailsSectionNav from "@/components/sections/trek-details/section-nav/TrekDetailsSectionNav";
 import TripInfoSection from "@/components/sections/trek-details/trip-info/TripInfoSection";
@@ -55,8 +55,10 @@ export default function TrekDetailsPageContent() {
       </header>
 
       <TrekDetailsHeroImage />
-      <TrekDetailsSectionNav />
-      <TripInfoSection />
+      <div className="bg-white">
+        <TrekDetailsSectionNav />
+        <TripInfoSection />
+      </div>
       <YouMightAlsoLoveSection />
       <MobileTripBookingBar />
       <Footer />

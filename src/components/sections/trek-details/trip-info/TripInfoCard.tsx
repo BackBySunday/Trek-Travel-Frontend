@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 type TripFact = {
   label: string;
@@ -8,12 +9,24 @@ type TripFact = {
   icon: "duration" | "departure" | "destination" | "trekDuration" | "rating" | "group";
 };
 
+type TravelerDetails = {
+  name: string;
+  gender: string;
+  foodPreference: string;
+};
+
 const basePrice = 2110;
 const maxTravelers = 10;
 const spotsLeft = 6;
+const maxBookableTravelers = Math.min(maxTravelers, spotsLeft);
 const pickupOptions = ["Toll Road - Dehradun", "City Center", "Railway Station"];
 const genderOptions = ["Male", "Female", "Other"];
 const foodPreferenceOptions = ["Non-Veg", "Veg", "Jain"];
+const defaultTraveler: TravelerDetails = {
+  name: "",
+  gender: genderOptions[0],
+  foodPreference: foodPreferenceOptions[0],
+};
 
 const tripFacts: TripFact[] = [
   { label: "Trip duration", value: "5 D / 4 N", icon: "duration" },
@@ -174,27 +187,57 @@ function DropdownPill({
   options,
   onChange,
   className = "w-full",
+  buttonClassName = "flex min-h-9 w-full items-center justify-between gap-2 rounded-[10px] border border-[#CBCBCB] bg-[#F6F7F7] py-1.5 pl-3 pr-2 font-urbanist text-sm font-medium leading-[1.32] tracking-[0.02em] text-[#1A1A17] shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] outline-none transition-colors hover:border-[#AFAFAF] focus-visible:border-[#393939] focus-visible:ring-2 focus-visible:ring-[#1A1A17]/10",
 }: {
   label: string;
   value: string;
   options: string[];
   onChange: (value: string) => void;
   className?: string;
+  buttonClassName?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(() =>
     Math.max(0, options.indexOf(value)),
   );
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const listboxRef = useRef<HTMLDivElement>(null);
   const optionRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const [listboxStyle, setListboxStyle] = useState<React.CSSProperties>({});
   const listboxId = `${label.toLowerCase().replace(/\s+/g, "-")}-options`;
   const selectedIndex = Math.max(0, options.indexOf(value));
+
+  const updateListboxPosition = useCallback(() => {
+    const button = buttonRef.current;
+
+    if (!button) return;
+
+    const rect = button.getBoundingClientRect();
+    const menuHeight = Math.min(44 * options.length + 8, 220);
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const top =
+      spaceBelow >= menuHeight + 12
+        ? rect.bottom + 8
+        : Math.max(12, rect.top - menuHeight - 8);
+
+    setListboxStyle({
+      left: rect.left,
+      top,
+      width: rect.width,
+    });
+  }, [options.length]);
 
   useEffect(() => {
     if (!isOpen) return;
 
     function handlePointerDown(event: PointerEvent) {
-      if (!dropdownRef.current?.contains(event.target as Node)) {
+      const target = event.target as Node;
+
+      if (
+        !dropdownRef.current?.contains(target) &&
+        !listboxRef.current?.contains(target)
+      ) {
         setIsOpen(false);
       }
     }
@@ -205,14 +248,19 @@ function DropdownPill({
       }
     }
 
+    updateListboxPosition();
     document.addEventListener("pointerdown", handlePointerDown);
     document.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("resize", updateListboxPosition);
+    window.addEventListener("scroll", updateListboxPosition, true);
 
     return () => {
       document.removeEventListener("pointerdown", handlePointerDown);
       document.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("resize", updateListboxPosition);
+      window.removeEventListener("scroll", updateListboxPosition, true);
     };
-  }, [isOpen]);
+  }, [isOpen, updateListboxPosition]);
 
   useEffect(() => {
     if (isOpen) {
@@ -266,6 +314,7 @@ function DropdownPill({
   return (
     <div ref={dropdownRef} className={`relative ${className}`}>
       <button
+        ref={buttonRef}
         type="button"
         aria-label={label}
         aria-controls={listboxId}
@@ -273,17 +322,19 @@ function DropdownPill({
         aria-haspopup="listbox"
         onClick={toggleDropdown}
         onKeyDown={handleButtonKeyDown}
-        className="flex min-h-10 w-full items-center justify-between gap-2 rounded-[10px] border border-[#CBCBCB] bg-[#F6F7F7] py-2 pl-3 pr-2 font-urbanist text-sm font-medium leading-[1.32] tracking-[0.02em] text-[#1A1A17] shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] outline-none transition-colors hover:border-[#AFAFAF] focus-visible:border-[#393939] focus-visible:ring-2 focus-visible:ring-[#1A1A17]/10"
+        className={buttonClassName}
       >
         <span className="truncate">{value}</span>
         <ChevronDownIcon />
       </button>
 
-      {isOpen && (
+      {isOpen && typeof document !== "undefined" && createPortal(
         <div
+          ref={listboxRef}
           id={listboxId}
           role="listbox"
-          className="absolute left-0 top-[calc(100%+8px)] z-30 w-full min-w-[150px] overflow-hidden rounded-[14px] border border-[#D7D7D7] bg-white p-1 shadow-[0_14px_34px_rgba(16,16,16,0.14)]"
+          style={listboxStyle}
+          className="fixed z-[120] min-w-[150px] overflow-hidden rounded-[14px] border border-[#D7D7D7] bg-white p-1 shadow-[0_14px_34px_rgba(16,16,16,0.14)]"
         >
           {options.map((option, index) => {
             const isSelected = option === value;
@@ -316,7 +367,8 @@ function DropdownPill({
               </button>
             );
           })}
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );
@@ -324,27 +376,42 @@ function DropdownPill({
 
 function BookingForm({ className = "" }: { className?: string }) {
   const [pickupSpot, setPickupSpot] = useState("Toll Road - Dehradun");
-  const [travelers, setTravelers] = useState(1);
-  const [travelerName, setTravelerName] = useState("Rishabh");
-  const [gender, setGender] = useState("Male");
-  const [foodPreference, setFoodPreference] = useState("Non-Veg");
-  const total = basePrice * travelers;
+  const [travelers, setTravelers] = useState<TravelerDetails[]>([
+    { ...defaultTraveler, name: "Rishabh" },
+  ]);
+  const total = basePrice * travelers.length;
 
   function decreaseTravelers() {
-    setTravelers((current) => Math.max(1, current - 1));
+    setTravelers((current) => current.slice(0, Math.max(1, current.length - 1)));
   }
 
   function increaseTravelers() {
-    setTravelers((current) => Math.min(maxTravelers, current + 1));
+    setTravelers((current) =>
+      current.length >= maxBookableTravelers
+        ? current
+        : [...current, { ...defaultTraveler }],
+    );
+  }
+
+  function updateTraveler(
+    index: number,
+    field: keyof TravelerDetails,
+    value: string,
+  ) {
+    setTravelers((current) =>
+      current.map((traveler, travelerIndex) =>
+        travelerIndex === index ? { ...traveler, [field]: value } : traveler,
+      ),
+    );
   }
 
   return (
     <form
-      className={`flex w-full flex-col items-center gap-4 rounded-[26px] bg-[#F6F7F7] pb-5 text-[#1A1A17] sm:gap-5 sm:rounded-[30px] sm:pb-6 ${className}`}
+      className={`flex w-full min-h-0 flex-col items-center gap-3 overflow-hidden rounded-[26px] bg-[#F6F7F7] pb-4 text-[#1A1A17] sm:gap-4 sm:rounded-[30px] sm:pb-5 ${className}`}
       onSubmit={(event) => event.preventDefault()}
     >
         <div className="grid w-full grid-cols-[minmax(0,1fr)_10px_minmax(0,1fr)] items-stretch overflow-hidden rounded-[26px] text-white sm:rounded-[30px]">
-          <div className="min-w-0 rounded-l-[26px] rounded-r-[5px] bg-[#1A1A17] px-7 py-5 sm:rounded-l-[30px] sm:px-8 sm:py-6">
+          <div className="min-w-0 rounded-l-[26px] rounded-r-[5px] bg-[#1A1A17] px-6 py-4 sm:rounded-l-[30px] sm:px-7 sm:py-5">
             <p className="w-full font-urbanist text-sm font-semibold leading-[1.32em] tracking-[0.02em] text-white">
               Starting From
             </p>
@@ -360,7 +427,7 @@ function BookingForm({ className = "" }: { className?: string }) {
 
           <span className="-my-px block bg-[#F6F7F7]" aria-hidden="true" />
 
-          <div className="flex min-w-0 flex-col items-end justify-center gap-1.5 rounded-l-[5px] rounded-r-[26px] bg-[#1A1A17] py-5 pl-1 pr-5 sm:rounded-r-[30px] sm:py-6 sm:pr-6">
+          <div className="flex min-w-0 flex-col items-end justify-center gap-1.5 rounded-l-[5px] rounded-r-[26px] bg-[#1A1A17] py-4 pl-1 pr-5 sm:rounded-r-[30px] sm:py-5 sm:pr-6">
             <p className="flex items-center gap-2 whitespace-nowrap font-urbanist text-sm font-bold leading-none text-white sm:text-[15px]">
               <span className="h-1.5 w-1.5 rounded-full bg-white shadow-[0_0_0_4px_rgba(255,255,255,0.14)]" />
               {spotsLeft} spots left
@@ -376,9 +443,9 @@ function BookingForm({ className = "" }: { className?: string }) {
           </div>
         </div>
 
-        <div className="flex w-full flex-col items-center gap-4 px-5 sm:gap-5 sm:px-6">
-          <div className="flex w-full flex-col items-start gap-4 sm:gap-5">
-            <div className="flex w-full flex-col items-start gap-3.5">
+        <div className="flex min-h-0 w-full flex-1 flex-col items-center gap-3 px-5 sm:gap-4 sm:px-6">
+          <div className="flex w-full flex-col items-start gap-3 sm:gap-4">
+            <div className="flex w-full flex-col items-start gap-2.5">
               {tripFacts.map((fact) => (
                 <TripFactRow key={fact.label} fact={fact} />
               ))}
@@ -386,13 +453,13 @@ function BookingForm({ className = "" }: { className?: string }) {
 
             <Divider />
 
-            <p className="w-full text-center font-urbanist text-xl font-semibold text-[#393939] sm:text-[22px]">
+            <p className="w-full text-center font-urbanist text-lg font-semibold text-[#393939] sm:text-xl">
               Reserve Your Spot
             </p>
           </div>
 
-          <div className="flex w-full flex-col items-start gap-4 sm:gap-5">
-            <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex min-h-0 w-full flex-1 flex-col items-start gap-3 sm:gap-4">
+            <div className="flex w-full flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
               <p className="font-urbanist text-base font-medium leading-[1.32] tracking-[0.02em] text-[#1A1A17]">
                 Pickup Spot :
               </p>
@@ -405,7 +472,7 @@ function BookingForm({ className = "" }: { className?: string }) {
               />
             </div>
 
-            <div className="flex w-full flex-col items-center gap-4">
+            <div className="flex min-h-0 w-full flex-1 flex-col items-center gap-3">
               <div className="flex w-full items-center justify-between gap-4">
                 <p className="font-urbanist text-base font-medium leading-[1.32] tracking-[0.02em] text-black">
                   No. of Travelers
@@ -414,19 +481,19 @@ function BookingForm({ className = "" }: { className?: string }) {
                   <button
                     type="button"
                     aria-label="Decrease travelers"
-                    disabled={travelers === 1}
+                    disabled={travelers.length === 1}
                     onClick={decreaseTravelers}
                     className="transition-opacity disabled:cursor-not-allowed disabled:opacity-45"
                   >
                     <MinusIcon />
                   </button>
                   <p className="font-urbanist text-xl font-medium leading-[1.32] tracking-[0.02em] text-black">
-                    {travelers}
+                    {travelers.length}
                   </p>
                   <button
                     type="button"
                     aria-label="Increase travelers"
-                    disabled={travelers === maxTravelers}
+                    disabled={travelers.length === maxBookableTravelers}
                     onClick={increaseTravelers}
                     className="transition-opacity disabled:cursor-not-allowed disabled:opacity-45"
                   >
@@ -435,41 +502,64 @@ function BookingForm({ className = "" }: { className?: string }) {
                 </div>
               </div>
 
-              <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-[1.15fr_0.85fr_1fr]">
-                <div className="flex flex-col items-start gap-2">
-                  <p className="w-full font-urbanist text-base font-medium leading-[1.32] tracking-[0.02em] text-[#1A1A17]">
-                    Name
-                  </p>
-                  <input
-                    aria-label="Traveler name"
-                    value={travelerName}
-                    onChange={(event) => setTravelerName(event.target.value)}
-                    className="min-h-10 w-full truncate rounded-[10px] border border-[#CBCBCB] bg-[#F6F7F7] px-3 py-2 font-urbanist text-sm font-medium leading-[1.32] tracking-[0.02em] text-[#1A1A17]"
-                  />
-                </div>
+              <div className="min-h-0 w-full flex-1 overflow-y-auto pr-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <div className="flex w-full flex-col gap-2.5">
+                  {travelers.map((traveler, index) => (
+                    <div
+                      key={index}
+                      className="overflow-hidden rounded-[22px] border border-[#DADAD4] bg-[#FBFBF8]"
+                    >
+                      <div className="rounded-t-[22px] border-b border-[#E6E6DF] bg-white px-3.5 py-2.5">
+                        <p className="font-urbanist text-sm font-semibold leading-none tracking-[0.02em] text-[#1A1A17]">
+                          Traveler {index + 1}
+                        </p>
+                      </div>
+                      <div className="grid w-full grid-cols-1 gap-px rounded-b-[22px] bg-[#E2E2DC] p-px sm:grid-cols-[1.15fr_0.85fr_1fr]">
+                        <label className="flex min-w-0 flex-col gap-1.5 bg-[#F6F7F7] px-3 py-2.5 sm:rounded-bl-[20px]">
+                          <span className="font-urbanist text-[11px] font-semibold leading-none tracking-[0.04em] text-[#73736C]">
+                            Name
+                          </span>
+                          <input
+                            aria-label={`Traveler ${index + 1} name`}
+                            value={traveler.name}
+                            onChange={(event) =>
+                              updateTraveler(index, "name", event.target.value)
+                            }
+                            placeholder={`Traveler ${index + 1}`}
+                            className="h-8 w-full min-w-0 truncate border-0 bg-transparent p-0 font-urbanist text-base font-medium leading-none tracking-[0.01em] text-[#1A1A17] outline-none placeholder:text-[#9A9A94] focus:ring-0"
+                          />
+                        </label>
 
-                <div className="flex flex-col items-start gap-2">
-                  <p className="w-full font-urbanist text-base font-medium leading-[1.32] tracking-[0.02em] text-[#1A1A17]">
-                    Gender
-                  </p>
-                  <DropdownPill
-                    label="Gender"
-                    value={gender}
-                    options={genderOptions}
-                    onChange={setGender}
-                  />
-                </div>
+                        <div className="flex min-w-0 flex-col gap-1.5 bg-[#F6F7F7] px-3 py-2.5 sm:rounded-b-[20px] sm:rounded-bl-none sm:rounded-br-[20px]">
+                          <p className="font-urbanist text-[11px] font-semibold leading-none tracking-[0.04em] text-[#73736C]">
+                            Gender
+                          </p>
+                          <DropdownPill
+                            label={`Traveler ${index + 1} gender`}
+                            value={traveler.gender}
+                            options={genderOptions}
+                            onChange={(value) => updateTraveler(index, "gender", value)}
+                            buttonClassName="flex h-8 w-full items-center justify-between gap-1 border-0 bg-transparent p-0 font-urbanist text-base font-medium leading-none tracking-[0.01em] text-[#1A1A17] outline-none focus-visible:ring-2 focus-visible:ring-[#1A1A17]/10"
+                          />
+                        </div>
 
-                <div className="flex flex-col items-start gap-2">
-                  <p className="w-full font-urbanist text-base font-medium leading-[1.32] tracking-[0.02em] text-[#1A1A17]">
-                    Food Pref.
-                  </p>
-                  <DropdownPill
-                    label="Food preference"
-                    value={foodPreference}
-                    options={foodPreferenceOptions}
-                    onChange={setFoodPreference}
-                  />
+                        <div className="flex min-w-0 flex-col gap-1.5 rounded-b-[20px] bg-[#F6F7F7] px-3 py-2.5 sm:rounded-bl-[20px] sm:rounded-br-[20px]">
+                          <p className="font-urbanist text-[11px] font-semibold leading-none tracking-[0.04em] text-[#73736C]">
+                            Food Pref.
+                          </p>
+                          <DropdownPill
+                            label={`Traveler ${index + 1} food preference`}
+                            value={traveler.foodPreference}
+                            options={foodPreferenceOptions}
+                            onChange={(value) =>
+                              updateTraveler(index, "foodPreference", value)
+                            }
+                            buttonClassName="flex h-8 w-full items-center justify-between gap-1 border-0 bg-transparent p-0 font-urbanist text-base font-medium leading-none tracking-[0.01em] text-[#1A1A17] outline-none focus-visible:ring-2 focus-visible:ring-[#1A1A17]/10"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -502,8 +592,8 @@ function BookingForm({ className = "" }: { className?: string }) {
 
 export default function TripInfoCard() {
   return (
-    <aside className="hidden w-full max-w-[460px] lg:sticky lg:top-2 lg:block lg:self-start">
-      <BookingForm />
+    <aside className="hidden w-full max-w-[460px] lg:sticky lg:top-4 lg:block lg:h-[calc(100svh-2rem)] lg:self-start">
+      <BookingForm className="lg:h-full" />
     </aside>
   );
 }

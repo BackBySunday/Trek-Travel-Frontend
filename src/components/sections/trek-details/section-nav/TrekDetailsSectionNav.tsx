@@ -14,7 +14,6 @@ const sectionLinks = [
   { id: "photos", label: "Photos" },
   { id: "reviews", label: "Reviews" },
   { id: "faq", label: "FAQ" },
-  { id: "related-treks", label: "Related treks" },
 ];
 
 export default function TrekDetailsSectionNav() {
@@ -53,7 +52,7 @@ export default function TrekDetailsSectionNav() {
       <div className="mx-auto grid w-full max-w-[1500px] lg:grid-cols-[minmax(0,900px)_460px] lg:justify-between lg:gap-12 xl:gap-16">
         <nav
           aria-label="Trek details sections"
-          className="flex h-12 w-full items-end gap-1 overflow-x-auto border-b border-[#E5E5E5] bg-white/95 backdrop-blur-xl [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="flex h-12 w-fit max-w-full items-end gap-1 overflow-x-auto rounded-br-lg border-b border-[#E5E5E5] bg-white/95 pr-3 backdrop-blur-xl [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {sectionLinks.map((link) => {
             const isActive = activeSection === link.id;
