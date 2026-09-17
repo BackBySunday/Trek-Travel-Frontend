@@ -1,4 +1,4 @@
-import TripInfoCard from "@/app/trek-details/TripInfoCard";
+import TripInfoCard from "./TripInfoCard";
 import TripInfoOverview from "./TripInfoOverview";
 
 export default function TripInfoSection() {
