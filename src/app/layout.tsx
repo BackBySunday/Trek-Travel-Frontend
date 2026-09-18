@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Sans, Inter, Urbanist } from "next/font/google";
 import Script from "next/script";
+import { AuthProvider } from "@/lib/AuthContext";
 import "./globals.css";
 
 const urbanist = Urbanist({
@@ -110,7 +111,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${urbanist.variable} ${ibmPlexSans.variable} ${inter.variable}`}
     >
       <body>
-        {children}
+        <AuthProvider>{children}</AuthProvider>
         {googleAnalyticsId ? (
           <>
             <Script
