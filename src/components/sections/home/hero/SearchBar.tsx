@@ -1,7 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
+import {
+  getSearchSuggestionActions,
+  getSearchSuggestionGroups,
+  serializeSearchFilters,
+  type DestinationSuggestion,
+  type TrekSearchItem,
+} from "@/lib/search";
 
 type SearchItem = {
   label: string;
@@ -589,6 +597,219 @@ function Divider() {
   );
 }
 
+function SearchMiniIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className="h-3.5 w-3.5" aria-hidden="true">
+      <path
+        d="m20 20-4.2-4.2M10.8 18a7.2 7.2 0 1 1 0-14.4 7.2 7.2 0 0 1 0 14.4Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function SuggestionArrowIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden="true">
+      <path
+        d="M5 12h14m-5-5 5 5-5 5"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function SuggestionGroup({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="px-1 py-1">
+      <p className="px-3 pb-1 font-urbanist text-[11px] font-semibold uppercase tracking-[0.12em] text-white/65">
+        {label}
+      </p>
+      {children}
+    </div>
+  );
+}
+
+function SearchSuggestionPanel({
+  query,
+  popularSuggestions,
+  trekSuggestions,
+  destinationSuggestions,
+  regionSuggestions,
+  activeIndex,
+  onActiveIndexChange,
+  onPickQuery,
+  onPickTrek,
+  onPickRegion,
+}: {
+  query: string;
+  popularSuggestions: string[];
+  trekSuggestions: TrekSearchItem[];
+  destinationSuggestions: DestinationSuggestion[];
+  regionSuggestions: string[];
+  activeIndex: number;
+  onActiveIndexChange: (index: number) => void;
+  onPickQuery: (value: string) => void;
+  onPickTrek: (trek: TrekSearchItem) => void;
+  onPickRegion: (region: string) => void;
+}) {
+  const hasQuery = Boolean(query.trim());
+  const hasMatches =
+    trekSuggestions.length > 0 ||
+    destinationSuggestions.length > 0 ||
+    regionSuggestions.length > 0;
+
+  return (
+    <div className="hero-search-suggestions absolute left-0 right-0 top-[calc(100%+0.45rem)] z-[60] overflow-hidden rounded-[24px] border border-white/25 bg-[linear-gradient(0deg,rgba(35,35,35,0.58)_0%,rgba(35,35,35,0.58)_100%),rgba(243,243,243,0.52)] bg-blend-plus-lighter p-2 text-left shadow-[0_18px_60px_rgba(0,0,0,0.30)] backdrop-blur-xl">
+      {!hasQuery ? (
+        <SuggestionGroup label="Popular searches">
+          <div className="flex flex-wrap gap-2 px-2 pb-1">
+            {popularSuggestions.map((term, currentIndex) => {
+              const active = activeIndex === currentIndex;
+
+              return (
+                <button
+                  key={term}
+                  type="button"
+                  onMouseEnter={() => onActiveIndexChange(currentIndex)}
+                  onClick={() => onPickQuery(term)}
+                  className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 font-urbanist text-xs font-medium text-white transition-colors sm:text-sm ${
+                    active
+                      ? "border-white/45 bg-white/20"
+                      : "border-white/20 bg-white/10 hover:bg-white/18"
+                  }`}
+                >
+                  <SearchMiniIcon />
+                  {term}
+                </button>
+              );
+            })}
+          </div>
+        </SuggestionGroup>
+      ) : hasMatches ? (
+        <>
+          {trekSuggestions.length > 0 && (
+            <SuggestionGroup label="Treks">
+              {trekSuggestions.map((trek, currentIndex) => {
+                const active = activeIndex === currentIndex;
+
+                return (
+                  <button
+                    key={trek.id}
+                    type="button"
+                    onMouseEnter={() => onActiveIndexChange(currentIndex)}
+                    onClick={() => onPickTrek(trek)}
+                    className={`flex w-full items-center gap-3 rounded-[16px] px-3 py-2.5 text-left transition-colors ${
+                      active ? "bg-white/18" : "hover:bg-white/12"
+                    }`}
+                  >
+                    <span className="relative h-12 w-16 shrink-0 overflow-hidden rounded-[12px] bg-white/10">
+                      <Image
+                        src={trek.image}
+                        alt=""
+                        fill
+                        sizes="64px"
+                        className="object-cover"
+                      />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate font-urbanist text-sm font-semibold text-white">
+                        {trek.title}
+                      </span>
+                      <span className="mt-0.5 block truncate font-urbanist text-xs font-medium text-white/70">
+                        {trek.destination} - {trek.difficulty}
+                      </span>
+                    </span>
+                    <SuggestionArrowIcon />
+                  </button>
+                );
+              })}
+            </SuggestionGroup>
+          )}
+
+          {destinationSuggestions.length > 0 && (
+            <SuggestionGroup label="Destinations">
+              {destinationSuggestions.map((destination, index) => {
+                const currentIndex = trekSuggestions.length + index;
+                const active = activeIndex === currentIndex;
+
+                return (
+                  <button
+                    key={destination.name}
+                    type="button"
+                    onMouseEnter={() => onActiveIndexChange(currentIndex)}
+                    onClick={() => onPickQuery(destination.name)}
+                    className={`flex w-full items-center justify-between rounded-[16px] px-3 py-2.5 font-urbanist text-sm font-medium text-white transition-colors ${
+                      active ? "bg-white/18" : "hover:bg-white/12"
+                    }`}
+                  >
+                    <span className="min-w-0">
+                      <span className="block truncate">{destination.name}</span>
+                      <span className="mt-0.5 block text-xs font-medium text-white/70">
+                        {destination.count} trek{destination.count === 1 ? "" : "s"} available
+                      </span>
+                    </span>
+                    <SuggestionArrowIcon />
+                  </button>
+                );
+              })}
+            </SuggestionGroup>
+          )}
+
+          {regionSuggestions.length > 0 && (
+            <SuggestionGroup label="Regions">
+              {regionSuggestions.map((region, index) => {
+                const currentIndex =
+                  trekSuggestions.length + destinationSuggestions.length + index;
+                const active = activeIndex === currentIndex;
+
+                return (
+                  <button
+                    key={region}
+                    type="button"
+                    onMouseEnter={() => onActiveIndexChange(currentIndex)}
+                    onClick={() => onPickRegion(region)}
+                    className={`flex w-full items-center justify-between rounded-[16px] px-3 py-2.5 font-urbanist text-sm font-medium text-white transition-colors ${
+                      active ? "bg-white/18" : "hover:bg-white/12"
+                    }`}
+                  >
+                    <span>{region}</span>
+                    <SuggestionArrowIcon />
+                  </button>
+                );
+              })}
+            </SuggestionGroup>
+          )}
+        </>
+      ) : (
+        <button
+          type="button"
+          onMouseEnter={() => onActiveIndexChange(0)}
+          onClick={() => onPickQuery(query)}
+          className={`flex w-full items-center justify-between rounded-[16px] px-3 py-3 font-urbanist text-sm font-semibold text-white transition-colors ${
+            activeIndex === 0 ? "bg-white/18" : "hover:bg-white/12"
+          }`}
+        >
+          <span className="min-w-0 truncate">Search all treks for &quot;{query}&quot;</span>
+          <SuggestionArrowIcon />
+        </button>
+      )}
+    </div>
+  );
+}
+
 export default function SearchBar() {
   const router = useRouter();
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -598,8 +819,64 @@ export default function SearchBar() {
   const [today, setToday] = useState(getToday);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchError, setSearchError] = useState("");
+  const [searchFocused, setSearchFocused] = useState(false);
+  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
   const [selections, setSelections] =
     useState<Record<SearchItemKey, string>>(() => getDefaultSelections(getToday()));
+  const trimmedSearchQuery = searchQuery.trim();
+  const suggestionGroups = useMemo(
+    () => getSearchSuggestionGroups(trimmedSearchQuery),
+    [trimmedSearchQuery],
+  );
+  const suggestionActions = useMemo(
+    () => getSearchSuggestionActions(trimmedSearchQuery, suggestionGroups),
+    [suggestionGroups, trimmedSearchQuery],
+  );
+  const showSuggestions = searchFocused && !openItem;
+
+  const goToSearch = ({
+    q,
+    region = "",
+  }: {
+    q: string;
+    region?: string;
+  }) => {
+    const nextQuery = q.trim();
+
+    setSearchQuery(nextQuery);
+    setSearchError("");
+    setSearchFocused(false);
+    setOpenItem(null);
+    setDateMode("quick");
+    setMonthOffset(0);
+
+    router.push(
+      `/search${serializeSearchFilters({
+        q: nextQuery,
+        region,
+        difficulty: "",
+        sort: "relevance",
+      })}`,
+    );
+  };
+
+  const runSuggestionAction = (index: number) => {
+    const action = suggestionActions[index];
+
+    if (!action) return;
+
+    if (action.type === "trek") {
+      goToSearch({ q: action.value.title, region: action.value.region });
+      return;
+    }
+
+    if (action.type === "region") {
+      goToSearch({ q: "", region: action.value });
+      return;
+    }
+
+    goToSearch({ q: action.value });
+  };
 
   const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -615,7 +892,8 @@ export default function SearchBar() {
     setOpenItem(null);
     setDateMode("quick");
     setMonthOffset(0);
-    router.push("/trek-details");
+    setSearchFocused(false);
+    goToSearch({ q: destination });
   };
 
   useEffect(() => {
@@ -651,7 +929,7 @@ export default function SearchBar() {
   }, []);
 
   useEffect(() => {
-    if (!openItem) {
+    if (!openItem && !searchFocused) {
       return;
     }
 
@@ -661,6 +939,8 @@ export default function SearchBar() {
         !wrapperRef.current.contains(event.target as Node)
       ) {
         setOpenItem(null);
+        setSearchFocused(false);
+        setActiveSuggestionIndex(-1);
         setDateMode("quick");
         setMonthOffset(0);
       }
@@ -669,6 +949,8 @@ export default function SearchBar() {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setOpenItem(null);
+        setSearchFocused(false);
+        setActiveSuggestionIndex(-1);
         setDateMode("quick");
         setMonthOffset(0);
       }
@@ -681,42 +963,88 @@ export default function SearchBar() {
       document.removeEventListener("pointerdown", handlePointerDown);
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [openItem]);
+  }, [openItem, searchFocused]);
 
   return (
     <div
       ref={wrapperRef}
       className="relative mt-4 flex w-full max-w-[min(89vw,880px)] flex-col items-stretch gap-2 sm:mt-5 lg:mt-6"
     >
-      <form
-        className="flex w-full items-center gap-2 overflow-hidden rounded-[24px] bg-[linear-gradient(0deg,rgba(51,51,51,0.30)_0%,rgba(51,51,51,0.30)_100%),rgba(243,243,243,0.60)] bg-blend-plus-lighter p-2 shadow-[0_18px_60px_rgba(0,0,0,0.18)] backdrop-blur-xl sm:rounded-[28px] xl:gap-3 xl:rounded-[98.605px] 2xl:gap-4 2xl:p-2.5"
-        onSubmit={handleSearchSubmit}
-      >
-        <input
-          type="search"
-          placeholder="Search treks, destinations, or regions"
-          value={searchQuery}
-          onChange={(event) => {
-            setSearchQuery(event.target.value);
-            if (searchError) setSearchError("");
-          }}
-          aria-invalid={Boolean(searchError)}
-          aria-describedby={searchError ? "hero-search-error" : undefined}
-          className="min-w-0 flex-1 bg-transparent px-3 font-urbanist text-sm font-medium leading-tight text-[#FFF] outline-none placeholder:text-[#E4E4E4] sm:text-[15px] lg:text-[15px] 2xl:px-4 2xl:text-lg"
-        />
-
-        <Divider />
-
-        <button
-          type="submit"
-          className="flex h-10 shrink-0 items-center justify-center gap-2 rounded-[113.1px] bg-[rgba(20,20,20,0.84)] py-1 pl-4 pr-1 font-urbanist text-[15px] text-[#FFF] shadow-[0_2px_4px_0_rgba(0,0,0,0.15)] transition-transform hover:scale-[1.02] active:scale-[0.98] sm:h-10 lg:text-[15px] xl:w-fit 2xl:h-12 2xl:gap-2.5 2xl:text-lg"
+      <div className="relative">
+        <form
+          className="flex w-full items-center gap-2 overflow-hidden rounded-[24px] bg-[linear-gradient(0deg,rgba(51,51,51,0.30)_0%,rgba(51,51,51,0.30)_100%),rgba(243,243,243,0.60)] bg-blend-plus-lighter p-2 shadow-[0_18px_60px_rgba(0,0,0,0.18)] backdrop-blur-xl sm:rounded-[28px] xl:gap-3 xl:rounded-[98.605px] 2xl:gap-4 2xl:p-2.5"
+          onSubmit={handleSearchSubmit}
         >
-          <span className="w-fit text-nowrap">Find my trek</span>
-          <span className="flex items-center rounded-[76.6px] bg-[#FFF] p-1.5 2xl:gap-2 2xl:p-2">
-            <ArrowIcon />
-          </span>
-        </button>
-      </form>
+          <input
+            type="search"
+            placeholder="Search treks, destinations, or regions"
+            value={searchQuery}
+            onFocus={() => {
+              setSearchFocused(true);
+              setActiveSuggestionIndex(-1);
+              setOpenItem(null);
+            }}
+            onChange={(event) => {
+              setSearchQuery(event.target.value);
+              setSearchFocused(true);
+              setActiveSuggestionIndex(-1);
+              if (searchError) setSearchError("");
+            }}
+            onKeyDown={(event) => {
+              if (!showSuggestions) return;
+
+              if (event.key === "ArrowDown") {
+                event.preventDefault();
+                setActiveSuggestionIndex((current) =>
+                  current < suggestionActions.length - 1 ? current + 1 : 0,
+                );
+              }
+
+              if (event.key === "ArrowUp") {
+                event.preventDefault();
+                setActiveSuggestionIndex((current) =>
+                  current > 0 ? current - 1 : suggestionActions.length - 1,
+                );
+              }
+
+              if (event.key === "Enter" && activeSuggestionIndex >= 0) {
+                event.preventDefault();
+                runSuggestionAction(activeSuggestionIndex);
+              }
+            }}
+            aria-invalid={Boolean(searchError)}
+            aria-describedby={searchError ? "hero-search-error" : undefined}
+            className="min-w-0 flex-1 bg-transparent px-3 font-urbanist text-sm font-medium leading-tight text-[#FFF] outline-none placeholder:text-[#E4E4E4] sm:text-[15px] lg:text-[15px] 2xl:px-4 2xl:text-lg"
+          />
+
+          <Divider />
+
+          <button
+            type="submit"
+            className="flex h-10 shrink-0 items-center justify-center gap-2 rounded-[113.1px] bg-[rgba(20,20,20,0.84)] py-1 pl-4 pr-1 font-urbanist text-[15px] text-[#FFF] shadow-[0_2px_4px_0_rgba(0,0,0,0.15)] transition-transform hover:scale-[1.02] active:scale-[0.98] sm:h-10 lg:text-[15px] xl:w-fit 2xl:h-12 2xl:gap-2.5 2xl:text-lg"
+          >
+            <span className="w-fit text-nowrap">Find my trek</span>
+            <span className="flex items-center rounded-[76.6px] bg-[#FFF] p-1.5 2xl:gap-2 2xl:p-2">
+              <ArrowIcon />
+            </span>
+          </button>
+        </form>
+
+        {showSuggestions && (
+          <SearchSuggestionPanel
+            query={trimmedSearchQuery}
+            popularSuggestions={suggestionGroups.popular}
+            trekSuggestions={suggestionGroups.treks}
+            destinationSuggestions={suggestionGroups.destinations}
+            regionSuggestions={suggestionGroups.regions}
+            activeIndex={activeSuggestionIndex}
+            onActiveIndexChange={setActiveSuggestionIndex}
+            onPickQuery={(value) => goToSearch({ q: value })}
+            onPickTrek={(trek) => goToSearch({ q: trek.title, region: trek.region })}
+            onPickRegion={(region) => goToSearch({ q: "", region })}
+          />
+        )}
+      </div>
       {searchError && (
         <div
           id="hero-search-error"
