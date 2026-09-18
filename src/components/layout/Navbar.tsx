@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { useAuth } from "@/lib/AuthContext";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -25,10 +24,6 @@ export default function Navbar({
   const [activeTab, setActiveTab] = useState(navLinks[0].label);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isSolid = variant === "solid";
-  const { isAuthenticated, isLoading, logout } = useAuth();
-  const authPillClass = isSolid
-    ? "inline-flex min-h-9 cursor-pointer items-center rounded-full bg-[rgba(20,20,20,0.84)] bg-blend-darken px-3.5 text-xs font-medium text-white shadow-[0_2px_4px_0_rgba(0,0,0,0.15)] transition-all duration-300 hover:scale-[1.03] active:scale-95"
-    : "liquid-glass-nav inline-flex min-h-9 cursor-pointer items-center rounded-full px-3.5 text-xs font-medium text-white transition-all duration-300 hover:scale-[1.03] active:scale-95";
 
   return (
     <>
@@ -150,16 +145,7 @@ export default function Navbar({
         </div>
 
         {/* Liquid Glass Book Now Button */}
-        <div className="hidden min-w-0 items-center gap-2 justify-self-end sm:flex">
-          {isLoading ? null : isAuthenticated ? (
-            <button type="button" onClick={logout} className={authPillClass}>
-              <span className="select-none whitespace-nowrap font-sans tracking-wide">Sign out</span>
-            </button>
-          ) : (
-            <Link href="/auth" className={authPillClass}>
-              <span className="select-none whitespace-nowrap font-sans tracking-wide">Sign in</span>
-            </Link>
-          )}
+        <div className="hidden min-w-0 justify-self-end sm:flex">
           <Link
             href="/trek-details"
             className={
@@ -219,26 +205,6 @@ export default function Navbar({
                 </a>
               );
             })}
-            {isLoading ? null : isAuthenticated ? (
-              <button
-                type="button"
-                onClick={() => {
-                  logout();
-                  setMobileMenuOpen(false);
-                }}
-                className="w-full rounded-2xl px-5 py-3 text-left font-sans text-base text-[#101010]/90 transition-all duration-200 hover:bg-black/10"
-              >
-                Sign out
-              </button>
-            ) : (
-              <Link
-                href="/auth"
-                className="w-full rounded-2xl px-5 py-3 text-left font-sans text-base text-[#101010]/90 transition-all duration-200 hover:bg-black/10"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Sign in
-              </Link>
-            )}
             <Link
               href="/trek-details"
               className="mt-1 flex w-full items-center justify-between rounded-2xl bg-[#101010] px-5 py-3 font-sans text-base font-medium text-white transition-transform active:scale-[0.98]"
