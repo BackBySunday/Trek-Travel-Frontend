@@ -3,8 +3,10 @@
 import type { CSSProperties, FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Script from "next/script";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useAuth } from "@/lib/AuthContext";
 import styles from "./AuthPage.module.css";
 
 type View = "options" | "signup" | "login" | "google" | "otp" | "success";
@@ -176,6 +178,8 @@ async function postAuth(path: string, body: Record<string, string>) {
 }
 
 export default function AuthPage() {
+  const { login, isAuthenticated, isLoading } = useAuth();
+  const router = useRouter();
   const [view, setView] = useState<View>("options");
   const [flow, setFlow] = useState<Flow>("phone-signup");
   const [notice, setNotice] = useState<Notice>(null);
@@ -260,6 +264,9 @@ export default function AuthPage() {
       }
       if (error.code === "conflict") {
         return "This email is already linked to another account.";
+      }
+      if (error.code === "account_exists") {
+        return "You already have an account with this phone number. Sign in instead.";
       }
       if (error.code === "network_error") {
         return error.message;
@@ -457,6 +464,16 @@ export default function AuthPage() {
     return undefined;
   }, [initializeGoogleButton, view]);
 
+  // A visitor who is already signed in and lands on /auth directly (not via
+  // a fresh verify-OTP success) doesn't need the sign-up/login options
+  // again — send them back. Skipped while on "success" so the confirmation
+  // screen they just earned still shows.
+  useEffect(() => {
+    if (!isLoading && isAuthenticated && view !== "success") {
+      router.replace("/");
+    }
+  }, [isLoading, isAuthenticated, view, router]);
+
   const verifyOtp = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
@@ -495,11 +512,32 @@ export default function AuthPage() {
         }
         body.name = normalizedName;
         body.email = normalizedEmail;
+        // Tells identity-svc this phone must NOT already have an account —
+        // otherwise verify silently logs the caller in instead of erroring,
+        // which is right for the login flow but wrong here.
+        body.intent = "signup";
       }
-      await postAuth(endpoint, body);
+      const data = await postAuth(endpoint, body);
+      if (typeof data.access_token === "string" && typeof data.refresh_token === "string") {
+        login({
+          access_token: data.access_token,
+          refresh_token: data.refresh_token,
+          token_type: typeof data.token_type === "string" ? data.token_type : "Bearer",
+          expires_in: typeof data.expires_in === "number" ? data.expires_in : 0,
+          user_id: typeof data.user_id === "string" ? data.user_id : "",
+        });
+      }
       setNotice({ tone: "success", text: "Your account is ready. You can continue exploring BackBySunday." });
       setView("success");
     } catch (error) {
+      if (error instanceof AuthRequestError && error.code === "account_exists") {
+        // Send them straight to the login form — sign-up already told them
+        // why, no point leaving them stuck re-submitting the same signup.
+        showView("login", "phone-login");
+        setNotice({ tone: "error", text: friendlyError(error) });
+        setLoading(false);
+        return;
+      }
       setNotice({ tone: "error", text: friendlyError(error) });
     } finally {
       setLoading(false);
