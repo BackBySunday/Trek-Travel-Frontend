@@ -1,6 +1,9 @@
 # BackBySunday Frontend
 
-Responsive web application frontend for BackBySunday, a trekking and travel experience platform. The app is built as a polished landing page with reusable layout components, section-based page composition, local visual assets, and responsive Tailwind styling.
+The traveller-facing web app for BackBySunday, a weekend-trek marketplace:
+browsing and searching treks, an operator's public profile, trek detail
+pages with a real booking flow (Cashfree checkout), a traveller's own
+bookings and messages, and phone/Google sign-in.
 
 ## Tech Stack
 
@@ -9,180 +12,108 @@ Responsive web application frontend for BackBySunday, a trekking and travel expe
 - TypeScript
 - Tailwind CSS 4
 - `next/font` for Urbanist, IBM Plex Sans, and Inter
-- `next/image` for optimized local images
+- `next/image` (configured to also load images from a Cloudflare R2 bucket)
 
-## Current Page Sections
+## Backend dependency
 
-- Hero with glass navigation, headline, search bar, and rotating trek cards
-- Top Categories
-- Our Partners
-- Featured Destinations
-- Why Trek With Us
-- Snapshots
-- Our Testimonials
-- CTA section
-- Reusable site footer
+This app is the frontend for the BackBySunday backend — see
+[backend-infra](https://github.com/BackBySunday/backend-infra) for how to
+run the whole backend stack. In short, it talks directly to six backend
+services over HTTP (each has its own repo, listed there): identity, catalog,
+inventory, organizer, booking, engagement, and payments. Nothing here talks
+to a database directly.
 
-## Project Structure
-
-```txt
-public/
-|-- Animation/
-|-- Banner/
-|-- CTA/
-|-- Featured-Destination/
-|-- Footer/
-|-- Hero/
-|-- Our-Partners/
-|-- Top-Categories/
-`-- Why-Trek-With-Us/
-
-src/
-|-- app/
-|   |-- api/
-|   |-- cancellation-and-refund-policy/
-|   |-- globals.css
-|   |-- layout.tsx
-|   |-- privacy-policy/
-|   |-- terms-and-conditions/
-|   `-- page.tsx
-`-- components/
-    |-- layout/
-    |   |-- coming-soon/
-    |   |-- ComingSoonProvider.tsx
-    |   |-- Footer.tsx
-    |   |-- Navbar.tsx
-    |   |-- SectionBadge.tsx
-    |   |-- SectionIntro.tsx
-    |   `-- TrekCard.tsx
-    `-- sections/
-        |-- cta/
-        |-- featured-destinations/
-        |-- hero/
-        |-- our-partners/
-        |-- our-testimonials/
-        |-- snapshots/
-        |-- top-categories/
-        `-- why-trek-with-us/
-```
-
-## Key Files
-
-- `src/app/page.tsx`: Composes the full landing page.
-- `src/app/layout.tsx`: Metadata, viewport settings, and font loading.
-- `src/app/api/waitlist/route.ts`: Waitlist API route backed by Supabase REST.
-- `src/app/globals.css`: Tailwind import, theme variables, glass effects, animation utilities, and base styles.
-- `src/components/layout/ComingSoonProvider.tsx`: Shared modal provider for coming soon and waitlist flows.
-- `src/components/layout/Navbar.tsx`: Responsive navigation and mobile menu.
-- `src/components/layout/Footer.tsx`: Reusable footer with a logo placeholder, quick links, contact info, newsletter form, mountain image, and copyright.
-- `src/components/layout/TrekCard.tsx`: Reusable trek package card.
-- `src/components/layout/SectionBadge.tsx` and `SectionIntro.tsx`: Shared section UI primitives.
-- `src/components/sections/*`: Page-specific sections and their local subcomponents.
-
-## Requirements
-
-- Node.js compatible with Next.js 16
-- npm
-
-## Setup
-
-Install dependencies:
+## Getting started
 
 ```bash
 npm install
-```
-
-Start the development server:
-
-```bash
+cp .env.example .env.local   # see below
 npm run dev
 ```
 
-Open the app at:
+Open [http://localhost:3000](http://localhost:3000). The backend stack
+(see backend-infra) needs to already be running for any page beyond static
+content to load real data.
+
+### Environment variables (`.env.local`)
+
+| Variable | Required? | What it's for |
+|---|---|---|
+| `NEXT_PUBLIC_AUTH_API_BASE_URL` | Yes | identity-svc — phone/Google OTP sign-in. Defaults to `http://localhost:8087`. |
+| `NEXT_PUBLIC_CATALOG_API_BASE_URL` | Yes | catalog-svc — trek listings, search filters, pickup points. Defaults to `http://localhost:8089`. |
+| `NEXT_PUBLIC_INVENTORY_API_BASE_URL` | Yes | inventory-svc — departures, availability, add-on pricing. Defaults to `http://localhost:8090`. |
+| `NEXT_PUBLIC_ORGANIZER_API_BASE_URL` | Yes | organizer-svc — operator profiles, stats, media. Defaults to `http://localhost:8088`. |
+| `NEXT_PUBLIC_BOOKING_API_BASE_URL` | Yes | booking-svc — creating and listing bookings. Defaults to `http://localhost:8091`. |
+| `NEXT_PUBLIC_ENGAGEMENT_API_BASE_URL` | Yes | engagement-svc — reviews, follows, DM/group chat. Defaults to `http://localhost:8092`. |
+| `NEXT_PUBLIC_PAYMENTS_API_BASE_URL` | Yes | payments-svc — gateway mode, Cashfree checkout session, payment sync. Defaults to `http://localhost:8093`. |
+| `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | Yes, for Google sign-in | Must match identity-svc's own `GOOGLE_CLIENT_ID` (see backend-infra's `docker-compose.yml`) — Google verifies the ID token's `aud` claim against this same client, so a mismatch silently breaks Google sign-in. |
+| `NEXT_PUBLIC_MEDIA_BASE_URL` | No | Public base URL of the R2 bucket organizer/trip photos are served from (e.g. `https://pub-xxxx.r2.dev`). Without it, uploaded photos have no URL to render. |
+| `NEXT_PUBLIC_SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` | Only for the waitlist form | Used by `src/app/api/waitlist/route.ts` to store waitlist sign-ups in Supabase. |
+| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | No | Google Analytics. |
+
+All the `*_API_BASE_URL` values default to `localhost` + the port
+backend-infra's `docker-compose.yml` exposes that service on, so a local
+`.env.local` with just the Google/Supabase/GA values (or even none at all)
+is enough for local dev against the default stack.
+
+### Payments in local dev
+
+Book Now creates a real booking against booking-svc, then either:
+
+- opens Cashfree's real checkout popup (when payments-svc is running in
+  `PAYMENT_GATEWAY_MODE=live`, using a genuine `payment_session_id`), or
+- falls back to an internal sandbox-payment simulation (when payments-svc is
+  in the default `mock` mode).
+
+Either way, confirmation goes through payments-svc's `POST
+/orders/:id/sync`, which pulls the real payment status from Cashfree
+directly — no public webhook URL needed for local dev.
+
+## Key pages
+
+| Route | What it is |
+|---|---|
+| `/` | Home — hero search, featured destinations, partners |
+| `/search` | Trek search with live catalog filters |
+| `/trek-details/[slug]` | A trek's detail page: itinerary, pickups, reviews, and the booking card |
+| `/operators/[slug]` | An operator's public profile: treks, gallery, videos, reviews, message button |
+| `/auth` | Phone OTP and Google sign-in / sign-up |
+| `/bookings` | The signed-in traveller's booking + payment history |
+| `/messages` | The signed-in traveller's DMs with operators and trip group chats |
+
+## Project structure
 
 ```txt
-http://localhost:3000
+src/
+├── app/                    # routes (Next.js App Router)
+│   ├── auth/
+│   ├── bookings/
+│   ├── messages/
+│   ├── operators/[slug]/
+│   ├── search/
+│   └── trek-details/[slug]/
+├── components/
+│   ├── chat/                # shared chat panel (DM + group threads)
+│   ├── layout/               # Navbar, Footer, TrekCard
+│   ├── providers/
+│   └── sections/
+│       ├── home/
+│       ├── operators/operator-profile/
+│       └── trek-details/
+└── lib/                     # data-fetching + API clients per backend service
+    ├── AuthContext.tsx       # session state, token refresh
+    ├── apiClient.ts          # authenticated fetch helper
+    ├── booking.ts            # booking-svc + payments-svc client, Cashfree checkout
+    ├── operator.ts / operators.ts
+    ├── trek.ts / trekCards.ts
+    └── search.ts
 ```
 
-Create `.env` from `.env.example` and set the required Supabase values before testing the waitlist API.
-
-## Available Scripts
+## Scripts
 
 ```bash
-npm run dev
+npm run dev     # start the dev server
+npm run build   # production build
+npm run start   # run a production build
+npm run lint    # eslint
 ```
-
-Runs the local development server.
-
-```bash
-npm run build
-```
-
-Creates an optimized production build.
-
-```bash
-npm run start
-```
-
-Starts the production server after building.
-
-```bash
-npm run lint
-```
-
-Runs ESLint.
-
-## Quality Checks
-
-Run these before committing or pushing changes:
-
-```bash
-npm run lint
-npm run build
-```
-
-## Vercel Deployment
-
-Use the default Vercel settings for a Next.js app.
-
-Required environment variables:
-
-```txt
-NEXT_PUBLIC_SUPABASE_URL
-SUPABASE_SERVICE_ROLE_KEY
-```
-
-Keep `SUPABASE_SERVICE_ROLE_KEY` server-only. Do not expose it with a `NEXT_PUBLIC_` prefix.
-
-## Assets
-
-All application assets live in `public/` and are referenced by route-relative paths such as `/Hero/hero-background.png`.
-
-Current asset groups:
-
-- `public/Animation/`: Coming soon video and waitlist role icons.
-- `public/Banner/`: Social preview image.
-- `public/Hero/`: Hero background and carousel cards.
-- `public/Top-Categories/`: Trek category card imagery.
-- `public/Our-Partners/`: Partner logo/card imagery.
-- `public/Featured-Destination/`: Featured destination cards.
-- `public/Why-Trek-With-Us/`: Why Trek section image.
-- `public/CTA/`: CTA background image.
-- `public/Footer/`: Footer mountain strip image.
-
-Only keep assets that are used by the application.
-
-## Development Guidelines
-
-- Treat pasted Figma-to-React code as reference, then adapt it for real responsive layouts.
-- Keep reusable site chrome and shared UI in `src/components/layout`.
-- Keep section-specific components in `src/components/sections/<section-name>`.
-- Avoid raw Figma absolute positioning, `min-w-screen`, `min-h-screen`, and large fixed offsets.
-- Prefer responsive grids/flex layouts, `max-w-*`, breakpoint classes, and practical typography scales.
-- Use `next/image` for local images rendered in components.
-- Keep global CSS limited to theme variables, base styles, shared effects, and reusable animation utilities.
-- Remove unused generated files, starter assets, and temporary helper components before pushing.
-
-## Build Notes
-
-This project uses `next/font/google`. Production builds require access to Google Fonts unless the fonts are already cached by the build environment.
