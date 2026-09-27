@@ -5,14 +5,15 @@ import SectionBadge from "@/components/layout/SectionBadge";
 import TrekCard, { TrekCardGlassFilters } from "@/components/layout/TrekCard";
 import FilterDropdown from "@/components/search/FilterDropdown";
 import {
+  EMPTY_FILTERS,
+  getSearchDifficulties,
+  getSearchRegions,
   searchTreks,
-  SEARCH_DIFFICULTIES,
-  SEARCH_REGIONS,
   SEARCH_SORT_OPTIONS,
   serializeSearchFilters,
-  TREK_SEARCH_ITEMS,
   type SearchFilters,
 } from "@/lib/search";
+import { useTrekItems } from "@/components/providers/TrekItemsProvider";
 import TopCategoriesIntro from "./TopCategoriesIntro";
 import ViewAllTreksButton from "./ViewAllTreksButton";
 
@@ -20,7 +21,7 @@ const HOME_TREK_LIMIT = 8;
 
 function updateFilter(
   filters: SearchFilters,
-  key: keyof SearchFilters,
+  key: Exclude<keyof SearchFilters, "attrs">,
   value: string,
 ) {
   return {
@@ -30,36 +31,32 @@ function updateFilter(
 }
 
 export default function TopCategoriesSection() {
+  const items = useTrekItems();
   const controlsRef = useRef<HTMLDivElement>(null);
-  const [filters, setFilters] = useState<SearchFilters>({
-    q: "",
-    region: "",
-    difficulty: "",
-    sort: "relevance",
-  });
+  const [filters, setFilters] = useState<SearchFilters>(EMPTY_FILTERS);
   const [openFilter, setOpenFilter] = useState<"region" | "difficulty" | "sort" | null>(null);
   const hasActiveFilters =
     filters.region || filters.difficulty || filters.sort !== "relevance";
   const filteredTreks = useMemo(
     () =>
       hasActiveFilters
-        ? searchTreks(filters)
-        : TREK_SEARCH_ITEMS.map((trek) => ({
+        ? searchTreks(items, filters)
+        : items.map((trek) => ({
             ...trek,
             score: 0,
             matchedFields: [],
           })),
-    [filters, hasActiveFilters],
+    [items, filters, hasActiveFilters],
   );
   const visibleTreks = filteredTreks.slice(0, HOME_TREK_LIMIT);
   const viewAllHref = `/search${serializeSearchFilters(filters)}`;
   const regionOptions = [
     { value: "", label: "All regions" },
-    ...SEARCH_REGIONS.map((region) => ({ value: region, label: region })),
+    ...getSearchRegions(items).map((region) => ({ value: region, label: region })),
   ];
   const difficultyOptions = [
     { value: "", label: "All difficulties" },
-    ...SEARCH_DIFFICULTIES.map((difficulty) => ({
+    ...getSearchDifficulties(items).map((difficulty) => ({
       value: difficulty,
       label: difficulty,
     })),
@@ -163,12 +160,7 @@ export default function TopCategoriesSection() {
             <button
               type="button"
               onClick={() =>
-                setFilters({
-                  q: "",
-                  region: "",
-                  difficulty: "",
-                  sort: "relevance",
-                })
+                setFilters(EMPTY_FILTERS)
               }
               className="mt-4 rounded-full bg-[#101010] px-5 py-2.5 font-urbanist text-sm font-semibold text-white"
             >

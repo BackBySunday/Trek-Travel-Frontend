@@ -263,10 +263,10 @@ export default function AuthPage() {
         return "Too many attempts. Please wait before requesting another OTP.";
       }
       if (error.code === "conflict") {
-        return "This email is already linked to another account.";
+        return "This email is already linked to another account. Sign in instead, or use a different email.";
       }
       if (error.code === "account_exists") {
-        return "You already have an account with this phone number. Sign in instead.";
+        return "An account with this phone number already exists. Sign in instead, or use a different number.";
       }
       if (error.code === "network_error") {
         return error.message;
@@ -328,7 +328,12 @@ export default function AuthPage() {
     }
 
     try {
-      const data = await postAuth("/app/auth/otp/request", { phone: normalizedPhone });
+      const data = await postAuth(
+        "/app/auth/otp/request",
+        flow === "phone-signup"
+          ? { phone: normalizedPhone, intent: "signup", email: normalizedEmail }
+          : { phone: normalizedPhone },
+      );
       const latestDevOtp = SHOW_DEV_OTP && typeof data.dev_otp === "string" ? data.dev_otp : "";
       setPhone(normalizedPhone);
       setChallengePhone(normalizedPhone);
@@ -342,6 +347,9 @@ export default function AuthPage() {
       });
       setView("otp");
     } catch (error) {
+      if (flow === "phone-signup" && error instanceof AuthRequestError && error.code === "account_exists") {
+        showView("login", "phone-login");
+      }
       setNotice({ tone: "error", text: friendlyError(error) });
     } finally {
       setLoading(false);

@@ -12,6 +12,15 @@ type AuthContextValue = {
   userId: string | null;
   login: (tokens: TokenPair) => void;
   logout: () => void;
+  /**
+   * Returns a token guaranteed fresh at the moment of the call, refreshing
+   * first if the one in state has gone stale — unlike `accessToken`, which
+   * is only ever refreshed once, on page load. Use this (not `accessToken`
+   * directly) right before any call that must not fail on an expired token,
+   * such as creating a booking. Returns null if the session can't be
+   * refreshed (the caller should treat that as logged out).
+   */
+  getFreshAccessToken: () => Promise<string | null>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -87,6 +96,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setTokensState(next);
   }, []);
 
+  const getFreshAccessToken = useCallback(async (): Promise<string | null> => {
+    if (!tokens) return null;
+    if (isTokenFresh(tokens.access_token)) return tokens.access_token;
+    const refreshed = await refreshTokens(tokens.refresh_token);
+    if (refreshed) {
+      saveTokens(refreshed);
+      setTokensState(refreshed);
+      return refreshed.access_token;
+    }
+    // The refresh token itself is gone/expired — this session is over.
+    clearTokens();
+    setTokensState(null);
+    return null;
+  }, [tokens]);
+
   const logout = useCallback(() => {
     setTokensState((current) => {
       clearTokens();
@@ -110,8 +134,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       userId: tokens?.user_id ?? null,
       login,
       logout,
+      getFreshAccessToken,
     }),
-    [tokens, isLoading, login, logout],
+    [tokens, isLoading, login, logout, getFreshAccessToken],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

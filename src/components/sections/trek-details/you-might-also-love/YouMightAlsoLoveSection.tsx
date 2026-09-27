@@ -1,77 +1,8 @@
 import SectionBadge from "@/components/layout/SectionBadge";
 import SectionIntro from "@/components/layout/SectionIntro";
-import TrekCard, { type TrekCardProps } from "@/components/layout/TrekCard";
-
-const relatedTreks: TrekCardProps[] = [
-  {
-    title: "Vasota Fort Trek",
-    description:
-      "Vasota Fort sits near Bamnoli in Satara, reached by boat across Shivsagar backwaters and a Koyna forest trail.",
-    image: "/Top-Categories/vasota-fort-trek.png",
-    alt: "Trekkers climbing rocks near a lake",
-    durationTag: "1D",
-    rating: "4.4",
-    ratingCount: "92",
-    altitude: "3,842 ft",
-    difficulty: "Moderate",
-    duration: "4-7 Hours",
-    spots: "18 left",
-    nextDeparture: "Sat, 19 Sep",
-    operator: "JKL Trek & Travel",
-    price: "\u20B9 1,900",
-  },
-  {
-    title: "Vasota Fort Trek",
-    description:
-      "Vasota Fort sits near Bamnoli in Satara, reached by boat across Shivsagar backwaters and a Koyna forest trail.",
-    image: "/Top-Categories/vasota-fort-trek.png",
-    alt: "Trekkers climbing rocks near a lake",
-    durationTag: "1D",
-    rating: "4.4",
-    ratingCount: "92",
-    altitude: "3,842 ft",
-    difficulty: "Moderate",
-    duration: "4-7 Hours",
-    spots: "16 left",
-    nextDeparture: "Sun, 20 Sep",
-    operator: "JKL Trek & Travel",
-    price: "\u20B9 1,900",
-  },
-  {
-    title: "Vasota Fort Trek",
-    description:
-      "Vasota Fort sits near Bamnoli in Satara, reached by boat across Shivsagar backwaters and a Koyna forest trail.",
-    image: "/Top-Categories/vasota-fort-trek.png",
-    alt: "Trekkers climbing rocks near a lake",
-    durationTag: "1D",
-    rating: "4.4",
-    ratingCount: "92",
-    altitude: "3,842 ft",
-    difficulty: "Moderate",
-    duration: "4-7 Hours",
-    spots: "14 left",
-    nextDeparture: "Sat, 26 Sep",
-    operator: "JKL Trek & Travel",
-    price: "\u20B9 1,900",
-  },
-  {
-    title: "Vasota Fort Trek",
-    description:
-      "Vasota Fort sits near Bamnoli in Satara, reached by boat across Shivsagar backwaters and a Koyna forest trail.",
-    image: "/Top-Categories/vasota-fort-trek.png",
-    alt: "Trekkers climbing rocks near a lake",
-    durationTag: "1D",
-    rating: "4.4",
-    ratingCount: "92",
-    altitude: "3,842 ft",
-    difficulty: "Moderate",
-    duration: "4-7 Hours",
-    spots: "12 left",
-    nextDeparture: "Sun, 27 Sep",
-    operator: "JKL Trek & Travel",
-    price: "\u20B9 1,900",
-  },
-];
+import Link from "next/link";
+import TrekCard from "@/components/layout/TrekCard";
+import { getTrekSearchItems } from "@/lib/trekCards";
 
 function ArrowUpRightIcon() {
   return (
@@ -97,19 +28,23 @@ function ArrowUpRightIcon() {
 
 function ViewAllTreksButton() {
   return (
-    <button
-      type="button"
+    <Link
+      href="/search"
       className="inline-flex h-10 items-center gap-2.5 rounded-full bg-[rgba(20,20,20,0.84)] py-1 pl-3.5 pr-1 font-urbanist text-sm text-white shadow-[0_2px_4px_0_rgba(0,0,0,0.15)] transition-transform hover:scale-[1.02] active:scale-[0.98] sm:h-12 sm:gap-3 sm:pl-4 sm:text-lg"
     >
       <span className="text-nowrap">View all treks</span>
       <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white sm:h-10 sm:w-10">
         <ArrowUpRightIcon />
       </span>
-    </button>
+    </Link>
   );
 }
 
-export default function YouMightAlsoLoveSection() {
+export default async function YouMightAlsoLoveSection({ currentSlug }: { currentSlug?: string }) {
+  const relatedTreks = (await getTrekSearchItems()).filter((trek) => trek.slug !== currentSlug).slice(0, 4);
+
+  if (relatedTreks.length === 0) return null;
+
   return (
     <section id="related-treks" className="w-full scroll-mt-20 bg-white px-4 py-12 text-[#101010] sm:py-16 lg:px-[30px]">
       <div className="mx-auto flex w-full max-w-[1500px] flex-col items-center gap-5 sm:gap-6">
@@ -130,8 +65,8 @@ export default function YouMightAlsoLoveSection() {
             />
           </div>
           <div className="mt-8 grid w-full grid-cols-2 gap-4 sm:gap-5 lg:mt-10 xl:grid-cols-4">
-            {relatedTreks.map((trek, index) => (
-              <TrekCard key={`${trek.title}-${index}`} {...trek} />
+            {relatedTreks.map((trek) => (
+              <TrekCard key={trek.id} {...trek} />
             ))}
           </div>
         </div>

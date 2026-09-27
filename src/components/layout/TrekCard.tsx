@@ -225,6 +225,7 @@ export default function TrekCard({
         src={image}
         alt={alt}
         fill
+        unoptimized={/^https?:/.test(image)}
         className="object-cover"
         sizes="(min-width: 1280px) 25vw, (min-width: 640px) 50vw, 100vw"
       />

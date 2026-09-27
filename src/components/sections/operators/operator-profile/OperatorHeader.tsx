@@ -1,8 +1,12 @@
-﻿"use client";
+"use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { authFetch } from "@/lib/apiClient";
+import { useAuth } from "@/lib/AuthContext";
 import OperatorMark from "./OperatorMark";
+import OperatorMessageDialog from "./OperatorMessageDialog";
 import {
   FollowingIcon,
   FollowIcon,
@@ -26,14 +30,60 @@ function formatCount(value: number) {
   return String(value);
 }
 
+const ENGAGEMENT_URL = process.env.NEXT_PUBLIC_ENGAGEMENT_API_BASE_URL ?? "http://localhost:8092";
+
 export default function OperatorHeader({ operator }: { operator: Operator }) {
-  const [isFollowing, setIsFollowing] = useState(false);
+  const router = useRouter();
+  const { accessToken } = useAuth();
+  const [followed, setFollowed] = useState(false);
+  const isFollowing = Boolean(accessToken) && followed;
+  const [followBusy, setFollowBusy] = useState(false);
+  const [messageOpen, setMessageOpen] = useState(false);
+
+  useEffect(() => {
+    if (!accessToken) return;
+    let cancelled = false;
+    authFetch(ENGAGEMENT_URL, "/follows?limit=200", accessToken)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { follows?: { OrganizerID: string }[] } | null) => {
+        if (!cancelled && data?.follows) {
+          setFollowed(data.follows.some((f) => f.OrganizerID === operator.id));
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [accessToken, operator.id]);
+
+  async function toggleFollow() {
+    if (!accessToken) {
+      router.push("/auth");
+      return;
+    }
+    if (followBusy) return;
+    const next = !isFollowing;
+    setFollowBusy(true);
+    setFollowed(next);
+    try {
+      const res = await authFetch(ENGAGEMENT_URL, `/organizers/${operator.id}/follow`, accessToken, {
+        method: next ? "POST" : "DELETE",
+        body: next ? JSON.stringify({}) : undefined,
+      });
+      if (!res.ok) setFollowed(!next);
+    } catch {
+      setFollowed(!next);
+    } finally {
+      setFollowBusy(false);
+    }
+  }
 
   return (
     <section className="mx-auto max-w-[1846px] px-[30px] pt-[25px] text-[#101010]">
       <div className="relative h-[220px] overflow-hidden rounded-[24px] border border-[#E5E5E5] bg-[#F6F7F7] sm:h-[330px]">
         <Image
           src={operator.coverUrl}
+          unoptimized={/^https?:/.test(operator.coverUrl)}
           alt=""
           fill
           priority
@@ -80,7 +130,7 @@ export default function OperatorHeader({ operator }: { operator: Operator }) {
             type="button"
             aria-label={isFollowing ? "Following" : "Follow"}
             aria-pressed={isFollowing}
-            onClick={() => setIsFollowing((current) => !current)}
+            onClick={toggleFollow}
             className="group relative h-11 w-[132px] overflow-hidden rounded-full bg-[rgba(20,20,20,0.84)] font-urbanist text-sm font-medium text-white shadow-[0_2px_4px_0_rgba(0,0,0,0.15)] transition-transform duration-300 hover:scale-[1.02] active:scale-[0.98]"
           >
             <span
@@ -114,6 +164,7 @@ export default function OperatorHeader({ operator }: { operator: Operator }) {
           </button>
           <button
             type="button"
+            onClick={() => (accessToken ? setMessageOpen(true) : router.push("/auth"))}
             className="inline-flex h-11 items-center gap-3 rounded-full border border-[#D7D7D7] bg-white py-1 pl-4 pr-1 font-urbanist text-sm font-medium text-[#101010] transition-transform hover:scale-[1.02] active:scale-[0.98]"
           >
             <span className="text-nowrap">Message</span>
@@ -131,10 +182,14 @@ export default function OperatorHeader({ operator }: { operator: Operator }) {
         </div>
       </div>
 
-      <p className="mt-6 max-w-2xl font-urbanist text-base leading-relaxed text-[#666]">
-        {operator.bio} Trips run in small groups with certified leads, and every
-        departure is insured and briefed the evening before you set off.
-      </p>
+      {operator.bio ? (
+        <p className="mt-6 max-w-2xl font-urbanist text-base leading-relaxed text-[#666]">
+          {operator.bio}
+        </p>
+      ) : null}
+      {messageOpen && accessToken ? (
+        <OperatorMessageDialog operator={operator} accessToken={accessToken} onClose={() => setMessageOpen(false)} />
+      ) : null}
     </section>
   );
 }

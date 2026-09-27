@@ -3,8 +3,10 @@ import JsonLd from "@/components/layout/JsonLd";
 import Navbar from "@/components/layout/Navbar";
 import { TrekCardGlassFilters } from "@/components/layout/TrekCard";
 import OperatorProfileSection from "@/components/sections/operators/operator-profile/OperatorProfileSection";
+import type { OperatorPageData } from "@/lib/operator";
 
-export default function OperatorsPageContent() {
+export default function OperatorsPageContent({ slug, data }: { slug: string; data: OperatorPageData }) {
+  const { operator } = data;
   const siteUrl = "https://backbysunday.in";
   const jsonLd = [
     {
@@ -20,27 +22,30 @@ export default function OperatorsPageContent() {
         {
           "@type": "ListItem",
           position: 2,
-          name: "Operators",
-          item: `${siteUrl}/operators`,
+          name: operator.name,
+          item: `${siteUrl}/operators/${slug}`,
         },
       ],
     },
     {
       "@context": "https://schema.org",
       "@type": "Organization",
-      name: "JKL Trek & Travel",
-      url: `${siteUrl}/operators`,
+      name: operator.name,
+      url: `${siteUrl}/operators/${slug}`,
       address: {
         "@type": "PostalAddress",
-        addressLocality: "Pune",
-        addressRegion: "Maharashtra",
+        addressLocality: operator.homeBase,
         addressCountry: "IN",
       },
-      aggregateRating: {
-        "@type": "AggregateRating",
-        ratingValue: "4.8",
-        reviewCount: "1284",
-      },
+      ...(operator.reviewCount > 0
+        ? {
+            aggregateRating: {
+              "@type": "AggregateRating",
+              ratingValue: operator.rating.toFixed(1),
+              reviewCount: String(operator.reviewCount),
+            },
+          }
+        : {}),
     },
   ];
 
@@ -52,7 +57,7 @@ export default function OperatorsPageContent() {
         <Navbar />
       </header>
 
-      <OperatorProfileSection />
+      <OperatorProfileSection {...data} />
       <Footer />
     </main>
   );

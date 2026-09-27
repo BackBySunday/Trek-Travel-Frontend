@@ -1,36 +1,12 @@
-import type { Metadata } from "next";
-import TrekDetailsPageContent from "./TrekDetailsPageContent";
+import { notFound, redirect } from "next/navigation";
+import { getFirstPublishedSlug } from "@/lib/trek";
 
-export const metadata: Metadata = {
-  title: "Vasota Fort Trek Details",
-  description:
-    "View Vasota Fort Trek details on BackBySunday, including trip overview, itinerary highlights, inclusions, pricing, and related weekend treks.",
-  alternates: {
-    canonical: "/trek-details",
-  },
-  openGraph: {
-    title: "Vasota Fort Trek Details | BackBySunday",
-    description:
-      "View Vasota Fort Trek details on BackBySunday, including trip overview, itinerary highlights, inclusions, pricing, and related weekend treks.",
-    url: "/trek-details",
-    images: [
-      {
-        url: "/Hero/card-1.png",
-        width: 1200,
-        height: 630,
-        alt: "Vasota Fort Trek details on BackBySunday",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Vasota Fort Trek Details | BackBySunday",
-    description:
-      "View Vasota Fort Trek details on BackBySunday, including trip overview, itinerary highlights, inclusions, pricing, and related weekend treks.",
-    images: ["/Hero/card-1.png"],
-  },
-};
+export const dynamic = "force-dynamic";
 
-export default function TrekDetailsPage() {
-  return <TrekDetailsPageContent />;
+// /trek-details has no slug of its own — send visitors to the first published
+// trek so old links and the nav's generic "Treks" link still land somewhere real.
+export default async function TrekDetailsIndexPage() {
+  const slug = await getFirstPublishedSlug();
+  if (!slug) notFound();
+  redirect(`/trek-details/${slug}`);
 }

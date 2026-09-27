@@ -1,41 +1,56 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { useRouter } from "next/navigation";
+import { formatDepartureDate, formatRupees, type TrekPickup, type TrekView } from "@/lib/trek";
+import { useAuth } from "@/lib/AuthContext";
+import {
+  createBooking,
+  friendlyBookingError,
+  getGatewayMode,
+  isActiveBooking,
+  listOwnBookings,
+  openCashfreeCheckout,
+  simulateSandboxPayment,
+  syncPaymentStatus,
+  waitForConfirmation,
+  type BookingAddonRequest,
+} from "@/lib/booking";
 
 type TripFact = {
   label: string;
   value: string;
   icon: "duration" | "departure" | "destination" | "trekDuration" | "rating" | "group";
+  node?: ReactNode; // replaces the plain value (used for the departure picker)
 };
 
 type TravelerDetails = {
   name: string;
+  age: string;
   gender: string;
-  foodPreference: string;
+  foodPreference: string; // "Veg" | "Non-Veg"
+  waterSpots: string; // "No" | "Yes"
 };
 
-const basePrice = 2110;
-const maxTravelers = 10;
-const spotsLeft = 6;
-const maxBookableTravelers = Math.min(maxTravelers, spotsLeft);
-const pickupOptions = ["Toll Road - Dehradun", "City Center", "Railway Station"];
+const genderToApi: Record<string, "MALE" | "FEMALE" | "OTHER"> = { Male: "MALE", Female: "FEMALE", Other: "OTHER" };
+
+type BookingStep = "idle" | "booking" | "paying" | "confirming" | "success" | "error";
+
 const genderOptions = ["Male", "Female", "Other"];
-const foodPreferenceOptions = ["Non-Veg", "Veg", "Jain"];
+const yesNoOptions = ["No", "Yes"];
 const defaultTraveler: TravelerDetails = {
   name: "",
+  age: "",
   gender: genderOptions[0],
-  foodPreference: foodPreferenceOptions[0],
+  foodPreference: "Veg",
+  waterSpots: "No",
 };
 
-const tripFacts: TripFact[] = [
-  { label: "Trip duration", value: "5 D / 4 N", icon: "duration" },
-  { label: "Departure", value: "October 14, 2026", icon: "departure" },
-  { label: "Destination", value: "Vasota Fort", icon: "destination" },
-  { label: "Trail time", value: "6 Hours", icon: "trekDuration" },
-  { label: "Trek Rating", value: "Light", icon: "rating" },
-  { label: "Group size", value: "Max 10 Travelers", icon: "group" },
-];
+// Pickups are free, so the label is just the place.
+function pickupLabel(p: TrekPickup): string {
+  return p.label;
+}
 
 function ClockIcon() {
   return (
@@ -174,9 +189,15 @@ function TripFactRow({ fact }: { fact: TripFact }) {
           {fact.label}
         </p>
       </div>
-      <p className="max-w-[54%] text-right font-urbanist text-base font-medium leading-[1.32] tracking-[0.02em] text-[#1A1A17]">
-        {fact.value}
-      </p>
+      {fact.node ? (
+        <div className="max-w-[54%] text-right font-urbanist text-base font-medium leading-[1.32] tracking-[0.02em] text-[#1A1A17]">
+          {fact.node}
+        </div>
+      ) : (
+        <p className="max-w-[54%] text-right font-urbanist text-base font-medium leading-[1.32] tracking-[0.02em] text-[#1A1A17]">
+          {fact.value}
+        </p>
+      )}
     </div>
   );
 }
@@ -374,12 +395,86 @@ function DropdownPill({
   );
 }
 
-function BookingForm({ className = "" }: { className?: string }) {
-  const [pickupSpot, setPickupSpot] = useState("Toll Road - Dehradun");
-  const [travelers, setTravelers] = useState<TravelerDetails[]>([
-    { ...defaultTraveler, name: "Rishabh" },
-  ]);
-  const total = basePrice * travelers.length;
+function BookingForm({ trek, className = "" }: { trek: TrekView; className?: string }) {
+  const [departureIndex, setDepartureIndex] = useState(0);
+  const departure = trek.departures[departureIndex];
+  const departureOptions = trek.departures.map((d) => formatDepartureDate(d.startAt));
+  const unitPricePaise = departure?.pricePaise ?? trek.basePricePaise;
+  const spotsLeft = departure?.spotsLeft ?? 0;
+  const maxTravelers = departure?.capacity ?? 0;
+  const maxBookableTravelers = Math.max(1, Math.min(maxTravelers || 1, spotsLeft || 1));
+  const pickupOptions = (departure?.pickups ?? []).map(pickupLabel);
+  const [pickupSpot, setPickupSpot] = useState(pickupOptions[0] ?? "");
+  const selectedPickup = departure?.pickups.find((p) => pickupLabel(p) === pickupSpot) ?? departure?.pickups[0];
+  const [travelers, setTravelers] = useState<TravelerDetails[]>([{ ...defaultTraveler }]);
+  const { isAuthenticated, accessToken, getFreshAccessToken } = useAuth();
+  const router = useRouter();
+  const [step, setStep] = useState<BookingStep>("idle");
+  const [formError, setFormError] = useState("");
+  const [bookingCode, setBookingCode] = useState<string | null>(null);
+  // departure_id -> booking_code, for every departure of THIS trek the
+  // traveller already has an active booking against — lets "you've already
+  // booked this" read differently from "sold out to other people".
+  const [bookedDepartures, setBookedDepartures] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (!isAuthenticated || !accessToken) return;
+    let cancelled = false;
+    listOwnBookings(accessToken)
+      .then((bookings) => {
+        if (cancelled) return;
+        const mine: Record<string, string> = {};
+        for (const b of bookings) {
+          if (b.trip_id === trek.id && isActiveBooking(b)) mine[b.departure_id] = b.booking_code;
+        }
+        setBookedDepartures(mine);
+      })
+      .catch(() => {}); // best-effort — worst case, the button just doesn't say "booked" yet
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated, accessToken, trek.id]);
+
+  const bookedCode = departure ? bookedDepartures[departure.id] : undefined;
+  const nonVegPaise = departure?.nonVegPaise ?? null;
+  const waterSpotsPaise = departure?.waterSpotsPaise ?? null;
+  const foodOptions = nonVegPaise !== null ? ["Veg", `Non-Veg (+${formatRupees(nonVegPaise)})`] : ["Veg"];
+  const foodLabel = (value: string) => (value === "Non-Veg" && nonVegPaise !== null ? `Non-Veg (+${formatRupees(nonVegPaise)})` : value);
+  const nonVegCount = nonVegPaise !== null ? travelers.filter((t) => t.foodPreference === "Non-Veg").length : 0;
+  const waterCount = waterSpotsPaise !== null ? travelers.filter((t) => t.waterSpots === "Yes").length : 0;
+  const total = unitPricePaise * travelers.length + nonVegCount * (nonVegPaise ?? 0) + waterCount * (waterSpotsPaise ?? 0);
+  const trailTime = trek.routeFacts.find(([label]) => /trail time/i.test(label))?.[1] ?? "—";
+  const tripFacts: TripFact[] = [
+    { label: "Trip duration", value: `${trek.durationDays} D / ${trek.durationNights} N`, icon: "duration" },
+    {
+      label: "Departure",
+      value: departure ? formatDepartureDate(departure.startAt) : "To be announced",
+      icon: "departure",
+      node:
+        departureOptions.length > 1 ? (
+          <DropdownPill
+            label="Departure date"
+            value={departureOptions[departureIndex]}
+            options={departureOptions}
+            onChange={changeDeparture}
+            className="w-fit"
+            buttonClassName="flex items-center gap-1 border-0 bg-transparent p-0 font-urbanist text-base font-medium leading-[1.32] tracking-[0.02em] text-[#1A1A17] outline-none focus-visible:ring-2 focus-visible:ring-[#1A1A17]/10"
+          />
+        ) : undefined,
+    },
+    { label: "Destination", value: trek.destination || trek.baseCity || "—", icon: "destination" },
+    { label: "Trail time", value: trailTime, icon: "trekDuration" },
+    { label: "Trek Rating", value: trek.difficulty, icon: "rating" },
+    { label: "Group size", value: maxTravelers ? `Max ${maxTravelers} Travelers` : "—", icon: "group" },
+  ];
+
+  function changeDeparture(label: string) {
+    const next = Math.max(0, departureOptions.indexOf(label));
+    const nextDeparture = trek.departures[next];
+    setDepartureIndex(next);
+    setPickupSpot(nextDeparture?.pickups[0] ? pickupLabel(nextDeparture.pickups[0]) : "");
+    setTravelers((current) => current.slice(0, Math.max(1, Math.min(nextDeparture?.spotsLeft ?? 1, nextDeparture?.capacity ?? 1))));
+  }
 
   function decreaseTravelers() {
     setTravelers((current) => current.slice(0, Math.max(1, current.length - 1)));
@@ -405,10 +500,115 @@ function BookingForm({ className = "" }: { className?: string }) {
     );
   }
 
+  async function handleBookNow() {
+    if (!isAuthenticated) {
+      router.push("/auth");
+      return;
+    }
+    if (!departure) return;
+    // Get a token that's fresh right now, not whatever `accessToken` was at
+    // last render — a traveller can easily sit on this page long enough for
+    // that one to expire before they click Book Now.
+    const token = await getFreshAccessToken();
+    if (!token) {
+      router.push("/auth");
+      return;
+    }
+    for (const [index, traveler] of travelers.entries()) {
+      const age = Number(traveler.age);
+      if (!traveler.name.trim()) {
+        setFormError(`Enter a name for Traveler ${index + 1}.`);
+        return;
+      }
+      if (!Number.isInteger(age) || age <= 0 || age >= 120) {
+        setFormError(`Enter a valid age for Traveler ${index + 1}.`);
+        return;
+      }
+    }
+
+    setFormError("");
+    setStep("booking");
+    try {
+      const addons: BookingAddonRequest[] = [];
+      if (departure.nonVegOptionId) {
+        const qty = travelers.filter((t) => t.foodPreference === "Non-Veg").length;
+        if (qty > 0) addons.push({ addon_option_id: departure.nonVegOptionId, qty });
+      }
+      if (departure.waterSpotsOptionId) {
+        const qty = travelers.filter((t) => t.waterSpots === "Yes").length;
+        if (qty > 0) addons.push({ addon_option_id: departure.waterSpotsOptionId, qty });
+      }
+
+      const booking = await createBooking(token, {
+        departure_id: departure.id,
+        traveller_count: travelers.length,
+        travellers: travelers.map((t) => ({ full_name: t.name.trim(), age: Number(t.age), gender: genderToApi[t.gender] ?? "OTHER" })),
+        pickup_point_id: selectedPickup?.id,
+        addons,
+      });
+
+      if (!booking.gateway_order_id) {
+        // The saga's order-create step failed inline; booking-svc's own
+        // retry job will pick it up. Nothing more this click can do.
+        setFormError("Your booking was placed, but starting payment failed. It will retry automatically - check Bookings shortly.");
+        setStep("error");
+        return;
+      }
+
+      setStep("paying");
+      const mode = await getGatewayMode();
+      if (mode === "live" && booking.payment_session_id) {
+        // Real Cashfree checkout popup. The widget's own "it went fine"
+        // report isn't trusted on its own — syncPaymentStatus asks
+        // payments-svc to confirm with Cashfree server-to-server before we
+        // treat the payment as real.
+        await openCashfreeCheckout(booking.payment_session_id);
+        await syncPaymentStatus(booking.gateway_order_id);
+      } else {
+        // No real session to open a popup against (mock gateway mode) —
+        // fall back to the built-in sandbox payment simulation.
+        await simulateSandboxPayment(booking.gateway_order_id);
+      }
+
+      setStep("confirming");
+      const confirmed = await waitForConfirmation(token, booking.booking_code);
+      if (confirmed.status !== "CONFIRMED") {
+        setFormError("Payment was received but the booking hasn't confirmed yet. Check Bookings in a moment.");
+        setStep("error");
+        return;
+      }
+      setBookingCode(confirmed.booking_code);
+      setBookedDepartures((current) => ({ ...current, [departure.id]: confirmed.booking_code }));
+      setStep("success");
+    } catch (err) {
+      setFormError(friendlyBookingError(err));
+      setStep("error");
+    }
+  }
+
+  const busy = step === "booking" || step === "paying" || step === "confirming";
+  const bookLabel =
+    step === "booking"
+      ? "Booking..."
+      : step === "paying"
+        ? "Waiting for payment..."
+        : step === "confirming"
+          ? "Confirming..."
+          : !departure
+            ? "No departures yet"
+            : bookedCode
+              ? "You've booked this trip ✓"
+              : spotsLeft === 0
+                ? "Sold out"
+                : "Book Now";
+
   return (
     <form
       className={`flex w-full min-h-0 flex-col items-center gap-3 overflow-hidden rounded-[26px] bg-[#F6F7F7] pb-4 text-[#1A1A17] sm:gap-4 sm:rounded-[30px] sm:pb-5 ${className}`}
-      onSubmit={(event) => event.preventDefault()}
+      onSubmit={(event) => {
+        event.preventDefault();
+        void handleBookNow();
+      }}
     >
         <div className="grid w-full grid-cols-[minmax(0,1fr)_10px_minmax(0,1fr)] items-stretch overflow-hidden rounded-[26px] text-white sm:rounded-[30px]">
           <div className="min-w-0 rounded-l-[26px] rounded-r-[5px] bg-[#1A1A17] px-6 py-4 sm:rounded-l-[30px] sm:px-7 sm:py-5">
@@ -417,7 +617,7 @@ function BookingForm({ className = "" }: { className?: string }) {
             </p>
             <p className="flex w-fit items-end font-urbanist leading-none">
               <span className="text-[32px] font-semibold tracking-[0.01em] text-white sm:text-[34px]">
-                $3,150
+                {formatRupees(unitPricePaise)}
               </span>
               <span className="pb-1 text-sm font-normal tracking-[0.02em] text-[#D9D9D9]">
                 /person
@@ -463,13 +663,17 @@ function BookingForm({ className = "" }: { className?: string }) {
               <p className="font-urbanist text-base font-medium leading-[1.32] tracking-[0.02em] text-[#1A1A17]">
                 Pickup Spot :
               </p>
-              <DropdownPill
-                label="Pickup spot"
-                value={pickupSpot}
-                options={pickupOptions}
-                onChange={setPickupSpot}
-                className="w-full sm:w-fit"
-              />
+              {pickupOptions.length > 0 ? (
+                <DropdownPill
+                  label="Pickup spot"
+                  value={pickupSpot}
+                  options={pickupOptions}
+                  onChange={setPickupSpot}
+                  className="w-full sm:w-fit"
+                />
+              ) : (
+                <p className="font-urbanist text-sm text-[#73736C]">No pickup listed yet</p>
+              )}
             </div>
 
             <div className="flex min-h-0 w-full flex-1 flex-col items-center gap-3">
@@ -514,7 +718,7 @@ function BookingForm({ className = "" }: { className?: string }) {
                           Traveler {index + 1}
                         </p>
                       </div>
-                      <div className="grid w-full grid-cols-1 gap-px rounded-b-[22px] bg-[#E2E2DC] p-px sm:grid-cols-[1.15fr_0.85fr_1fr]">
+                      <div className="grid w-full grid-cols-1 gap-px rounded-b-[22px] bg-[#E2E2DC] p-px sm:grid-cols-[1fr_0.6fr_0.8fr_1fr]">
                         <label className="flex min-w-0 flex-col gap-1.5 bg-[#F6F7F7] px-3 py-2.5 sm:rounded-bl-[20px]">
                           <span className="font-urbanist text-[11px] font-semibold leading-none tracking-[0.04em] text-[#73736C]">
                             Name
@@ -526,6 +730,20 @@ function BookingForm({ className = "" }: { className?: string }) {
                               updateTraveler(index, "name", event.target.value)
                             }
                             placeholder={`Traveler ${index + 1}`}
+                            className="h-8 w-full min-w-0 truncate border-0 bg-transparent p-0 font-urbanist text-base font-medium leading-none tracking-[0.01em] text-[#1A1A17] outline-none placeholder:text-[#9A9A94] focus:ring-0"
+                          />
+                        </label>
+
+                        <label className="flex min-w-0 flex-col gap-1.5 bg-[#F6F7F7] px-3 py-2.5">
+                          <span className="font-urbanist text-[11px] font-semibold leading-none tracking-[0.04em] text-[#73736C]">
+                            Age
+                          </span>
+                          <input
+                            aria-label={`Traveler ${index + 1} age`}
+                            value={traveler.age}
+                            onChange={(event) => updateTraveler(index, "age", event.target.value.replace(/[^0-9]/g, "").slice(0, 3))}
+                            inputMode="numeric"
+                            placeholder="Age"
                             className="h-8 w-full min-w-0 truncate border-0 bg-transparent p-0 font-urbanist text-base font-medium leading-none tracking-[0.01em] text-[#1A1A17] outline-none placeholder:text-[#9A9A94] focus:ring-0"
                           />
                         </label>
@@ -543,20 +761,35 @@ function BookingForm({ className = "" }: { className?: string }) {
                           />
                         </div>
 
-                        <div className="flex min-w-0 flex-col gap-1.5 rounded-b-[20px] bg-[#F6F7F7] px-3 py-2.5 sm:rounded-bl-[20px] sm:rounded-br-[20px]">
+                        <div className="flex min-w-0 flex-col gap-1.5 bg-[#F6F7F7] px-3 py-2.5 sm:col-span-1">
                           <p className="font-urbanist text-[11px] font-semibold leading-none tracking-[0.04em] text-[#73736C]">
                             Food Pref.
                           </p>
                           <DropdownPill
                             label={`Traveler ${index + 1} food preference`}
-                            value={traveler.foodPreference}
-                            options={foodPreferenceOptions}
+                            value={nonVegPaise === null ? "Veg" : foodLabel(traveler.foodPreference)}
+                            options={foodOptions}
                             onChange={(value) =>
-                              updateTraveler(index, "foodPreference", value)
+                              updateTraveler(index, "foodPreference", value.startsWith("Non-Veg") ? "Non-Veg" : "Veg")
                             }
                             buttonClassName="flex h-8 w-full items-center justify-between gap-1 border-0 bg-transparent p-0 font-urbanist text-base font-medium leading-none tracking-[0.01em] text-[#1A1A17] outline-none focus-visible:ring-2 focus-visible:ring-[#1A1A17]/10"
                           />
                         </div>
+
+                        {waterSpotsPaise !== null ? (
+                          <div className="flex min-w-0 flex-col gap-1.5 bg-[#F6F7F7] px-3 py-2.5 sm:col-span-3">
+                            <p className="font-urbanist text-[11px] font-semibold leading-none tracking-[0.04em] text-[#73736C]">
+                              {`Water spots (+${formatRupees(waterSpotsPaise)})`}
+                            </p>
+                            <DropdownPill
+                              label={`Traveler ${index + 1} water spots`}
+                              value={traveler.waterSpots}
+                              options={yesNoOptions}
+                              onChange={(value) => updateTraveler(index, "waterSpots", value)}
+                              buttonClassName="flex h-8 w-full items-center justify-between gap-1 border-0 bg-transparent p-0 font-urbanist text-base font-medium leading-none tracking-[0.01em] text-[#1A1A17] outline-none focus-visible:ring-2 focus-visible:ring-[#1A1A17]/10"
+                            />
+                          </div>
+                        ) : null}
                       </div>
                     </div>
                   ))}
@@ -570,18 +803,38 @@ function BookingForm({ className = "" }: { className?: string }) {
                   Total (before taxes)
                 </p>
                 <p className="font-urbanist text-xl font-bold leading-[1.32] tracking-[0.02em] text-black">
-                  Rs {total}
+                  {formatRupees(total)}
                 </p>
               </div>
             </div>
           </div>
         </div>
 
+        {step === "success" ? (
+          <div className="w-[calc(100%-40px)] rounded-[16px] bg-[#EAF7EE] px-4 py-3 font-urbanist text-sm text-[#1A7A3C] sm:w-[calc(100%-48px)]">
+            Payment received - booking {bookingCode} is confirmed! You&apos;ve been added to the trip group chat.{" "}
+            <a href="/messages" className="font-semibold underline">
+              Open Messages
+            </a>
+          </div>
+        ) : formError ? (
+          <p className="w-[calc(100%-40px)] font-urbanist text-sm text-[#9B2C2C] sm:w-[calc(100%-48px)]">{formError}</p>
+        ) : bookedCode ? (
+          <p className="w-[calc(100%-40px)] font-urbanist text-sm text-[#1A7A3C] sm:w-[calc(100%-48px)]">
+            You already have a booking ({bookedCode}) for this departure.{" "}
+            <a href="/bookings" className="font-semibold underline">
+              View my bookings
+            </a>
+          </p>
+        ) : null}
+
         <button
           type="submit"
+          disabled={!departure || Boolean(bookedCode) || spotsLeft === 0 || busy}
+          style={!departure || bookedCode || spotsLeft === 0 || busy ? { opacity: 0.5, cursor: "not-allowed" } : undefined}
           className="flex h-11 w-[calc(100%-40px)] items-center justify-between rounded-[113.1px] bg-[rgba(20,20,20,0.84)] py-[5px] pl-5 pr-[5px] font-urbanist text-lg font-semibold text-white shadow-[0_2px_4px_0_rgba(0,0,0,0.15)] sm:h-12 sm:w-[calc(100%-48px)] sm:pl-6 sm:text-xl"
         >
-          <span>Book Now</span>
+          <span>{bookLabel}</span>
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[63px] bg-white sm:h-10 sm:w-10">
             <ArrowIcon />
           </span>
@@ -590,15 +843,17 @@ function BookingForm({ className = "" }: { className?: string }) {
   );
 }
 
-export default function TripInfoCard() {
+export default function TripInfoCard({ trek }: { trek: TrekView }) {
   return (
     <aside className="hidden w-full max-w-[460px] lg:sticky lg:top-4 lg:block lg:h-[calc(100svh-2rem)] lg:self-start">
-      <BookingForm className="lg:h-full" />
+      <BookingForm trek={trek} className="lg:h-full" />
     </aside>
   );
 }
 
-export function MobileTripBookingBar() {
+export function MobileTripBookingBar({ trek }: { trek: TrekView }) {
+  const firstDeparture = trek.departures[0];
+  const spotsLeft = firstDeparture?.spotsLeft ?? 0;
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   useEffect(() => {
@@ -631,10 +886,10 @@ export function MobileTripBookingBar() {
             </p>
             <div className="mt-1 flex min-w-0 items-end gap-2">
               <p className="font-urbanist text-[22px] font-semibold leading-none tracking-[0.01em] text-white">
-                $3,150
+                {formatRupees(firstDeparture?.pricePaise ?? trek.basePricePaise)}
               </p>
               <p className="pb-0.5 font-urbanist text-xs tracking-[0.02em] text-white/70">
-                {spotsLeft} spots left
+                {firstDeparture ? `${spotsLeft} spots left` : "No departures yet"}
               </p>
             </div>
           </div>
@@ -675,7 +930,7 @@ export function MobileTripBookingBar() {
               </button>
             </div>
             <div className="mx-auto w-full max-w-[520px]">
-              <BookingForm className="rounded-t-[24px] shadow-none" />
+              <BookingForm trek={trek} className="rounded-t-[24px] shadow-none" />
             </div>
           </div>
         </div>

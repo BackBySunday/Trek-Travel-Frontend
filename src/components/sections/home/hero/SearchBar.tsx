@@ -5,11 +5,15 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   getSearchSuggestionActions,
+  EMPTY_FILTERS,
+  getSearchDestinations,
+  getSearchRegions,
   getSearchSuggestionGroups,
   serializeSearchFilters,
   type DestinationSuggestion,
   type TrekSearchItem,
 } from "@/lib/search";
+import { useTrekItems } from "@/components/providers/TrekItemsProvider";
 
 type SearchItem = {
   label: string;
@@ -23,12 +27,12 @@ type DateMode = "quick" | "calendar";
 const searchItems: Record<SearchItemKey, SearchItem> = {
   region: {
     label: "Regions",
-    value: "Pune",
+    value: "",
     icon: "region",
   },
   destination: {
     label: "Destinations",
-    value: "Lohagad Trek",
+    value: "",
     icon: "destination",
   },
   date: {
@@ -40,16 +44,14 @@ const searchItems: Record<SearchItemKey, SearchItem> = {
 
 const searchItemOrder: SearchItemKey[] = ["region", "destination", "date"];
 
-const searchOptions: Record<SearchItemKey, string[]> = {
-  region: ["Pune", "Mumbai", "Uttarakhand", "Himachal Pradesh", "Karnataka"],
-  destination: [
-    "Lohagad Trek",
-    "Rajmachi Trek",
-    "Kalsubai Trek",
-    "Vasota Fort",
-    "Harishchandragad",
-  ],
-  date: [],
+// Nothing chosen yet: shown as the dropdown's value and treated as "no filter".
+const ALL_REGIONS = "All regions";
+const ALL_DESTINATIONS = "All destinations";
+const ANY_DATE = "Any date";
+const placeholders: Record<SearchItemKey, string> = {
+  region: ALL_REGIONS,
+  destination: ALL_DESTINATIONS,
+  date: ANY_DATE,
 };
 
 function getToday() {
@@ -118,20 +120,33 @@ function getCalendarCells(today: Date, monthOffset = 0) {
   return cells;
 }
 
+function toIsoDate(date: Date) {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+/** Turns whatever the date dropdown reported ("Tomorrow", "Sep 20, 2026", ...) into YYYY-MM-DD. */
+function selectionToIsoDate(selection: string, today: Date): string {
+  if (!selection || selection === ANY_DATE) return "";
+  if (selection === "Tomorrow") return toIsoDate(getRelativeDate(today, 1));
+  const daysUntilSaturday = (6 - today.getDay() + 7) % 7 || 7;
+  if (selection === "This weekend") return toIsoDate(getRelativeDate(today, daysUntilSaturday));
+  if (selection === "Next weekend") return toIsoDate(getRelativeDate(today, daysUntilSaturday + 7));
+  const parsed = new Date(selection.split(" - ")[0]);
+  return Number.isNaN(parsed.getTime()) ? "" : toIsoDate(parsed);
+}
+
 function getDateQuickOptions(today: Date) {
   return [
+    { label: ANY_DATE, detail: "Show every departure" },
     { label: "Tomorrow", detail: getRelativeDateLabel(today, 1) },
     { label: "This weekend", detail: getThisWeekendLabel(today) },
     { label: "Next weekend", detail: getNextWeekendLabel(today) },
   ];
 }
 
-function getDefaultSelections(today: Date): Record<SearchItemKey, string> {
-  return {
-    region: searchItems.region.value,
-    destination: searchItems.destination.value,
-    date: formatDateLabel(today),
-  };
+function getDefaultSelections(): Record<SearchItemKey, string> {
+  return { region: "", destination: "", date: "" };
 }
 
 function RegionIcon() {
@@ -811,6 +826,7 @@ function SearchSuggestionPanel({
 }
 
 export default function SearchBar() {
+  const items = useTrekItems();
   const router = useRouter();
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [openItem, setOpenItem] = useState<SearchItemKey | null>(null);
@@ -822,11 +838,16 @@ export default function SearchBar() {
   const [searchFocused, setSearchFocused] = useState(false);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
   const [selections, setSelections] =
-    useState<Record<SearchItemKey, string>>(() => getDefaultSelections(getToday()));
+    useState<Record<SearchItemKey, string>>(() => getDefaultSelections());
   const trimmedSearchQuery = searchQuery.trim();
+  const dropdownOptions: Record<SearchItemKey, string[]> = {
+    region: [ALL_REGIONS, ...getSearchRegions(items)],
+    destination: [ALL_DESTINATIONS, ...getSearchDestinations(items, selections.region)],
+    date: [],
+  };
   const suggestionGroups = useMemo(
-    () => getSearchSuggestionGroups(trimmedSearchQuery),
-    [trimmedSearchQuery],
+    () => getSearchSuggestionGroups(items, trimmedSearchQuery),
+    [items, trimmedSearchQuery],
   );
   const suggestionActions = useMemo(
     () => getSearchSuggestionActions(trimmedSearchQuery, suggestionGroups),
@@ -837,9 +858,13 @@ export default function SearchBar() {
   const goToSearch = ({
     q,
     region = "",
+    destination = "",
+    date = "",
   }: {
     q: string;
     region?: string;
+    destination?: string;
+    date?: string;
   }) => {
     const nextQuery = q.trim();
 
@@ -852,10 +877,11 @@ export default function SearchBar() {
 
     router.push(
       `/search${serializeSearchFilters({
+        ...EMPTY_FILTERS,
         q: nextQuery,
         region,
-        difficulty: "",
-        sort: "relevance",
+        destination,
+        date,
       })}`,
     );
   };
@@ -882,9 +908,12 @@ export default function SearchBar() {
     event.preventDefault();
 
     const destination = searchQuery.trim();
+    const pickedRegion = selections.region;
+    const pickedDestination = selections.destination;
+    const pickedDate = selectionToIsoDate(selections.date, today);
 
-    if (!destination) {
-      setSearchError("Please enter a trek or destination.");
+    if (!destination && !pickedRegion && !pickedDestination && !pickedDate) {
+      setSearchError("Search a trek, or pick a region, destination or date.");
       return;
     }
 
@@ -893,7 +922,7 @@ export default function SearchBar() {
     setDateMode("quick");
     setMonthOffset(0);
     setSearchFocused(false);
-    goToSearch({ q: destination });
+    goToSearch({ q: destination, region: pickedRegion, destination: pickedDestination, date: pickedDate });
   };
 
   useEffect(() => {
@@ -1065,8 +1094,8 @@ export default function SearchBar() {
             <SearchSelect
               item={searchItems[key]}
               isOpen={openItem === key}
-              options={searchOptions[key]}
-              selected={selections[key]}
+              options={dropdownOptions[key]}
+              selected={selections[key] || placeholders[key]}
               today={today}
               monthOffset={monthOffset}
               onPrevMonth={() =>
@@ -1089,8 +1118,19 @@ export default function SearchBar() {
                   setMonthOffset(0);
                 }
               }}
-              onPick={(value) => {
-                setSelections((current) => ({ ...current, [key]: value }));
+              onPick={(picked) => {
+                const value =
+                  picked === ALL_REGIONS || picked === ALL_DESTINATIONS || picked === ANY_DATE ? "" : picked;
+                setSelections((current) => ({
+                  ...current,
+                  [key]: value,
+                  // a destination only makes sense inside the chosen region
+                  ...(key === "region" &&
+                  current.destination &&
+                  !getSearchDestinations(items, value).includes(current.destination)
+                    ? { destination: "" }
+                    : {}),
+                }));
                 setOpenItem(null);
                 setDateMode("quick");
                 setMonthOffset(0);

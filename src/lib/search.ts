@@ -11,6 +11,29 @@ export type TrekSearchItem = TrekCardProps & {
   priceValue: number;
   ratingValue: number;
   departureOrder: number;
+  organizerId?: string;
+  upcomingDates?: string[];
+  attributes?: TrekAttributeValue[];
+};
+
+/** One registry filter value on a trek (from the admin-managed filter registry). */
+export type TrekAttributeValue = {
+  key: string;
+  label: string;
+  type: string;
+  value?: string;
+  valueLabel?: string;
+  num?: number;
+  bool?: boolean;
+};
+
+/** A filter definition from the registry, e.g. "Trek type" with its options. */
+export type FilterDef = {
+  key: string;
+  label: string;
+  dataType: string;
+  unit?: string;
+  options: { value: string; label: string }[];
 };
 
 export type SearchFilters = {
@@ -18,7 +41,28 @@ export type SearchFilters = {
   region: string;
   difficulty: string;
   sort: SearchSort;
+  /** Exact trek title or destination picked in the hero search. */
+  destination: string;
+  /** ISO date (YYYY-MM-DD): only treks with a departure on or after it. */
+  date: string;
+  /** Maximum price per person in rupees; "" = no limit. */
+  maxPrice: string;
+  /** Registry filters: attribute key -> chosen value (option value, "true", or a numeric maximum). */
+  attrs: Record<string, string>;
 };
+
+export const EMPTY_FILTERS: SearchFilters = {
+  q: "",
+  region: "",
+  difficulty: "",
+  sort: "relevance",
+  destination: "",
+  date: "",
+  maxPrice: "",
+  attrs: {},
+};
+
+const ATTR_PARAM_PREFIX = "f.";
 
 export type TrekSearchResult = TrekSearchItem & {
   score: number;
@@ -65,216 +109,44 @@ const DEFAULT_SUGGESTION_LIMITS = {
   regions: 2,
 };
 
-export const TREK_SEARCH_ITEMS: TrekSearchItem[] = [
-  {
-    id: "vasota-fort-trek",
-    slug: "vasota-fort-trek",
-    title: "Vasota Fort Trek",
-    description:
-      "A boat ride from Bamnoli leads into Koyna forest trails, Shivsagar backwater views, and remote fort ruins.",
-    image: "/Top-Categories/vasota-fort-trek.png",
-    alt: "Trekkers climbing rocks near a lake",
-    durationTag: "1D",
-    rating: "4.4",
-    ratingCount: "92",
-    altitude: "3,842 ft",
-    difficulty: "Moderate",
-    duration: "4-7 Hours",
-    spots: "18 left",
-    nextDeparture: "Sat, 19 Sep",
-    operator: "JKL Trek",
-    price: "Rs. 1,900",
-    region: "Pune",
-    destination: "Koyna, Satara",
-    tags: ["fort", "forest", "backwaters", "sahyadri", "weekend"],
-    priceValue: 1900,
-    ratingValue: 4.4,
-    departureOrder: 1,
-  },
-  {
-    id: "lohagad-fort-trek",
-    slug: "lohagad-fort-trek",
-    title: "Lohagad Fort Trek",
-    description:
-      "An easy Lonavala fort route known for stone gates, Vinchu Kata ramparts, and Pawna Lake views.",
-    image: "/Top-Categories/lohagad-fort-trek.png",
-    alt: "Vertical trek destination preview",
-    durationTag: "1D",
-    rating: "4.7",
-    ratingCount: "128",
-    altitude: "3,389 ft",
-    difficulty: "Easy",
-    duration: "1-2 Hours",
-    spots: "12 left",
-    nextDeparture: "Sun, 20 Sep",
-    operator: "Travel Trek",
-    price: "Rs. 1,250",
-    region: "Pune",
-    destination: "Lonavala",
-    tags: ["fort", "lonavala", "pawna", "beginner", "weekend"],
-    priceValue: 1250,
-    ratingValue: 4.7,
-    departureOrder: 2,
-  },
-  {
-    id: "rajmachi-trail",
-    slug: "rajmachi-trail",
-    title: "Rajmachi Trail",
-    description:
-      "A Lonavala-Karjat trail to Udhewadi and the twin forts of Shrivardhan and Manaranjan.",
-    image: "/Top-Categories/rajmachi-trail.png",
-    alt: "Adventure destination preview",
-    durationTag: "1N/2D",
-    rating: "4.6",
-    ratingCount: "116",
-    altitude: "2,710 ft",
-    difficulty: "Easy-Moderate",
-    duration: "5-6 Hours",
-    spots: "9 left",
-    nextDeparture: "Sat, 26 Sep",
-    operator: "JKL Trek",
-    price: "Rs. 2,100",
-    region: "Pune",
-    destination: "Lonavala, Karjat",
-    tags: ["fort", "night trek", "village trail", "sunrise", "weekend"],
-    priceValue: 2100,
-    ratingValue: 4.6,
-    departureOrder: 3,
-  },
-  {
-    id: "harishchandragad",
-    slug: "harishchandragad",
-    title: "Harishchandragad",
-    description:
-      "A route-dependent Sahyadri fort trek with Konkan Kada, cave temples, and Taramati Peak views.",
-    image: "/Top-Categories/harishchandragad-trek.png",
-    alt: "Trekkers climbing a rocky trail",
-    durationTag: "2D/1N",
-    rating: "4.8",
-    ratingCount: "154",
-    altitude: "4,671 ft",
-    difficulty: "Moderate-Hard",
-    duration: "7 Hours",
-    spots: "6 left",
-    nextDeparture: "Fri, 2 Oct",
-    operator: "Wild Trails",
-    price: "Rs. 2,850",
-    region: "Pune",
-    destination: "Ahmednagar",
-    tags: ["fort", "konkan kada", "caves", "sahyadri", "views"],
-    priceValue: 2850,
-    ratingValue: 4.8,
-    departureOrder: 4,
-  },
-  {
-    id: "kalsubai-peak",
-    slug: "kalsubai-peak",
-    title: "Kalsubai Peak",
-    description:
-      "Climb Maharashtra's highest peak from Bari village, with iron ladders, ridges, and summit views.",
-    image: "/Top-Categories/kalsubai-peak.png",
-    alt: "Mountain trek destination preview",
-    durationTag: "1N/1D",
-    rating: "4.7",
-    ratingCount: "139",
-    altitude: "5,400 ft",
-    difficulty: "Moderate",
-    duration: "3-4 Hours",
-    spots: "14 left",
-    nextDeparture: "Sat, 10 Oct",
-    operator: "Peak Route",
-    price: "Rs. 1,750",
-    region: "Pune",
-    destination: "Bari village",
-    tags: ["peak", "summit", "highest peak", "night trek", "sahyadri"],
-    priceValue: 1750,
-    ratingValue: 4.7,
-    departureOrder: 6,
-  },
-  {
-    id: "devkund-waterfall",
-    slug: "devkund-waterfall",
-    title: "Devkund Waterfall",
-    description:
-      "A Bhira forest trail with rocky patches and stream crossings leading to a blue plunge waterfall.",
-    image: "/Top-Categories/devkund-waterfall.png",
-    alt: "Forest adventure destination preview",
-    durationTag: "1D",
-    rating: "4.5",
-    ratingCount: "87",
-    altitude: "1,545 ft",
-    difficulty: "Easy-Moderate",
-    duration: "5-6 Hours",
-    spots: "20 left",
-    nextDeparture: "Sun, 5 Oct",
-    operator: "Travel Trek",
-    price: "Rs. 1,550",
-    region: "Pune",
-    destination: "Bhira",
-    tags: ["waterfall", "forest", "stream crossing", "monsoon", "weekend"],
-    priceValue: 1550,
-    ratingValue: 4.5,
-    departureOrder: 5,
-  },
-  {
-    id: "andharban-forest",
-    slug: "andharban-forest",
-    title: "Andharban Forest",
-    description:
-      "A descending Tamhini Ghat forest trail from Pimpri toward Bhira backwaters through dense canopy.",
-    image: "/Top-Categories/andharban-forest.png",
-    alt: "Trekkers on a scenic trail",
-    durationTag: "1D",
-    rating: "4.6",
-    ratingCount: "103",
-    altitude: "2,160 ft",
-    difficulty: "Moderate",
-    duration: "5-6 Hours",
-    spots: "8 left",
-    nextDeparture: "Sat, 26 Sep",
-    operator: "Wild Trails",
-    price: "Rs. 1,800",
-    region: "Pune",
-    destination: "Tamhini Ghat",
-    tags: ["forest", "descending trail", "canopy", "monsoon", "backwaters"],
-    priceValue: 1800,
-    ratingValue: 4.6,
-    departureOrder: 3,
-  },
-  {
-    id: "sandhan-valley",
-    slug: "sandhan-valley",
-    title: "Sandhan Valley",
-    description:
-      "A Samrad village canyon route through narrow basalt walls, boulder sections, and rappelling patches.",
-    image: "/Top-Categories/sandhan-valley.png",
-    alt: "Vertical mountain route preview",
-    durationTag: "2D/1N",
-    rating: "4.8",
-    ratingCount: "121",
-    altitude: "1,200 ft",
-    difficulty: "Moderate-Hard",
-    duration: "2D",
-    spots: "5 left",
-    nextDeparture: "Sat, 7 Nov",
-    operator: "Peak Route",
-    price: "Rs. 3,200",
-    region: "Pune",
-    destination: "Samrad village",
-    tags: ["valley", "canyon", "rappelling", "boulders", "adventure"],
-    priceValue: 3200,
-    ratingValue: 4.8,
-    departureOrder: 7,
-  },
-];
+export function getSearchRegions(items: TrekSearchItem[]): string[] {
+  return Array.from(new Set(items.map((trek) => trek.region).filter(Boolean)));
+}
 
-export const SEARCH_REGIONS = Array.from(
-  new Set(TREK_SEARCH_ITEMS.map((trek) => trek.region)),
-);
+/** Destinations available for a region (or all), as trek titles. */
+export function getSearchDestinations(items: TrekSearchItem[], region = ""): string[] {
+  return Array.from(
+    new Set(items.filter((t) => !region || t.region === region).map((t) => t.title)),
+  );
+}
 
-export const SEARCH_DIFFICULTIES = Array.from(
-  new Set(TREK_SEARCH_ITEMS.map((trek) => trek.difficulty)),
-);
+/**
+ * Registry filters that are actually usable for the current treks: ENUM
+ * options carrying at least one trek, numeric filters as "up to" steps.
+ */
+export function getUsableFilterDefs(defs: FilterDef[], items: TrekSearchItem[]): FilterDef[] {
+  return defs
+    .map((def) => {
+      if (def.dataType === "ENUM") {
+        const used = new Set(
+          items.flatMap((t) => (t.attributes ?? []).filter((a) => a.key === def.key && a.value).map((a) => a.value as string)),
+        );
+        return { ...def, options: def.options.filter((o) => used.has(o.value)) };
+      }
+      if (def.dataType === "INT" || def.dataType === "RANGE") {
+        const nums = Array.from(
+          new Set(items.flatMap((t) => (t.attributes ?? []).filter((a) => a.key === def.key && a.num !== undefined).map((a) => a.num as number))),
+        ).sort((a, b) => a - b);
+        return { ...def, options: nums.map((n) => ({ value: String(n), label: `Up to ${n.toLocaleString("en-IN")}${def.unit ? " " + def.unit : ""}` })) };
+      }
+      return def;
+    })
+    .filter((def) => def.dataType === "BOOL" || def.options.length > 0);
+}
+
+export function getSearchDifficulties(items: TrekSearchItem[]): string[] {
+  return Array.from(new Set(items.map((trek) => trek.difficulty).filter(Boolean)));
+}
 
 export const SEARCH_SORT_OPTIONS: Array<{ value: SearchSort; label: string }> = [
   { value: "relevance", label: "Best match" },
@@ -296,13 +168,13 @@ function queryTokens(query: string) {
     .filter(Boolean);
 }
 
-function findExactTitleMatch(query: string) {
+function findExactTitleMatch(items: TrekSearchItem[], query: string) {
   const normalizedQuery = normalize(query);
 
   if (!normalizedQuery) return null;
 
   return (
-    TREK_SEARCH_ITEMS.find(
+    items.find(
       (trek) => normalize(trek.title) === normalizedQuery,
     ) ?? null
   );
@@ -373,11 +245,20 @@ export function parseSearchFilters(params: URLSearchParams): SearchFilters {
     ? sortParam
     : DEFAULT_SORT;
 
+  const attrs: Record<string, string> = {};
+  params.forEach((value, key) => {
+    if (key.startsWith(ATTR_PARAM_PREFIX) && value) attrs[key.slice(ATTR_PARAM_PREFIX.length)] = value;
+  });
+
   return {
     q: params.get("q") ?? "",
     region: params.get("region") ?? "",
     difficulty: params.get("difficulty") ?? "",
     sort,
+    destination: params.get("dest") ?? "",
+    date: params.get("date") ?? "",
+    maxPrice: params.get("maxPrice") ?? "",
+    attrs,
   };
 }
 
@@ -389,19 +270,57 @@ export function serializeSearchFilters(filters: SearchFilters) {
   if (filters.region) params.set("region", filters.region);
   if (filters.difficulty) params.set("difficulty", filters.difficulty);
   if (filters.sort !== DEFAULT_SORT) params.set("sort", filters.sort);
+  if (filters.destination) params.set("dest", filters.destination);
+  if (filters.date) params.set("date", filters.date);
+  if (filters.maxPrice) params.set("maxPrice", filters.maxPrice);
+  Object.entries(filters.attrs).forEach(([key, value]) => {
+    if (value) params.set(`${ATTR_PARAM_PREFIX}${key}`, value);
+  });
 
   const query = params.toString();
   return query ? `?${query}` : "";
 }
 
-export function searchTreks(filters: SearchFilters): TrekSearchResult[] {
+/** Every non-text filter, applied identically to plain and exact-title searches. */
+function matchesFilters(trek: TrekSearchItem, filters: SearchFilters): boolean {
+  if (filters.region && trek.region !== filters.region) return false;
+  if (filters.difficulty && trek.difficulty !== filters.difficulty) return false;
+
+  if (filters.destination) {
+    const wanted = normalize(filters.destination);
+    if (normalize(trek.title) !== wanted && normalize(trek.destination) !== wanted) return false;
+  }
+
+  if (filters.date && !(trek.upcomingDates ?? []).some((d) => d >= filters.date)) return false;
+
+  if (filters.maxPrice) {
+    const max = Number(filters.maxPrice);
+    if (Number.isFinite(max) && trek.priceValue > max) return false;
+  }
+
+  for (const [key, wanted] of Object.entries(filters.attrs)) {
+    const attr = (trek.attributes ?? []).find((a) => a.key === key);
+    if (!attr) return false;
+    if (attr.type === "BOOL") {
+      if (String(attr.bool) !== wanted) return false;
+    } else if (attr.type === "ENUM") {
+      if (attr.value !== wanted) return false;
+    } else {
+      const max = Number(wanted);
+      if (!Number.isFinite(max) || attr.num === undefined || attr.num > max) return false;
+    }
+  }
+
+  return true;
+}
+
+export function searchTreks(items: TrekSearchItem[], filters: SearchFilters): TrekSearchResult[] {
   const tokens = queryTokens(filters.q);
-  const exactTitleMatch = findExactTitleMatch(filters.q);
+  const exactTitleMatch = findExactTitleMatch(items, filters.q);
 
   if (
     exactTitleMatch &&
-    (!filters.region || exactTitleMatch.region === filters.region) &&
-    (!filters.difficulty || exactTitleMatch.difficulty === filters.difficulty)
+    matchesFilters(exactTitleMatch, filters)
   ) {
     return [
       {
@@ -412,9 +331,8 @@ export function searchTreks(filters: SearchFilters): TrekSearchResult[] {
     ];
   }
 
-  const results = TREK_SEARCH_ITEMS.reduce<TrekSearchResult[]>((matches, trek) => {
-    if (filters.region && trek.region !== filters.region) return matches;
-    if (filters.difficulty && trek.difficulty !== filters.difficulty) return matches;
+  const results = items.reduce<TrekSearchResult[]>((matches, trek) => {
+    if (!matchesFilters(trek, filters)) return matches;
 
     const scored = scoreTrek(trek, tokens);
 
@@ -432,16 +350,12 @@ export function searchTreks(filters: SearchFilters): TrekSearchResult[] {
   return sortSearchResults(results, filters.sort);
 }
 
-export function getSearchSuggestions(query: string, limit = 6) {
-  return searchTreks({
-    q: query,
-    region: "",
-    difficulty: "",
-    sort: "relevance",
-  }).slice(0, limit);
+export function getSearchSuggestions(items: TrekSearchItem[], query: string, limit = 6) {
+  return searchTreks(items, { ...EMPTY_FILTERS, q: query }).slice(0, limit);
 }
 
 export function getSearchSuggestionGroups(
+  items: TrekSearchItem[],
   query: string,
   limits = DEFAULT_SUGGESTION_LIMITS,
 ): SearchSuggestionGroups {
@@ -459,7 +373,7 @@ export function getSearchSuggestionGroups(
   const normalizedQuery = trimmedQuery.toLowerCase();
   const destinationMap = new Map<string, number>();
 
-  TREK_SEARCH_ITEMS.forEach((trek) => {
+  items.forEach((trek) => {
     if (trek.destination.toLowerCase().includes(normalizedQuery)) {
       destinationMap.set(
         trek.destination,
@@ -470,12 +384,12 @@ export function getSearchSuggestionGroups(
 
   return {
     popular: POPULAR_SEARCH_TERMS,
-    treks: getSearchSuggestions(trimmedQuery, limits.treks),
+    treks: getSearchSuggestions(items, trimmedQuery, limits.treks),
     destinations: Array.from(destinationMap, ([name, count]) => ({
       name,
       count,
     })).slice(0, limits.destinations),
-    regions: SEARCH_REGIONS.filter((region) =>
+    regions: getSearchRegions(items).filter((region) =>
       region.toLowerCase().includes(normalizedQuery),
     ).slice(0, limits.regions),
   };
@@ -483,7 +397,7 @@ export function getSearchSuggestionGroups(
 
 export function getSearchSuggestionActions(
   query: string,
-  groups = getSearchSuggestionGroups(query),
+  groups: SearchSuggestionGroups,
 ): SearchSuggestionAction[] {
   const trimmedQuery = query.trim();
 

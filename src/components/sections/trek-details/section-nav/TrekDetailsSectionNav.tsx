@@ -2,22 +2,10 @@
 
 import { useEffect, useState } from "react";
 
-const sectionLinks = [
-  { id: "overview", label: "Overview" },
-  { id: "route-details", label: "Route" },
-  { id: "itinerary", label: "Itinerary" },
-  { id: "pickup-drop", label: "Pickup" },
-  { id: "included", label: "Included" },
-  { id: "things-to-carry", label: "Carry" },
-  { id: "safety", label: "Safety" },
-  { id: "policies", label: "Policies" },
-  { id: "photos", label: "Photos" },
-  { id: "reviews", label: "Reviews" },
-  { id: "faq", label: "FAQ" },
-];
+type SectionLink = { id: string; label: string };
 
-export default function TrekDetailsSectionNav() {
-  const [activeSection, setActiveSection] = useState(sectionLinks[0].id);
+export default function TrekDetailsSectionNav({ sections: sectionLinks }: { sections: SectionLink[] }) {
+  const [activeSection, setActiveSection] = useState(sectionLinks[0]?.id ?? "overview");
 
   useEffect(() => {
     const sections = sectionLinks
@@ -45,7 +33,7 @@ export default function TrekDetailsSectionNav() {
     sections.forEach((section) => observer.observe(section));
 
     return () => observer.disconnect();
-  }, []);
+  }, [sectionLinks]);
 
   return (
     <div className="sticky top-0 z-40 w-full px-4 text-[#101010] sm:px-6 lg:px-[30px]">

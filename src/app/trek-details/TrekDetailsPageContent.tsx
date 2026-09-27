@@ -7,42 +7,28 @@ import TrekDetailsHeroImage from "@/components/sections/trek-details/hero/TrekDe
 import TrekDetailsSectionNav from "@/components/sections/trek-details/section-nav/TrekDetailsSectionNav";
 import TripInfoSection from "@/components/sections/trek-details/trip-info/TripInfoSection";
 import YouMightAlsoLoveSection from "@/components/sections/trek-details/you-might-also-love/YouMightAlsoLoveSection";
+import { type TrekView, visibleSections } from "@/lib/trek";
 
-export default function TrekDetailsPageContent() {
+export default function TrekDetailsPageContent({ trek }: { trek: TrekView }) {
   const siteUrl = "https://backbysunday.in";
+  const pageUrl = `${siteUrl}/trek-details/${trek.slug}`;
   const jsonLd = [
     {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: "Home",
-          item: siteUrl,
-        },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: "Vasota Fort Trek",
-          item: `${siteUrl}/trek-details`,
-        },
+        { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+        { "@type": "ListItem", position: 2, name: trek.title, item: pageUrl },
       ],
     },
     {
       "@context": "https://schema.org",
       "@type": "TouristTrip",
-      name: "Vasota Fort Trek from Pune",
-      description:
-        "A weekend trek to Vasota Fort with forest trails, backwater views, and Sahyadri landscapes near Pune.",
-      image: `${siteUrl}/Hero/card-1.png`,
-      url: `${siteUrl}/trek-details`,
-      provider: {
-        "@type": "Organization",
-        name: "BackBySunday",
-        url: siteUrl,
-      },
-      touristType: "Weekend trekkers",
+      name: trek.title,
+      description: trek.headline,
+      image: trek.photos[0] ?? `${siteUrl}/Hero/card-1.png`,
+      url: pageUrl,
+      provider: { "@type": "Organization", name: "BackBySunday", url: siteUrl },
     },
   ];
 
@@ -54,13 +40,13 @@ export default function TrekDetailsPageContent() {
         <Navbar variant="solid" logoSrc="/Footer/footer-logo.png" />
       </header>
 
-      <TrekDetailsHeroImage />
+      <TrekDetailsHeroImage trek={trek} />
       <div className="bg-white">
-        <TrekDetailsSectionNav />
-        <TripInfoSection />
+        <TrekDetailsSectionNav sections={visibleSections(trek)} />
+        <TripInfoSection trek={trek} />
       </div>
-      <YouMightAlsoLoveSection />
-      <MobileTripBookingBar />
+      <YouMightAlsoLoveSection currentSlug={trek.slug} />
+      <MobileTripBookingBar trek={trek} />
       <Footer />
     </main>
   );

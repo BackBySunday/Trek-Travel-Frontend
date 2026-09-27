@@ -9,15 +9,18 @@ import {
   getSearchSuggestionActions,
   getSearchSuggestionGroups,
   parseSearchFilters,
+  EMPTY_FILTERS,
+  getSearchDifficulties,
+  getUsableFilterDefs,
+  getSearchRegions,
   searchTreks,
-  SEARCH_DIFFICULTIES,
-  SEARCH_REGIONS,
   SEARCH_SORT_OPTIONS,
   serializeSearchFilters,
   type DestinationSuggestion,
   type SearchFilters,
   type TrekSearchItem,
 } from "@/lib/search";
+import { useFilterDefs, useTrekItems } from "@/components/providers/TrekItemsProvider";
 
 function SearchIcon() {
   return (
@@ -241,7 +244,7 @@ function FeedSearchSuggestions({
 
 function updateFilter(
   filters: SearchFilters,
-  key: keyof SearchFilters,
+  key: Exclude<keyof SearchFilters, "attrs">,
   value: string,
 ) {
   return {
@@ -251,6 +254,8 @@ function updateFilter(
 }
 
 export default function SearchFeedPage() {
+  const items = useTrekItems();
+  const filterDefs = useFilterDefs();
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -260,15 +265,15 @@ export default function SearchFeedPage() {
     () => parseSearchFilters(searchParams),
     [searchParams],
   );
-  const results = useMemo(() => searchTreks(filters), [filters]);
+  const results = useMemo(() => searchTreks(items, filters), [items, filters]);
   const [queryDraft, setQueryDraft] = useState(filters.q);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
-  const [openFilter, setOpenFilter] = useState<"region" | "difficulty" | "sort" | null>(null);
+  const [openFilter, setOpenFilter] = useState<string | null>(null);
   const trimmedQueryDraft = queryDraft.trim();
   const suggestionGroups = useMemo(
-    () => getSearchSuggestionGroups(trimmedQueryDraft),
-    [trimmedQueryDraft],
+    () => getSearchSuggestionGroups(items, trimmedQueryDraft),
+    [items, trimmedQueryDraft],
   );
   const suggestionActions = useMemo(
     () => getSearchSuggestionActions(trimmedQueryDraft, suggestionGroups),
@@ -325,14 +330,33 @@ export default function SearchFeedPage() {
   };
 
   const hasActiveFilters =
-    filters.q.trim() || filters.region || filters.difficulty || filters.sort !== "relevance";
+    filters.q.trim() ||
+    filters.region ||
+    filters.difficulty ||
+    filters.sort !== "relevance" ||
+    filters.destination ||
+    filters.date ||
+    filters.maxPrice ||
+    Object.keys(filters.attrs).length > 0;
+  const usableDefs = getUsableFilterDefs(filterDefs, items);
+  const priceSteps = getPriceSteps(items);
+  const priceOptions = [
+    { value: "", label: "Any price" },
+    ...priceSteps.map((n) => ({ value: String(n), label: `Up to Rs. ${n.toLocaleString("en-IN")}` })),
+  ];
+  const setAttr = (key: string, value: string) => {
+    const attrs = { ...filters.attrs };
+    if (value) attrs[key] = value;
+    else delete attrs[key];
+    setFilters({ ...filters, attrs });
+  };
   const regionOptions = [
     { value: "", label: "All regions" },
-    ...SEARCH_REGIONS.map((region) => ({ value: region, label: region })),
+    ...getSearchRegions(items).map((region) => ({ value: region, label: region })),
   ];
   const difficultyOptions = [
     { value: "", label: "All difficulties" },
-    ...SEARCH_DIFFICULTIES.map((difficulty) => ({
+    ...getSearchDifficulties(items).map((difficulty) => ({
       value: difficulty,
       label: difficulty,
     })),
@@ -392,12 +416,7 @@ export default function SearchFeedPage() {
               <button
                 type="button"
                 onClick={() =>
-                  applyFilters({
-                    q: "",
-                    region: "",
-                    difficulty: "",
-                    sort: "relevance",
-                  })
+                  applyFilters(EMPTY_FILTERS)
                 }
                 className="w-fit rounded-full border border-[#D7D7D7] px-3.5 py-1.5 font-urbanist text-sm font-semibold text-[#101010] transition-colors hover:border-[#101010] sm:px-4 sm:py-2"
               >
@@ -553,6 +572,70 @@ export default function SearchFeedPage() {
                 setFilters(updateFilter(filters, "sort", value));
               }}
             />
+
+            {priceSteps.length > 1 ? (
+              <FilterDropdown
+                label="Any price"
+                value={filters.maxPrice}
+                options={priceOptions}
+                open={openFilter === "price"}
+                onToggle={() => {
+                  setSuggestionsOpen(false);
+                  setOpenFilter((current) => (current === "price" ? null : "price"));
+                }}
+                onChange={(value) => {
+                  setOpenFilter(null);
+                  setFilters(updateFilter(filters, "maxPrice", value));
+                }}
+              />
+            ) : null}
+
+            {usableDefs.map((def) => {
+              const options =
+                def.dataType === "BOOL"
+                  ? [{ value: "", label: `Any ${def.label.toLowerCase()}` }, { value: "true", label: def.label }]
+                  : [{ value: "", label: `Any ${def.label.toLowerCase()}` }, ...def.options];
+              return (
+                <FilterDropdown
+                  key={def.key}
+                  label={options[0].label}
+                  value={filters.attrs[def.key] ?? ""}
+                  options={options}
+                  open={openFilter === `attr:${def.key}`}
+                  onToggle={() => {
+                    setSuggestionsOpen(false);
+                    setOpenFilter((current) => (current === `attr:${def.key}` ? null : `attr:${def.key}`));
+                  }}
+                  onChange={(value) => {
+                    setOpenFilter(null);
+                    setAttr(def.key, value);
+                  }}
+                />
+              );
+            })}
+
+            {filters.destination || filters.date ? (
+              <div className="flex flex-wrap items-center gap-2 sm:col-span-full">
+                {filters.destination ? (
+                  <button
+                    type="button"
+                    onClick={() => setFilters(updateFilter(filters, "destination", ""))}
+                    className="rounded-full border border-[#D7D7D7] bg-white px-3.5 py-1.5 font-urbanist text-sm font-medium text-[#101010]"
+                  >
+                    Destination: {filters.destination} &times;
+                  </button>
+                ) : null}
+                {filters.date ? (
+                  <button
+                    type="button"
+                    onClick={() => setFilters(updateFilter(filters, "date", ""))}
+                    className="rounded-full border border-[#D7D7D7] bg-white px-3.5 py-1.5 font-urbanist text-sm font-medium text-[#101010]"
+                  >
+                    Departing from {filters.date} &times;
+                  </button>
+                ) : null}
+              </div>
+            ) : null}
           </div>
         </div>
 
@@ -574,12 +657,7 @@ export default function SearchFeedPage() {
             <button
               type="button"
               onClick={() =>
-                applyFilters({
-                  q: "",
-                  region: "",
-                  difficulty: "",
-                  sort: "relevance",
-                })
+                applyFilters(EMPTY_FILTERS)
               }
               className="mt-5 rounded-full bg-[#101010] px-5 py-2.5 font-urbanist text-sm font-semibold text-white"
             >
@@ -590,4 +668,16 @@ export default function SearchFeedPage() {
       </div>
     </section>
   );
+}
+
+/** "Up to Rs. N" steps derived from the actual prices of the listed treks. */
+function getPriceSteps(items: { priceValue: number }[]): number[] {
+  if (items.length === 0) return [];
+  const prices = items.map((t) => t.priceValue);
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
+  const step = max - min > 6000 ? 2000 : max - min > 2500 ? 1000 : 500;
+  const steps: number[] = [];
+  for (let n = Math.ceil(min / step) * step; n < max + step; n += step) steps.push(n);
+  return steps.length ? steps : [Math.ceil(max / 100) * 100];
 }

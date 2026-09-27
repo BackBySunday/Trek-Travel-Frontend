@@ -1,4 +1,6 @@
 import Footer from "@/components/layout/Footer";
+import { TrekItemsProvider } from "@/components/providers/TrekItemsProvider";
+import { getFilterDefs, getTrekSearchItems } from "@/lib/trekCards";
 import JsonLd from "@/components/layout/JsonLd";
 import Navbar from "@/components/layout/Navbar";
 import CTASection from "@/components/sections/home/cta/CTASection";
@@ -11,7 +13,10 @@ import SnapshotsSection from "@/components/sections/home/snapshots/SnapshotsSect
 import TopCategoriesSection from "@/components/sections/home/top-categories/TopCategoriesSection";
 import WhyTrekWithUsSection from "@/components/sections/home/why-trek-with-us/WhyTrekWithUsSection";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const [trekItems, filterDefs] = await Promise.all([getTrekSearchItems(), getFilterDefs()]);
   const siteUrl = "https://backbysunday.in";
   const jsonLd = [
     {
@@ -56,6 +61,7 @@ export default function Home() {
   ];
 
   return (
+    <TrekItemsProvider items={trekItems} filterDefs={filterDefs}>
     <main className="relative isolate flex min-h-[100svh] w-full flex-col items-center overflow-x-hidden bg-[var(--bg)] px-4 text-white [--bg:#eef1f6] sm:min-h-[900px] sm:px-6 lg:min-h-[100svh] lg:px-8">
       <JsonLd data={jsonLd} />
       <HeroBackgroundSlider />
@@ -78,5 +84,6 @@ export default function Home() {
         <Footer />
       </div>
     </main>
+    </TrekItemsProvider>
   );
 }

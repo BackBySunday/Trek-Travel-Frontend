@@ -2,26 +2,9 @@
 
 import { type ReactNode, useEffect, useState } from "react";
 import Image from "next/image";
+import type { TrekView } from "@/lib/trek";
 
 type LabelValuePair = [label: string, value: string];
-
-const itineraryImages = [
-  "/Hero/card-1.png",
-  "/Hero/card-2.png",
-  "/Hero/card-3.png",
-];
-
-const trailImages = [
-  "/Hero/card-1.png",
-  "/Hero/card-2.png",
-  "/Hero/card-3.png",
-  "/Hero/sahyadri-fort-sunrise.png",
-  "/Featured-Destination/featured-pune-upper.png",
-  "/Featured-Destination/featured-pune-lower.png",
-  "/Featured-Destination/featured-uttarakhand-secondary.png",
-  "/Featured-Destination/featured-himachal-pradesh-upper.png",
-  "/Hero/mountain-ridge-trail.jpg",
-];
 
 const trailImageSpans = [
   "col-span-6 row-span-2 sm:col-span-7",
@@ -35,148 +18,17 @@ const trailImageSpans = [
   "col-span-6 sm:col-span-7",
 ];
 
-const trailPreviewImages = trailImages;
-
-const trekFacts: LabelValuePair[] = [
-  ["Region", "Sahyadris"],
-  ["Base village", "Bamnoli"],
-  ["Difficulty", "Light"],
-  ["Trail type", "Forest + fort"],
-  ["Terrain", "Boat, forest, gradual climb"],
-  ["Best for", "Weekend trekkers"],
-  ["Best season", "Oct-Feb"],
-];
-
-const routeDetails: LabelValuePair[] = [
-  ["Trail distance", "18 km approx."],
-  ["Trail time", "6 hours"],
-  ["Highest point", "1,400 m"],
-  ["Route feel", "Backwater crossing, forest walk, fort climb"],
-];
-
-const pickupDetails: LabelValuePair[] = [
-  ["Pickup city", "Pune"],
-  ["Meeting point", "Toll Road - Dehradun"],
-  ["Start window", "Early morning"],
-  ["Return", "Evening, traffic dependent"],
-];
-
-const includedItems = [
-  "Forest entry coordination",
-  "Local trek lead",
-  "Basic first-aid support",
-  "Boat and trail coordination",
-];
-
-const excludedItems = [
-  "Personal expenses",
-  "Pickup outside listed points",
-  "Meals not mentioned",
-  "Personal gear or rentals",
-];
-
-const thingsToCarry = [
-  "Trekking shoes with good grip",
-  "Two litres of water",
-  "Rain layer or windcheater",
-  "Personal medicines",
-  "Small daypack and torch",
-];
-
-const safetyItems = [
-  "Small group pacing with a local lead",
-  "Basic first-aid carried by the team",
-  "Route decisions depend on weather and forest access",
-  "Beginner friendly, but uneven forest patches need attention",
-];
-
-const policyItems = [
-  "Operator cancellation rules apply after booking.",
-  "Route timing may shift because of weather, forest access, or traffic.",
-  "Travelers should follow guide instructions during boat and forest sections.",
-];
-
-const reviews = [
-  {
-    name: "Aarav P.",
-    stars: 5,
-    daysAgo: 12,
-    text: "The boat ride and forest section made the trek feel different from a usual weekend climb.",
-    trek: "Vasota Fort Trek",
-  },
-  {
-    name: "Nisha K.",
-    stars: 5,
-    daysAgo: 28,
-    text: "Well paced and easy to follow. The pickup clarity helped a lot before booking.",
-    trek: "Vasota Fort Trek",
-  },
-  {
-    name: "Rahul S.",
-    stars: 4,
-    daysAgo: 47,
-    text: "Good beginner trek with enough views and quiet trail time to feel worth the weekend.",
-    trek: "Vasota Fort Trek",
-  },
-];
-
-const ratingDistribution = [78, 15, 4, 2, 1];
-
-const faqs = [
-  {
-    question: "Is this trek beginner friendly?",
-    answer:
-      "Yes, it suits beginners with average fitness, but the trail can still have uneven forest patches and changing weather.",
-  },
-  {
-    question: "Is pickup included?",
-    answer:
-      "Pickup is available from the listed fixed point. Any pickup outside the listed route is not included.",
-  },
-  {
-    question: "Can the route change?",
-    answer:
-      "Yes. Forest access, boat timing, rain, and local conditions can change the exact route or schedule.",
-  },
-];
-
-const itineraryDays = [
-  {
-    day: "Day 1",
-    title: "Depart from Pune and reach Bamnoli",
-    description:
-      "Start early from Pune and drive toward Bamnoli near the Koyna backwaters. After basic checks and local coordination, continue toward the Vasota trail access point.",
-    isOpen: true,
-  },
-  {
-    day: "Day 2",
-    title: "Boat ride across Shivsagar backwaters",
-    description:
-      "Cross the backwaters by boat and enter the forested section leading toward Vasota Fort. The route is known for quiet water views and dense Sahyadri vegetation.",
-  },
-  {
-    day: "Day 3",
-    title: "Trek to Vasota Fort",
-    description:
-      "Walk through forest trails and gradual climbs to reach the fort area. Explore viewpoints, old ruins, and wide views of the Koyna landscape before beginning the descent.",
-  },
-  {
-    day: "Day 4",
-    title: "Return to Bamnoli and Pune",
-    description:
-      "Return by boat to Bamnoli and continue the drive back toward Pune, with arrival depending on weather, traffic, and local route conditions.",
-  },
-];
-
-export default function TripInfoOverview() {
+export default function TripInfoOverview({ trek }: { trek: TrekView }) {
+  const trailImages = trek.photos;
+  const trailPreviewImages = trailImages.slice(0, 9);
+  const itineraryImages = trailImages.slice(0, 3);
+  const itineraryDays = trek.itinerary;
+  const faqs = trek.faqs;
+  const { rating, reviews } = trek;
   const [openDays, setOpenDays] = useState(() =>
-    new Set(
-      itineraryDays
-        .filter((day) => day.isOpen)
-        .map((day) => day.day),
-    ),
+    new Set(itineraryDays.slice(0, 1).map((day) => day.day)),
   );
-  const [openFaq, setOpenFaq] = useState(faqs[0].question);
+  const [openFaq, setOpenFaq] = useState(faqs[0]?.question ?? "");
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
 
@@ -257,7 +109,7 @@ export default function TripInfoOverview() {
       document.body.style.overflow = originalOverflow;
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isGalleryOpen, selectedPhotoIndex]);
+  }, [isGalleryOpen, selectedPhotoIndex, trailImages.length]);
 
   return (
     <div className="flex w-full flex-col items-start gap-8 text-[#101010] sm:gap-9">
@@ -269,34 +121,46 @@ export default function TripInfoOverview() {
           <p className="font-urbanist text-2xl font-medium leading-tight text-[#101010] sm:text-3xl lg:text-[34px]">
             Overview
           </p>
-          <h2 className="mt-6 font-urbanist text-[1.5rem] font-light italic leading-[1.22] text-[#101010] sm:text-[1.7rem] lg:text-[30px]">
-            <strong className="font-medium">Vasota Fort</strong> is one of the
-            Sahyadri&apos;s most rewarding forest routes, with a quiet boat
-            approach and fort views that earn every step.
-          </h2>
-          <p className="mt-6 max-w-[640px] font-urbanist text-sm leading-6 tracking-[0.02em] text-[#666] sm:text-base">
-            This weekend route is built for travellers from Pune who want a
-            managed escape with clear pickup coordination, a local trek lead,
-            steady pacing, and enough time on the trail to enjoy the forest,
-            backwaters, and fort viewpoints without feeling rushed.
-          </p>
+          {trek.headline ? (
+            <h2 className="mt-6 font-urbanist text-[1.5rem] font-light italic leading-[1.22] text-[#101010] sm:text-[1.7rem] lg:text-[30px]">
+              {trek.destination && trek.headline.startsWith(trek.destination) ? (
+                <>
+                  <strong className="font-medium">{trek.destination}</strong>
+                  {trek.headline.slice(trek.destination.length)}
+                </>
+              ) : (
+                trek.headline
+              )}
+            </h2>
+          ) : null}
+          {trek.description.map((paragraph, index) => (
+            <p
+              key={index}
+              className="mt-6 max-w-[640px] font-urbanist text-sm leading-6 tracking-[0.02em] text-[#666] sm:text-base"
+            >
+              {paragraph}
+            </p>
+          ))}
         </div>
 
-        <FactList items={trekFacts} />
+        <FactList items={trek.facts} />
       </section>
 
+{trek.routeFacts.length > 0 && (
       <CompactSection
         id="route-details"
         title="Route Details"
-        description="Forest paths, a backwater crossing, and a steady fort climb in one compact weekend route."
+        description={trek.intro["route-details"] ?? "The route at a glance."}
       >
-        <FactList items={routeDetails} compact />
+        <FactList items={trek.routeFacts} compact />
       </CompactSection>
+)}
 
+{itineraryDays.length > 0 && (
       <section id="itinerary" className="flex w-full scroll-mt-20 flex-col items-start gap-6">
         <SectionHeading
           title="Full Itinerary"
-          description="From Pune to Bamnoli, across the Koyna backwaters, and up to Vasota Fort."
+          description={trek.intro["itinerary"] ?? "Your plan, day by day."}
         />
         <DashedDivider />
 
@@ -344,11 +208,11 @@ export default function TripInfoOverview() {
                     </div>
                   </div>
 
-                  {isOpen && (
+                  {isOpen && itineraryImages.length > 0 && (
                     <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-3">
                       {itineraryImages.map((image, imageIndex) => (
                         <button
-                          key={image}
+                          key={`${image}-${imageIndex}`}
                           type="button"
                           className="group relative h-[160px] overflow-hidden rounded-[20px] bg-[#F6F7F7] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#101010]/20 sm:h-[175px] lg:h-[190px]"
                           onClick={() => openPhotoViewer(image)}
@@ -356,6 +220,7 @@ export default function TripInfoOverview() {
                         >
                           <Image
                             src={image}
+                            unoptimized={/^https?:/.test(image)}
                             alt={`Itinerary ${day.day} preview ${imageIndex + 1}`}
                             fill
                             sizes="(max-width: 640px) 100vw, 260px"
@@ -373,66 +238,79 @@ export default function TripInfoOverview() {
           })}
         </div>
       </section>
+)}
 
+{trek.pickupFacts.length > 0 && (
       <CompactSection
         id="pickup-drop"
         title="Pickup & Drop"
-        description="Fixed pickup keeps the city exit and return plan predictable."
+        description={trek.intro["pickup-drop"] ?? "Where you board and when."}
       >
-        <FactList items={pickupDetails} compact />
+        <FactList items={trek.pickupFacts} compact />
       </CompactSection>
+)}
 
+{trek.included.length + trek.excluded.length > 0 && (
       <section id="included" className="flex w-full scroll-mt-20 flex-col items-start gap-4">
         <SectionHeading
           title="Included / Not Included"
-          description="A clear split of what the operator manages and what stays with the traveller."
+          description={trek.intro["included"] ?? "What the operator manages and what stays with you."}
         />
         <div className="grid w-full max-w-[640px] gap-3.5 sm:grid-cols-2">
-          <Checklist title="Included" items={includedItems} icon="check" />
-          <Checklist title="Not included" items={excludedItems} icon="cross" />
+          <Checklist title="Included" items={trek.included} icon="check" />
+          <Checklist title="Not included" items={trek.excluded} icon="cross" />
         </div>
       </section>
+)}
 
+{trek.carry.length > 0 && (
       <CompactSection
         id="things-to-carry"
         title="Things to Carry"
-        description="The small essentials that make the forest and boat sections easier."
+        description={trek.intro["things-to-carry"] ?? "Pack these before you leave."}
       >
-        <SimpleList items={thingsToCarry} />
+        <SimpleList items={trek.carry} />
       </CompactSection>
+)}
 
+{trek.safety.length > 0 && (
       <CompactSection
         id="safety"
         title="Safety"
-        description="How the team manages pacing, route calls, and basic trail support."
+        description={trek.intro["safety"] ?? "How the team keeps the group safe."}
       >
-        <SimpleList items={safetyItems} />
+        <SimpleList items={trek.safety} />
       </CompactSection>
+)}
 
+{trek.policies.length > 0 && (
       <CompactSection
         id="policies"
         title="Policies"
-        description="Booking rules and route changes to know before reserving."
+        description={trek.intro["policies"] ?? "Rules to know before reserving."}
       >
-        <SimpleList items={policyItems} />
+        <SimpleList items={trek.policies} />
       </CompactSection>
+)}
 
+{trailImages.length > 0 && (
       <section id="photos" className="flex w-full scroll-mt-20 flex-col items-start gap-5">
         <SectionHeading
           title="Photos"
-          description="A quick visual sense of the backwater approach, forest path, and fort-side terrain."
+          description={trek.intro["photos"] ?? "A quick visual sense of the route."}
         />
         <div className="grid w-full max-w-[900px] auto-rows-[126px] grid-cols-6 gap-3 sm:auto-rows-[148px] sm:grid-cols-12">
           {trailPreviewImages.map((image, index) => (
             <div
-              key={image}
+              key={`${image}-${index}`}
               className={`group relative overflow-hidden rounded-[20px] bg-[#F6F7F7] ${
                 index > 3 ? "hidden sm:block" : ""
-              } ${trailImageSpans[index]}`}
+              } ${trailImageSpans[index % trailImageSpans.length]}`}
             >
               <Image
                 src={image}
-                alt={`Vasota Fort trail preview ${index + 1}`}
+                unoptimized={/^https?:/.test(image)}
+                alt={`${trek.title} trail preview ${index + 1}`}
                 fill
                 sizes="(max-width: 640px) 100vw, 520px"
                 className="object-cover transition-transform duration-300 group-hover:scale-[1.025]"
@@ -441,7 +319,7 @@ export default function TripInfoOverview() {
                 type="button"
                 className="absolute inset-0 z-[1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/80"
                 onClick={() => openPhotoViewer(image)}
-                aria-label={`Open Vasota Fort trail preview ${index + 1}`}
+                aria-label={`Open ${trek.title} trail preview ${index + 1}`}
               />
               {(index === 3 || index === trailPreviewImages.length - 1) && (
                 <>
@@ -472,83 +350,71 @@ export default function TripInfoOverview() {
           ))}
         </div>
       </section>
+)}
 
       <section id="reviews" className="flex w-full scroll-mt-20 flex-col items-start gap-5">
         <SectionHeading
           title="Reviews"
-          description="Recent traveller notes from the same trek."
+          description={rating ? "Recent traveller notes from this trek." : "No reviews yet — be the first after your trek."}
         />
-        <div className="flex w-full flex-col items-start gap-4">
-          <div className="flex w-full max-w-[500px] items-center gap-5 rounded-[20px] border border-[#E5E5E5] bg-[#F6F7F7] p-4 sm:p-5">
-            <div className="flex items-end gap-2">
-              <span className="font-urbanist text-[42px] font-medium leading-none text-[#101010]">
-                4.8
-              </span>
-              <span className="pb-1 font-urbanist text-sm text-[#666]">
-                128 reviews
-              </span>
-            </div>
-            <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-              {ratingDistribution.slice(0, 3).map((pct, index) => (
-                <div key={pct} className="flex items-center gap-2">
-                  <span className="w-3 font-urbanist text-xs text-[#8E8E8E]">
-                    {5 - index}
+        {rating || reviews.length > 0 ? (
+          <div className="flex w-full flex-col items-start gap-4">
+            {rating ? (
+              <div className="flex w-full max-w-[500px] items-center gap-5 rounded-[20px] border border-[#E5E5E5] bg-[#F6F7F7] p-4 sm:p-5">
+                <div className="flex items-end gap-2">
+                  <span className="font-urbanist text-[42px] font-medium leading-none text-[#101010]">
+                    {rating.avg.toFixed(1)}
                   </span>
-                  <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#E5E5E5]">
-                    <span
-                      className="block h-full rounded-full bg-[#FEB531]"
-                      style={{ width: `${pct}%` }}
-                    />
+                  <span className="pb-1 font-urbanist text-sm text-[#666]">
+                    {rating.count} review{rating.count === 1 ? "" : "s"}
                   </span>
-                  <span className="w-8 text-right font-urbanist text-xs text-[#8E8E8E]">
-                    {pct}%
-                  </span>
+                </div>
+                <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+                  {rating.distribution.slice(0, 3).map((pct, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <span className="w-3 font-urbanist text-xs text-[#8E8E8E]">{5 - index}</span>
+                      <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#E5E5E5]">
+                        <span className="block h-full rounded-full bg-[#FEB531]" style={{ width: `${pct}%` }} />
+                      </span>
+                      <span className="w-8 text-right font-urbanist text-xs text-[#8E8E8E]">{pct}%</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+            <div className="flex w-full max-w-[780px] gap-3.5 overflow-x-auto pb-2 pr-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {reviews.map((review, reviewIndex) => (
+                <div key={reviewIndex} className="w-[260px] shrink-0 sm:w-[280px]">
+                  <figure className="flex h-full min-h-[146px] flex-col gap-2.5 rounded-[20px] border border-[#E5E5E5] bg-[#F6F7F7] p-4">
+                    <div className="flex items-center gap-2.5">
+                      <span className="grid h-8 w-8 place-items-center rounded-full bg-[#1A1A17] font-urbanist text-xs text-white">
+                        T
+                      </span>
+                      <div>
+                        <p className="font-urbanist text-sm font-medium text-[#101010]">Verified traveller</p>
+                        <p className="flex items-center gap-0.5">
+                          {Array.from({ length: 5 }).map((_, index) => (
+                            <span key={index} className={index < review.stars ? "text-[#FEB531]" : "text-[#D7D7D7]"}>
+                              <StarIcon />
+                            </span>
+                          ))}
+                        </p>
+                      </div>
+                      <span className="ml-auto font-urbanist text-xs text-[#8E8E8E]">{review.daysAgo}d ago</span>
+                    </div>
+                    <blockquote className="font-urbanist text-[13px] leading-relaxed text-[#666]">
+                      {review.text}
+                    </blockquote>
+                    <figcaption className="mt-auto font-urbanist text-xs text-[#8E8E8E]">on {trek.title}</figcaption>
+                  </figure>
                 </div>
               ))}
             </div>
           </div>
-          <div className="flex w-full max-w-[780px] gap-3.5 overflow-x-auto pb-2 pr-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {reviews.map((review) => (
-              <div key={review.name} className="w-[260px] shrink-0 sm:w-[280px]">
-                <figure className="flex h-full min-h-[146px] flex-col gap-2.5 rounded-[20px] border border-[#E5E5E5] bg-[#F6F7F7] p-4">
-                  <div className="flex items-center gap-2.5">
-                    <span className="grid h-8 w-8 place-items-center rounded-full bg-[#1A1A17] font-urbanist text-xs text-white">
-                      {review.name[0]}
-                    </span>
-                    <div>
-                      <p className="font-urbanist text-sm font-medium text-[#101010]">
-                        {review.name}
-                      </p>
-                      <p className="flex items-center gap-0.5">
-                        {Array.from({ length: 5 }).map((_, index) => (
-                          <span
-                            key={index}
-                            className={
-                              index < review.stars ? "text-[#FEB531]" : "text-[#D7D7D7]"
-                            }
-                          >
-                            <StarIcon />
-                          </span>
-                        ))}
-                      </p>
-                    </div>
-                    <span className="ml-auto font-urbanist text-xs text-[#8E8E8E]">
-                      {review.daysAgo}d ago
-                    </span>
-                  </div>
-                  <blockquote className="font-urbanist text-[13px] leading-relaxed text-[#666]">
-                    {review.text}
-                  </blockquote>
-                  <figcaption className="mt-auto font-urbanist text-xs text-[#8E8E8E]">
-                    on {review.trek}
-                  </figcaption>
-                </figure>
-              </div>
-            ))}
-          </div>
-        </div>
+        ) : null}
       </section>
 
+{faqs.length > 0 && (
       <section id="faq" className="flex w-full scroll-mt-20 flex-col items-start gap-4">
         <SectionHeading
           title="FAQ"
@@ -586,6 +452,7 @@ export default function TripInfoOverview() {
           })}
         </div>
       </section>
+)}
 
       {isGalleryOpen && selectedPhotoIndex === null && (
         <div
@@ -616,25 +483,26 @@ export default function TripInfoOverview() {
                 id="trek-gallery-title"
                 className="font-urbanist text-2xl font-medium leading-tight text-[#101010] sm:text-3xl lg:text-[34px]"
               >
-                Vasota Fort Photos
+                {trek.title} Photos
               </h2>
               <p className="max-w-[680px] font-urbanist text-sm leading-6 tracking-[0.02em] text-[#666] sm:text-base">
-                Backwaters, forest approach, trail details, and fort-side views from this route.
+                {trek.intro.photos ?? "Photos from this route."}
               </p>
             </div>
 
             <div className="grid auto-rows-[120px] grid-cols-6 gap-3 sm:auto-rows-[180px] sm:grid-cols-12 lg:auto-rows-[220px]">
               {trailImages.map((image, index) => (
                 <button
-                  key={`${image}-gallery`}
+                  key={`${image}-gallery-${index}`}
                   type="button"
-                  className={`group relative overflow-hidden rounded-[20px] bg-[#F6F7F7] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#101010]/20 ${trailImageSpans[index]}`}
+                  className={`group relative overflow-hidden rounded-[20px] bg-[#F6F7F7] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#101010]/20 ${trailImageSpans[index % trailImageSpans.length]}`}
                   onClick={() => setSelectedPhotoIndex(index)}
-                  aria-label={`Open Vasota Fort gallery photo ${index + 1}`}
+                  aria-label={`Open ${trek.title} gallery photo ${index + 1}`}
                 >
                   <Image
                     src={image}
-                    alt={`Vasota Fort gallery photo ${index + 1}`}
+                    unoptimized={/^https?:/.test(image)}
+                    alt={`${trek.title} gallery photo ${index + 1}`}
                     fill
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 360px"
                     className="object-cover transition-transform duration-300 group-hover:scale-[1.025]"
@@ -651,7 +519,7 @@ export default function TripInfoOverview() {
           className="fixed inset-0 z-[90] flex items-center justify-center overflow-hidden bg-black/80 px-4 py-5 text-white backdrop-blur-xl sm:px-6 lg:px-[30px]"
           role="dialog"
           aria-modal="true"
-          aria-label={`Vasota Fort photo ${selectedPhotoIndex + 1} of ${trailImages.length}`}
+          aria-label={`${trek.title} photo ${selectedPhotoIndex + 1} of ${trailImages.length}`}
         >
           <button
             type="button"
@@ -686,7 +554,8 @@ export default function TripInfoOverview() {
               <div className="relative h-full max-h-[78vh] w-full overflow-hidden rounded-[20px]">
                 <Image
                   src={trailImages[selectedPhotoIndex]}
-                  alt={`Vasota Fort enlarged gallery photo ${selectedPhotoIndex + 1}`}
+                  unoptimized={/^https?:/.test(trailImages[selectedPhotoIndex])}
+                  alt={`${trek.title} enlarged gallery photo ${selectedPhotoIndex + 1}`}
                   fill
                   sizes="100vw"
                   className="object-contain"

@@ -9,11 +9,6 @@ import type {
   OperatorTrek,
 } from "../OperatorProfileSection";
 
-const currentDate = new Date("2026-09-07T00:00:00+05:30");
-
-const quote =
-  "Turned up nervous and came back already planning the next one. The leads never once made me feel slow.";
-
 function formatCount(value: number) {
   if (value >= 1000) {
     return `${Number((value / 1000).toFixed(1))}k`;
@@ -36,17 +31,9 @@ export default function TreksPanel({
   treks,
 }: TreksPanelProps) {
   const featured = treks[0];
-  const years = currentDate.getFullYear() - operator.since;
-  const soon = currentDate.getTime() + 90 * 86_400_000;
-  const upcomingCount = treks.reduce(
-    (count, trek) =>
-      count +
-      trek.upcomingDates.filter((date) => {
-        const time = new Date(date).getTime();
-        return time >= currentDate.getTime() && time <= soon;
-      }).length,
-    0,
-  );
+  const quote = reviews[0]?.text;
+  const years = operator.yearsOnPlatform;
+  const upcomingCount = operator.upcomingDepartures;
 
   return (
     <>
@@ -54,12 +41,13 @@ export default function TreksPanel({
         {featured ? (
           <div className="col-span-2 lg:row-span-2">
             <Link
-              href="/trek-details"
+              href={`/trek-details/${featured.slug}`}
               className="group relative flex h-full min-h-[300px] w-full flex-col justify-end overflow-hidden rounded-[20px] border border-[#E5E5E5] p-6 text-left"
             >
               <Image
                 src={featured.coverUrl}
                 alt={featured.title}
+                unoptimized={/^https?:/.test(featured.coverUrl)}
                 fill
                 sizes="(max-width: 1024px) 100vw, 600px"
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -107,11 +95,12 @@ export default function TreksPanel({
         />
         <StatTile
           icon="mountain"
-          value={`${operator.treksLed}+`}
-          label="Treks led"
+          value={String(operator.treksLed)}
+          label="Departures led"
           sub={`${formatCount(operator.followerCount)} followers`}
         />
 
+        {quote ? (
         <div className="col-span-2">
           <blockquote className="flex h-full min-h-[150px] flex-col justify-center rounded-[20px] border border-[#E5E5E5] bg-[#F6F7F7] p-6">
             <p className="font-urbanist text-lg italic leading-snug text-[#101010]">
@@ -119,24 +108,27 @@ export default function TreksPanel({
             </p>
             <footer className="mt-3 font-urbanist text-xs text-[#8E8E8E]">
               - {reviews[0]?.name.replace(/\s.*/, "") ?? "Guest"}, on{" "}
-              {featured?.title ?? "a recent trek"}
+              {reviews[0]?.trek ?? "a recent trek"}
             </footer>
           </blockquote>
         </div>
+        ) : null}
 
+        {galleryImages.length > 0 ? (
         <div className="col-span-2">
           <div className="grid h-full min-h-[150px] grid-cols-3 gap-1.5 overflow-hidden rounded-[20px] border border-[#E5E5E5]">
             {galleryImages.slice(0, 3).map((src) => (
               <span key={src} className="relative">
-                <Image src={src} alt="" fill sizes="200px" className="object-cover" />
+                <Image src={src} alt="" fill sizes="200px" unoptimized={/^https?:/.test(src)} className="object-cover" />
               </span>
             ))}
           </div>
         </div>
+        ) : null}
       </div>
 
       <h2 className="mb-6 mt-14 font-urbanist text-2xl font-medium text-[#101010]">
-        All {treks.length} treks from {operator.name}
+        {treks.length > 0 ? `All ${treks.length} treks from ${operator.name}` : `${operator.name} has no published treks yet`}
       </h2>
       <div className="grid grid-cols-2 gap-4 sm:gap-5 xl:grid-cols-4">
         {treks.map((trek) => (

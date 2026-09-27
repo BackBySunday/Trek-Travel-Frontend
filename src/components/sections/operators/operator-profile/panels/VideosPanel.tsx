@@ -30,6 +30,7 @@ function VideoCard({
         src={video.thumb}
         alt=""
         fill
+        unoptimized={/^https?:/.test(video.thumb)}
         sizes={featured ? "(max-width: 1024px) 100vw, 760px" : "420px"}
         className="object-cover transition-transform duration-700 group-hover:scale-105"
       />
@@ -37,9 +38,11 @@ function VideoCard({
       <span className="absolute left-1/2 top-1/2 grid h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-black/45 text-white backdrop-blur-md transition-transform group-hover:scale-110">
         <PlayIcon />
       </span>
-      <span className="absolute right-3 top-3 rounded bg-black/70 px-1.5 py-0.5 font-urbanist text-xs font-medium text-white">
-        {video.duration}
-      </span>
+      {video.duration ? (
+        <span className="absolute right-3 top-3 rounded bg-black/70 px-1.5 py-0.5 font-urbanist text-xs font-medium text-white">
+          {video.duration}
+        </span>
+      ) : null}
       <span
         className={`absolute inset-x-0 bottom-0 flex flex-col p-4 text-white ${
           featured ? "sm:p-6" : "sm:p-5"
@@ -52,9 +55,11 @@ function VideoCard({
         >
           {video.title}
         </span>
-        <span className="mt-1 font-urbanist text-xs text-white/65">
-          {video.views} views - {video.posted}
-        </span>
+        {video.views ? (
+          <span className="mt-1 font-urbanist text-xs text-white/65">
+            {video.views} views - {video.posted}
+          </span>
+        ) : null}
       </span>
     </button>
   );
@@ -140,9 +145,18 @@ export default function VideosPanel({
             className="w-full max-w-3xl"
             onClick={(event) => event.stopPropagation()}
           >
+            {active.src ? (
+              <video
+                src={active.src}
+                controls
+                autoPlay
+                className="aspect-video w-full rounded-[20px] bg-black"
+              />
+            ) : (
             <div className="relative aspect-video overflow-hidden rounded-[20px]">
               <Image
                 src={active.thumb}
+                unoptimized={/^https?:/.test(active.thumb)}
                 alt=""
                 fill
                 sizes="90vw"
@@ -160,15 +174,19 @@ export default function VideosPanel({
                 </a>
               </span>
             </div>
+            )}
             <div className="mt-3 flex items-start justify-between gap-4">
               <div>
                 <p className="font-urbanist text-base font-medium text-white">
                   {active.title}
                 </p>
-                <p className="font-urbanist text-xs text-white/60">
-                  {active.views} views - {active.posted}
-                </p>
+                {active.views ? (
+                  <p className="font-urbanist text-xs text-white/60">
+                    {active.views} views - {active.posted}
+                  </p>
+                ) : null}
               </div>
+              {active.youtubeId ? (
               <a
                 href={`https://www.youtube.com/watch?v=${active.youtubeId}`}
                 target="_blank"
@@ -178,6 +196,7 @@ export default function VideosPanel({
                 YouTube
                 <ExternalLinkIcon />
               </a>
+              ) : null}
             </div>
           </div>
         </div>

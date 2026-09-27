@@ -8,6 +8,7 @@ import { useAuth } from "@/lib/AuthContext";
 const navLinks = [
   { label: "Home", href: "/" },
   { label: "Treks", href: "/#treks" },
+  { label: "Operators", href: "/operators" },
   { label: "Destinations", href: "/#destinations" },
   { label: "Partners", href: "/#partners" },
   { label: "Contact", href: "/#contact" },
@@ -152,9 +153,17 @@ export default function Navbar({
         {/* Liquid Glass Book Now Button */}
         <div className="hidden min-w-0 items-center gap-2 justify-self-end sm:flex">
           {isLoading ? null : isAuthenticated ? (
-            <button type="button" onClick={logout} className={authPillClass}>
-              <span className="select-none whitespace-nowrap font-sans tracking-wide">Sign out</span>
-            </button>
+            <>
+              <Link href="/bookings" className={authPillClass}>
+                <span className="select-none whitespace-nowrap font-sans tracking-wide">Bookings</span>
+              </Link>
+              <Link href="/messages" className={authPillClass}>
+                <span className="select-none whitespace-nowrap font-sans tracking-wide">Messages</span>
+              </Link>
+              <button type="button" onClick={logout} className={authPillClass}>
+                <span className="select-none whitespace-nowrap font-sans tracking-wide">Sign out</span>
+              </button>
+            </>
           ) : (
             <Link href="/auth" className={authPillClass}>
               <span className="select-none whitespace-nowrap font-sans tracking-wide">Sign in</span>
@@ -220,16 +229,32 @@ export default function Navbar({
               );
             })}
             {isLoading ? null : isAuthenticated ? (
-              <button
-                type="button"
-                onClick={() => {
-                  logout();
-                  setMobileMenuOpen(false);
-                }}
-                className="w-full rounded-2xl px-5 py-3 text-left font-sans text-base text-[#101010]/90 transition-all duration-200 hover:bg-black/10"
-              >
-                Sign out
-              </button>
+              <>
+                <Link
+                  href="/bookings"
+                  className="w-full rounded-2xl px-5 py-3 text-left font-sans text-base text-[#101010]/90 transition-all duration-200 hover:bg-black/10"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Bookings
+                </Link>
+                <Link
+                  href="/messages"
+                  className="w-full rounded-2xl px-5 py-3 text-left font-sans text-base text-[#101010]/90 transition-all duration-200 hover:bg-black/10"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Messages
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    logout();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="w-full rounded-2xl px-5 py-3 text-left font-sans text-base text-[#101010]/90 transition-all duration-200 hover:bg-black/10"
+                >
+                  Sign out
+                </button>
+              </>
             ) : (
               <Link
                 href="/auth"

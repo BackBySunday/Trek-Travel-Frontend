@@ -43,7 +43,7 @@ export default function OperatorTabPanel({
   }
 
   if (tab === "Reviews") {
-    return <ReviewsPanel operator={operator} reviews={reviews} />;
+    return <ReviewsPanel operator={operator} reviews={reviews} treks={treks} />;
   }
 
   return (

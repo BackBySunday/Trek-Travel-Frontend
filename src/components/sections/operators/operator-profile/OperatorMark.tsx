@@ -18,6 +18,7 @@ export default function OperatorMark({
     >
       <Image
         src={operator.markUrl}
+        unoptimized={/^https?:/.test(operator.markUrl)}
         alt={`${operator.name} profile`}
         fill
         sizes="112px"

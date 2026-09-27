@@ -1,4 +1,19 @@
-export default function TrekDetailsHeroImage() {
+import type { CSSProperties } from "react";
+import type { TrekView } from "@/lib/trek";
+
+const FALLBACK_PHOTOS = [
+  "/Hero/card-1.png",
+  "/Hero/card-2.png",
+  "/Hero/card-3.png",
+  "/Hero/western-ghats-cliff.jpg",
+  "/Hero/mountain-ridge-trail.jpg",
+];
+
+export default function TrekDetailsHeroImage({ trek }: { trek: TrekView }) {
+  // Organizer photos first; any missing slot falls back to a stock image so the
+  // five-tile layout never renders empty.
+  const photos = Array.from({ length: 5 }, (_, i) => trek.photos[i] ?? FALLBACK_PHOTOS[i]);
+  const bg = (i: number): CSSProperties => ({ backgroundImage: `url("${photos[i]}")` });
   const imageClass =
     "rounded-[20px] bg-cover bg-center bg-no-repeat lg:rounded-[10px]";
 
@@ -6,9 +21,10 @@ export default function TrekDetailsHeroImage() {
     <section className="mt-1 w-full px-4 [--hero-gap:16px] [--hero-header-top:max(1rem,env(safe-area-inset-top))] [--hero-nav-height:44px] sm:mt-2 sm:px-6 md:[--hero-header-top:32px] md:[--hero-nav-height:54px] lg:mt-0 lg:px-[30px] lg:[--hero-gap:20px] xl:[--hero-gap:max(20px,(100vw-1860px)/2)] xl:[--hero-header-top:40px]">
       <div className="mx-auto grid w-full max-w-[1846px] grid-cols-1 gap-2 sm:gap-4 md:grid-cols-[1.05fr_1.3fr] lg:h-[min(914px,calc(100svh-(var(--hero-header-top)+var(--hero-nav-height)+(var(--hero-gap)*2))))] lg:min-h-[560px] lg:grid-cols-[752fr_1059fr] lg:gap-2">
         <div
-          aria-label="Vasota Fort Trek landscape"
+          aria-label={`${trek.title} landscape`}
           role="img"
-          className={`${imageClass} relative min-h-[360px] overflow-hidden bg-[url('/Hero/card-1.png')] sm:min-h-[430px] md:min-h-[560px] lg:h-full lg:rounded-l-[30px]`}
+          style={bg(0)}
+          className={`${imageClass} relative min-h-[360px] overflow-hidden sm:min-h-[430px] md:min-h-[560px] lg:h-full lg:rounded-l-[30px]`}
         >
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.08)_0%,rgba(0,0,0,0.56)_100%)]" />
           <div className="absolute inset-x-0 bottom-8 flex flex-col items-center gap-3 px-5 text-center sm:bottom-10 lg:bottom-12">
@@ -16,15 +32,17 @@ export default function TrekDetailsHeroImage() {
               <span className="trek-pill-glass-effect" />
               <span className="trek-pill-glass-tint" />
               <span className="trek-pill-glass-shine" />
-              <p className="trek-pill-glass-content">Adventure</p>
+              <p className="trek-pill-glass-content">{trek.difficulty}</p>
             </div>
             <h1 className="flex flex-col items-center gap-1">
               <span className="font-urbanist text-[clamp(2rem,4vw,52px)] font-medium leading-none text-white">
-                Vasota Fort
+                {trek.title}
               </span>
-              <span className="font-urbanist text-[clamp(1.75rem,3.5vw,48px)] font-medium leading-none text-white">
-                Trek - Pune
-              </span>
+              {trek.baseCity ? (
+                <span className="font-urbanist text-[clamp(1.75rem,3.5vw,48px)] font-medium leading-none text-white">
+                  from {trek.baseCity}
+                </span>
+              ) : null}
             </h1>
           </div>
         </div>
@@ -32,24 +50,28 @@ export default function TrekDetailsHeroImage() {
         <div className="grid grid-cols-2 gap-2 sm:min-h-[520px] sm:gap-4 lg:flex lg:h-full lg:flex-col lg:gap-2">
           <div className="contents lg:flex lg:flex-1 lg:gap-2">
             <div
-              aria-label="Vasota trek preview"
+              aria-label={`${trek.title} preview`}
               role="img"
-              className={`${imageClass} min-h-[156px] bg-[url('/Hero/card-2.png')] sm:min-h-[250px] lg:flex-[640]`}
+              style={bg(1)}
+              className={`${imageClass} min-h-[156px] sm:min-h-[250px] lg:flex-[640]`}
             />
             <div
-              aria-label="Vasota trek preview"
+              aria-label={`${trek.title} preview`}
               role="img"
-              className={`${imageClass} min-h-[156px] bg-[url('/Hero/card-3.png')] sm:min-h-[250px] lg:flex-[390] lg:rounded-tr-[30px]`}
+              style={bg(2)}
+              className={`${imageClass} min-h-[156px] sm:min-h-[250px] lg:flex-[390] lg:rounded-tr-[30px]`}
             />
           </div>
           <div className="contents lg:flex lg:flex-1 lg:gap-2">
             <div
-              aria-label="Vasota trek preview"
+              aria-label={`${trek.title} preview`}
               role="img"
-              className={`${imageClass} min-h-[156px] bg-[url('/Hero/western-ghats-cliff.jpg')] sm:min-h-[250px] lg:flex-[390]`}
+              style={bg(3)}
+              className={`${imageClass} min-h-[156px] sm:min-h-[250px] lg:flex-[390]`}
             />
             <div
-              className={`${imageClass} relative min-h-[156px] overflow-hidden bg-[url('/Hero/mountain-ridge-trail.jpg')] sm:min-h-[250px] lg:flex-[640] lg:rounded-br-[30px]`}
+              style={bg(4)}
+              className={`${imageClass} relative min-h-[156px] overflow-hidden sm:min-h-[250px] lg:flex-[640] lg:rounded-br-[30px]`}
             >
               <span
                 className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/55 to-transparent"
